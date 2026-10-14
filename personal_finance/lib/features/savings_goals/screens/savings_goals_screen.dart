@@ -153,12 +153,16 @@ class _SavingsGoalsScreenState extends State<SavingsGoalsScreen> {
           const SizedBox(width: 4),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => AddEditGoalSheet.show(context),
-        backgroundColor: isDark ? AppTheme.primaryGreen : AppTheme.primaryNavy,
-        foregroundColor: isDark ? AppTheme.deepNavy : Colors.white,
-        tooltip: 'Create Goal',
-        child: const Icon(Icons.add_rounded, size: 28),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 84.0),
+        child: FloatingActionButton(
+          onPressed: () => AddEditGoalSheet.show(context),
+          backgroundColor: AppTheme.primaryGreen,
+          foregroundColor: Colors.white,
+          elevation: 4,
+          tooltip: 'Create Goal',
+          child: const Icon(Icons.add_rounded, size: 28),
+        ),
       ),
       body: provider.isLoading
           ? Center(
@@ -521,13 +525,18 @@ class _SavingsGoalsScreenState extends State<SavingsGoalsScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                goal.status == GoalStatus.completed
-                    ? 'Completed 🎉'
-                    : (summary.planResult?.statusDescription ??
-                        '${summary.milestones.where((m) => m.isReached).length}/5 milestones reached'),
-                style: const TextStyle(fontSize: 11, color: Colors.grey),
+              Expanded(
+                child: Text(
+                  goal.status == GoalStatus.completed
+                      ? 'Completed 🎉'
+                      : (summary.planResult?.statusDescription ??
+                          '${summary.milestones.where((m) => m.isReached).length}/5 milestones reached'),
+                  style: const TextStyle(fontSize: 11, color: Colors.grey),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
+              const SizedBox(width: 8),
               TextButton.icon(
                 onPressed: () => AddContributionSheet.show(context, goal: goal),
                 icon: const Icon(Icons.add_rounded, size: 16),

@@ -39,8 +39,8 @@ class AppTheme {
   static const Color highlightMint = pureWhite;
   static const Color glowTeal = Colors.transparent;
 
-  // Semantic Financial Status Indicators (used in small badges, dots, chips)
-  static const Color primaryGreen = pureWhite; // Default brand icon/toggle element
+  // Brand Accents & Semantic Financial Status Indicators
+  static const Color primaryGreen = emeraldAccent; // Teal/emerald brand accent (#10B981)
   static const Color incomeGreen = Color(0xFF34D399); // Semantic income indicator
   static const Color expenseRed = Color(0xFFF87171); // Semantic expense/alert indicator
   static const Color transferBlue = Color(0xFF38BDF8); // Semantic transfer indicator
@@ -55,7 +55,7 @@ class AppTheme {
   static const Color emeraldDarkContainer = Color(0xFF181818);
 
   // Backward Compatibility Navy Aliases
-  static const Color primaryNavy = pureWhite;
+  static const Color primaryNavy = Color(0xFF0F172A); // Deep slate navy for secondary dark actions
   static const Color deepNavy = pureBlack;
   static const Color navyCardDark = cardCharcoal;
   static const Color navyElevatedDark = elevatedCharcoal;
@@ -278,16 +278,16 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: pureWhite,
-          foregroundColor: pureBlack,
+          backgroundColor: primaryGreen,
+          foregroundColor: Colors.white,
           elevation: 0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          backgroundColor: pureWhite,
-          foregroundColor: pureBlack,
+          backgroundColor: primaryGreen,
+          foregroundColor: Colors.white,
           elevation: 0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         ),
@@ -298,6 +298,11 @@ class AppTheme {
           foregroundColor: pureWhite,
           side: const BorderSide(color: borderTertiary, width: 1),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: primaryGreen,
         ),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(

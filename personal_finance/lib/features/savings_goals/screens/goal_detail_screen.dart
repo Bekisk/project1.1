@@ -639,7 +639,11 @@ class GoalDetailScreen extends StatelessWidget {
                                 ),
                                 child: Text(
                                   isTransfer ? 'Transfer' : 'Earmark',
-                                  style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w600,
+                                    color: isDark ? AppTheme.primaryText : AppTheme.textDark,
+                                  ),
                                 ),
                               ),
                             ],

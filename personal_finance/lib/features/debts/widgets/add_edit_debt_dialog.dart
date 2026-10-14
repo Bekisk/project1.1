@@ -261,7 +261,7 @@ class _AddEditDebtDialogState extends State<AddEditDebtDialog> {
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primaryGreen,
-                    foregroundColor: Colors.black,
+                    foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   onPressed: _isSaving ? null : _saveDebt,

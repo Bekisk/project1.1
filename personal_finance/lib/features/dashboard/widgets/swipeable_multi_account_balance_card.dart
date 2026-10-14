@@ -461,41 +461,50 @@ class _SwipeableMultiAccountBalanceCardState
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    _iconForAccount(item.account),
-                    color: Colors.white,
-                    size: 14,
-                  ),
-                  const SizedBox(width: 5),
-                  Text(
-                    item.bankDisplayName,
-                    style: const TextStyle(
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      _iconForAccount(item.account),
                       color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 0.3,
+                      size: 14,
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 2),
-              Text(
-                item.subtitleLabel,
-                style: TextStyle(
-                  color: widget.isDark ? AppTheme.secondaryGray : Colors.white70,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w500,
-                  letterSpacing: 0.3,
+                    const SizedBox(width: 5),
+                    Flexible(
+                      child: Text(
+                        item.bankDisplayName,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.3,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 2),
+                Text(
+                  item.subtitleLabel,
+                  style: TextStyle(
+                    color: widget.isDark ? AppTheme.secondaryGray : Colors.white70,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 0.3,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
           ),
+          const SizedBox(width: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
             decoration: BoxDecoration(
@@ -542,51 +551,58 @@ class _SwipeableMultiAccountBalanceCardState
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Text(
-                    item.bankDisplayName,
-                    style: TextStyle(
-                      color: widget.isDark
-                          ? AppTheme.secondaryGray
-                          : const Color(0xFFBBE5DA),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.2,
-                    ),
-                  ),
-                  const SizedBox(width: 5),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: widget.isDark
-                          ? const Color(0xFF202020)
-                          : (item.isMain
-                              ? AppTheme.primaryAccent.withValues(alpha: 0.2)
-                              : (item.isSavings
-                                  ? const Color(0xFF14B8A6).withValues(alpha: 0.25)
-                                  : Colors.white12)),
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Text(
-                      item.roleBadge,
-                      style: TextStyle(
-                        color: widget.isDark
-                            ? AppTheme.pureWhite
-                            : (item.isMain
-                                ? AppTheme.primaryAccent
-                                : (item.isSavings
-                                    ? const Color(0xFF5EEAD4)
-                                    : Colors.white70)),
-                        fontSize: 8.5,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.3,
+              Expanded(
+                child: Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        item.bankDisplayName,
+                        style: TextStyle(
+                          color: widget.isDark
+                              ? AppTheme.secondaryGray
+                              : const Color(0xFFBBE5DA),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.2,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 5),
+                    Container(
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: widget.isDark
+                            ? const Color(0xFF202020)
+                            : (item.isMain
+                                ? AppTheme.primaryAccent.withValues(alpha: 0.2)
+                                : (item.isSavings
+                                    ? const Color(0xFF14B8A6).withValues(alpha: 0.25)
+                                    : Colors.white12)),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Text(
+                        item.roleBadge,
+                        style: TextStyle(
+                          color: widget.isDark
+                              ? AppTheme.pureWhite
+                              : (item.isMain
+                                  ? AppTheme.primaryAccent
+                                  : (item.isSavings
+                                      ? const Color(0xFF5EEAD4)
+                                      : Colors.white70)),
+                          fontSize: 8.5,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.3,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
                 decoration: BoxDecoration(

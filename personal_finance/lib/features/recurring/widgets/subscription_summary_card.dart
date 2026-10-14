@@ -32,26 +32,33 @@ class SubscriptionSummaryCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(7),
-                      decoration: BoxDecoration(
-                        color: AppTheme.accentPurple.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(8),
+                Expanded(
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(7),
+                        decoration: BoxDecoration(
+                          color: AppTheme.accentPurple.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(Icons.autorenew_rounded, color: AppTheme.accentPurple, size: 18),
                       ),
-                      child: const Icon(Icons.autorenew_rounded, color: AppTheme.accentPurple, size: 18),
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      'Recurring Bills & Subscriptions',
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: -0.2,
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          'Recurring Bills & Subscriptions',
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: -0.2,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
+                const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
@@ -82,7 +89,8 @@ class SubscriptionSummaryCard extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
+                Expanded(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
@@ -100,9 +108,12 @@ class SubscriptionSummaryCard extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                           color: isDark ? Colors.white : Colors.black87,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
+                ),
                   Icon(
                     Icons.chevron_right_rounded,
                     color: isDark ? Colors.white38 : Colors.black38,

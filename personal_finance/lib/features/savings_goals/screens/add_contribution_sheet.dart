@@ -431,6 +431,7 @@ class _AddContributionSheetState extends State<AddContributionSheet> {
                 if (_selectedMode == ContributionMode.accountTransfer) ...[
                   DropdownButtonFormField<String>(
                     initialValue: _selectedSourceAccountId,
+                    isExpanded: true,
                     decoration: InputDecoration(
                       labelText: 'Source Account (Debited)',
                       prefixIcon: const Icon(Icons.account_balance_rounded),
@@ -439,7 +440,7 @@ class _AddContributionSheetState extends State<AddContributionSheet> {
                     items: accounts.map((acc) {
                       return DropdownMenuItem(
                         value: acc.id,
-                        child: Text('${acc.name} (${acc.currencyCode})'),
+                        child: Text('${acc.name} (${acc.currencyCode})', overflow: TextOverflow.ellipsis),
                       );
                     }).toList(),
                     onChanged: (val) => setState(() => _selectedSourceAccountId = val),
@@ -447,15 +448,16 @@ class _AddContributionSheetState extends State<AddContributionSheet> {
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
                     initialValue: _selectedDestinationAccountId,
+                    isExpanded: true,
                     decoration: InputDecoration(
-                      labelText: 'Destination Savings Account (Credited)',
-                      prefixIcon: const Icon(Icons.savings_outlined),
+                      labelText: 'Destination Account (Credited)',
+                      prefixIcon: const Icon(Icons.savings_rounded),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                     items: accounts.map((acc) {
                       return DropdownMenuItem(
                         value: acc.id,
-                        child: Text('${acc.name} (${acc.currencyCode})'),
+                        child: Text('${acc.name} (${acc.currencyCode})', overflow: TextOverflow.ellipsis),
                       );
                     }).toList(),
                     onChanged: (val) => setState(() => _selectedDestinationAccountId = val),

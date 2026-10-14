@@ -112,47 +112,50 @@ class _AccountsManagementScreenState extends State<AccountsManagementScreen> wit
           return AlertDialog(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             title: Text(accountToEdit == null ? 'New Account / Wallet' : 'Edit Account'),
-            content: Form(
-              key: formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextFormField(
-                    controller: nameCtrl,
-                    decoration: InputDecoration(
-                      labelText: 'Account Name *',
-                      hintText: 'e.g. CBE Account, Telebirr, Cash',
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            content: SingleChildScrollView(
+              child: Form(
+                key: formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextFormField(
+                      controller: nameCtrl,
+                      decoration: InputDecoration(
+                        labelText: 'Account Name *',
+                        hintText: 'e.g. CBE Account, Telebirr, Cash',
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      validator: (val) => val == null || val.trim().isEmpty ? 'Enter account name' : null,
                     ),
-                    validator: (val) => val == null || val.trim().isEmpty ? 'Enter account name' : null,
-                  ),
-                  const SizedBox(height: 14),
-                  DropdownButtonFormField<String>(
-                    initialValue: selectedType,
-                    decoration: InputDecoration(
-                      labelText: 'Account Type',
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    const SizedBox(height: 14),
+                    DropdownButtonFormField<String>(
+                      initialValue: selectedType,
+                      isExpanded: true,
+                      decoration: InputDecoration(
+                        labelText: 'Account Type',
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      items: const [
+                        DropdownMenuItem(value: 'cash', child: Text('Cash Wallet', overflow: TextOverflow.ellipsis)),
+                        DropdownMenuItem(value: 'bank', child: Text('Bank Account (CBE, Awash, etc.)', overflow: TextOverflow.ellipsis)),
+                        DropdownMenuItem(value: 'mobile_money', child: Text('Mobile Money (Telebirr, CBE Birr)', overflow: TextOverflow.ellipsis)),
+                        DropdownMenuItem(value: 'savings', child: Text('Dedicated Savings', overflow: TextOverflow.ellipsis)),
+                      ],
+                      onChanged: (val) {
+                        if (val != null) setDialogState(() => selectedType = val);
+                      },
                     ),
-                    items: const [
-                      DropdownMenuItem(value: 'cash', child: Text('Cash Wallet')),
-                      DropdownMenuItem(value: 'bank', child: Text('Bank Account (CBE, Awash, etc.)')),
-                      DropdownMenuItem(value: 'mobile_money', child: Text('Mobile Money (Telebirr, CBE Birr)')),
-                      DropdownMenuItem(value: 'savings', child: Text('Dedicated Savings')),
-                    ],
-                    onChanged: (val) {
-                      if (val != null) setDialogState(() => selectedType = val);
-                    },
-                  ),
-                  const SizedBox(height: 14),
-                  TextFormField(
-                    controller: openingCtrl,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    decoration: InputDecoration(
-                      labelText: 'Opening Balance (ETB)',
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    const SizedBox(height: 14),
+                    TextFormField(
+                      controller: openingCtrl,
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      decoration: InputDecoration(
+                        labelText: 'Opening Balance (ETB)',
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             actions: [
@@ -195,7 +198,10 @@ class _AccountsManagementScreenState extends State<AccountsManagementScreen> wit
                     _loadAccountsWithBalances();
                   }
                 },
-                style: FilledButton.styleFrom(backgroundColor: AppTheme.primaryGreen),
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppTheme.primaryGreen,
+                  foregroundColor: Colors.white,
+                ),
                 child: const Text('Save'),
               ),
             ],

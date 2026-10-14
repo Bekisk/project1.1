@@ -120,8 +120,9 @@ class TransactionDetailSheet extends StatelessWidget {
           width: 1,
         ),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
         children: [
           // Handle bar
           Container(
@@ -300,6 +301,7 @@ class TransactionDetailSheet extends StatelessWidget {
             ],
           ),
         ],
+      ),
       ),
     );
   }

@@ -601,20 +601,28 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                   else
                     Row(
                       children: [
-                        Text(
-                          sourceAccount,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                        Flexible(
+                          child: Text(
+                            sourceAccount,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         if (category != null) ...[
                           const Text(' • ', style: TextStyle(color: Colors.grey, fontSize: 11)),
-                          Text(
-                            category.name,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                          Flexible(
+                            child: Text(
+                              category.name,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],

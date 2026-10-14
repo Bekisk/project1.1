@@ -200,6 +200,8 @@ class DebtsListView extends StatelessWidget {
                       Text(
                         debt.personName,
                         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       Text(
                         isReceivable ? 'OWES YOU' : 'YOU OWE',

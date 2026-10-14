@@ -518,6 +518,8 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
                       Text(
                         budget.name,
                         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 2),
                       Text(
@@ -526,10 +528,13 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
                           fontSize: 12,
                           color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
                 ),
+                const SizedBox(width: 8),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [

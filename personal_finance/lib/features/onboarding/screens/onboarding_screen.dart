@@ -148,16 +148,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     const SizedBox(height: 14),
                     DropdownButtonFormField<String>(
                       initialValue: selectedType,
+                      isExpanded: true,
                       decoration: InputDecoration(
                         labelText: 'Account Type',
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                       ),
                       items: const [
-                        DropdownMenuItem(value: 'bank', child: Text('Bank Account (CBE, Awash, etc.)')),
-                        DropdownMenuItem(value: 'savings', child: Text('Savings Account')),
-                        DropdownMenuItem(value: 'mobile_money', child: Text('Mobile Money (Telebirr, CBE Birr)')),
-                        DropdownMenuItem(value: 'cash', child: Text('Cash or Wallet')),
-                        DropdownMenuItem(value: 'other', child: Text('Other Account')),
+                        DropdownMenuItem(value: 'bank', child: Text('Bank Account (CBE, Awash, etc.)', overflow: TextOverflow.ellipsis)),
+                        DropdownMenuItem(value: 'savings', child: Text('Savings Account', overflow: TextOverflow.ellipsis)),
+                        DropdownMenuItem(value: 'mobile_money', child: Text('Mobile Money (Telebirr, CBE Birr)', overflow: TextOverflow.ellipsis)),
+                        DropdownMenuItem(value: 'cash', child: Text('Cash or Wallet', overflow: TextOverflow.ellipsis)),
+                        DropdownMenuItem(value: 'other', child: Text('Other Account', overflow: TextOverflow.ellipsis)),
                       ],
                       onChanged: (val) {
                         if (val != null) setDialogState(() => selectedType = val);
@@ -218,7 +219,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   });
                   Navigator.pop(ctx);
                 },
-                style: FilledButton.styleFrom(backgroundColor: AppTheme.primaryGreen),
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppTheme.primaryGreen,
+                  foregroundColor: Colors.white,
+                ),
                 child: const Text('Add Account'),
               ),
             ],
@@ -454,10 +458,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
-        color: (isDark ? const Color(0xFF0B1E19) : Colors.white).withValues(alpha: 0.95),
+        color: (isDark ? AppTheme.cardCharcoal : Colors.white).withValues(alpha: 0.95),
         border: Border(
           top: BorderSide(
-            color: isDark ? const Color(0xFF1E3A32) : const Color(0xFFE2E8F0),
+            color: isDark ? AppTheme.borderPrimary : const Color(0xFFE2E8F0),
             width: 1,
           ),
         ),
@@ -804,8 +808,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   borderRadius: BorderRadius.circular(12),
                   side: BorderSide(
                     color: isSelected
-                        ? (isDark ? AppTheme.primaryAccent : AppTheme.primaryGreen)
-                        : (isDark ? const Color(0xFF1E3A32) : const Color(0xFFE2E8F0)),
+                        ? (isDark ? AppTheme.primaryGreen : AppTheme.primaryGreen)
+                        : (isDark ? AppTheme.borderPrimary : const Color(0xFFE2E8F0)),
                   ),
                 ),
                 onSelected: (selected) {
@@ -1010,12 +1014,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
                         color: isMain
-                            ? (isDark ? AppTheme.primaryAccent : AppTheme.primaryGreen)
-                            : (isDark ? const Color(0xFF1E3A32) : const Color(0xFFE2E8F0)),
+                            ? (isDark ? AppTheme.primaryGreen : AppTheme.primaryGreen)
+                            : (isDark ? AppTheme.borderPrimary : const Color(0xFFE2E8F0)),
                         width: isMain ? 2 : 1,
                       ),
                       color: isMain
-                          ? (isDark ? AppTheme.primaryAccent.withValues(alpha: 0.12) : const Color(0xFFE8F5E9))
+                          ? (isDark ? AppTheme.primaryGreen.withValues(alpha: 0.15) : const Color(0xFFE8F5E9))
                           : null,
                     ),
                     child: Row(
@@ -1286,37 +1290,47 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: [
-                              Text(acc.name, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-                              if (isMain) ...[
-                                const SizedBox(width: 6),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: AppTheme.primaryGreen.withValues(alpha: 0.15),
-                                    borderRadius: BorderRadius.circular(6),
+                          Expanded(
+                            child: Row(
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    acc.name,
+                                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                  child: const Text('MAIN',
-                                      style: TextStyle(
-                                          fontSize: 9, fontWeight: FontWeight.bold, color: AppTheme.primaryGreen)),
                                 ),
-                              ],
-                              if (isSavings) ...[
-                                const SizedBox(width: 6),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: AppTheme.transferBlue.withValues(alpha: 0.15),
-                                    borderRadius: BorderRadius.circular(6),
+                                if (isMain) ...[
+                                  const SizedBox(width: 6),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: AppTheme.primaryGreen.withValues(alpha: 0.15),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: const Text('MAIN',
+                                        style: TextStyle(
+                                            fontSize: 9, fontWeight: FontWeight.bold, color: AppTheme.primaryGreen)),
                                   ),
-                                  child: const Text('SAVINGS',
-                                      style: TextStyle(
-                                          fontSize: 9, fontWeight: FontWeight.bold, color: AppTheme.transferBlue)),
-                                ),
+                                ],
+                                if (isSavings) ...[
+                                  const SizedBox(width: 6),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: AppTheme.transferBlue.withValues(alpha: 0.15),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: const Text('SAVINGS',
+                                        style: TextStyle(
+                                            fontSize: 9, fontWeight: FontWeight.bold, color: AppTheme.transferBlue)),
+                                  ),
+                                ],
                               ],
-                            ],
+                            ),
                           ),
+                          const SizedBox(width: 8),
                           Text(
                             CurrencyFormatter.formatCents(acc.openingBalance),
                             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),

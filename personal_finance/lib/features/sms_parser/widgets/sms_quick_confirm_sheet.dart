@@ -121,8 +121,9 @@ class _SmsQuickConfirmSheetState extends State<SmsQuickConfirmSheet> {
           ),
         ],
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Drag handle
@@ -377,6 +378,7 @@ class _SmsQuickConfirmSheetState extends State<SmsQuickConfirmSheet> {
             ),
           ),
         ],
+      ),
       ),
     );
   }

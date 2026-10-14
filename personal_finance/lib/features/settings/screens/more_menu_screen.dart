@@ -162,11 +162,9 @@ class MoreMenuScreen extends StatelessWidget {
                           style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
                         ),
                         Text(
-                          themeProvider.themeMode == ThemeMode.system
-                              ? 'System Default'
-                              : themeProvider.themeMode == ThemeMode.dark
-                                  ? 'Dark Mode'
-                                  : 'Light Mode',
+                          themeProvider.themeMode == ThemeMode.dark
+                              ? 'Dark Mode (Enforced Default)'
+                              : 'Light Mode',
                           style: TextStyle(
                             fontSize: 12,
                             color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
@@ -178,21 +176,17 @@ class MoreMenuScreen extends StatelessWidget {
                 ),
                 DropdownButtonHideUnderline(
                   child: DropdownButton<ThemeMode>(
-                    value: themeProvider.themeMode,
+                    value: themeProvider.themeMode == ThemeMode.light ? ThemeMode.light : ThemeMode.dark,
                     borderRadius: BorderRadius.circular(14),
                     dropdownColor: isDark ? const Color(0xFF1E293B) : Colors.white,
                     items: const [
                       DropdownMenuItem(
-                        value: ThemeMode.system,
-                        child: Text('System', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                        value: ThemeMode.dark,
+                        child: Text('Dark (Default)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
                       ),
                       DropdownMenuItem(
                         value: ThemeMode.light,
                         child: Text('Light', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-                      ),
-                      DropdownMenuItem(
-                        value: ThemeMode.dark,
-                        child: Text('Dark', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
                       ),
                     ],
                     onChanged: (newMode) {
@@ -606,8 +600,11 @@ class MoreMenuScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 const Divider(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 4,
+                  alignment: WrapAlignment.spaceBetween,
+                  crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     TextButton(
                       onPressed: () {

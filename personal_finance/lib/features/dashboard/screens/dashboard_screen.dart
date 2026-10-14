@@ -235,45 +235,52 @@ class DashboardScreen extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          InkWell(
-            onTap: () => ProfileScreen.navigate(context),
-            borderRadius: BorderRadius.circular(24),
-            child: Row(
-              children: [
-                // Real Avatar with fallback initials / icon
-                ProfileAvatar(
-                  imagePath: imagePath,
-                  displayName: displayName,
-                  radius: 22,
-                ),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      _getTimeGreeting(),
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: isDark ? AppTheme.secondaryText : AppTheme.textSecondaryLight,
-                        letterSpacing: 0.2,
-                      ),
+          Expanded(
+            child: InkWell(
+              onTap: () => ProfileScreen.navigate(context),
+              borderRadius: BorderRadius.circular(24),
+              child: Row(
+                children: [
+                  // Real Avatar with fallback initials / icon
+                  ProfileAvatar(
+                    imagePath: imagePath,
+                    displayName: displayName,
+                    radius: 22,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _getTimeGreeting(),
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: isDark ? AppTheme.secondaryText : AppTheme.textSecondaryLight,
+                            letterSpacing: 0.2,
+                          ),
+                        ),
+                        const SizedBox(height: 1),
+                        Text(
+                          displayName,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: -0.3,
+                            color: isDark ? AppTheme.primaryText : AppTheme.textDark,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 1),
-                    Text(
-                      displayName,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: -0.3,
-                        color: isDark ? AppTheme.primaryText : AppTheme.textDark,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
           ),
+          const SizedBox(width: 8),
           // Settings / Profile shortcut button
           GestureDetector(
             onTap: () {
@@ -707,19 +714,21 @@ class DashboardScreen extends StatelessWidget {
                 barGroups: List.generate(7, (i) {
                   final cents = weeklySpending[i];
                   final isLatest = i == 6;
+                  // For 0 spend, provide a subtle minimum baseline so the day is visually anchored
+                  final displayValue = cents > 0 ? cents.toDouble() : 0.0;
                   return BarChartGroupData(
                     x: i,
                     barRods: [
                       BarChartRodData(
-                        toY: cents.toDouble(),
+                        toY: displayValue,
                         gradient: LinearGradient(
                           colors: isLatest
                               ? (isDark
-                                  ? [AppTheme.pureWhite, const Color(0xFFD4D4D4)]
-                                  : [const Color(0xFF65F5D4), const Color(0xFF18D6B1)])
+                                  ? [AppTheme.primaryGreen, const Color(0xFF059669)]
+                                  : [const Color(0xFF10B981), const Color(0xFF059669)])
                               : (isDark
-                                  ? [const Color(0xFF454545), const Color(0xFF292929)]
-                                  : [const Color(0xFF5EEAD4), const Color(0xFF0F766E)]),
+                                  ? [const Color(0xFF334155), const Color(0xFF1E293B)]
+                                  : [const Color(0xFF94A3B8), const Color(0xFF64748B)]),
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                         ),
@@ -732,6 +741,19 @@ class DashboardScreen extends StatelessWidget {
               ),
             ),
           ),
+          if (weeklySpending.every((c) => c == 0)) ...[
+            const SizedBox(height: 10),
+            Center(
+              child: Text(
+                'No expenses recorded yet this week',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontStyle: FontStyle.italic,
+                  color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                ),
+              ),
+            ),
+          ],
 
           if (summary.topCategories.isNotEmpty) ...[
             const Divider(height: 24),
@@ -805,7 +827,8 @@ class DashboardScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final target = summary.goalsTotalTarget;
     final saved = summary.goalsTotalSaved;
-    final double percent = target > 0 ? (saved / target).clamp(0.0, 1.0) : 0.0;
+    final hasGoals = target > 0;
+    final double percent = hasGoals ? (saved / target).clamp(0.0, 1.0) : 0.0;
 
     return FintechCard(
       onTap: onNavigateToGoals,
@@ -836,49 +859,69 @@ class DashboardScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              Text(
-                '${(percent * 100).toStringAsFixed(0)}% reached',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                  color: isDark ? AppTheme.pureWhite : AppTheme.primaryNavy,
+              if (hasGoals)
+                Text(
+                  '${(percent * 100).toStringAsFixed(0)}% reached',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                    color: isDark ? AppTheme.primaryGreen : AppTheme.primaryNavy,
+                  ),
                 ),
-              ),
             ],
           ),
           const SizedBox(height: 14),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: LinearProgressIndicator(
-              value: percent,
-              minHeight: 8,
-              backgroundColor: isDark ? AppTheme.borderPrimary : const Color(0xFFF1F5F9),
-              valueColor: AlwaysStoppedAnimation<Color>(
-                isDark ? AppTheme.pureWhite : AppTheme.primaryNavy,
+          if (!hasGoals) ...[
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'No active savings goals set. Tap to start building your emergency fund or target purchase.',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppTheme.primaryGreen),
+              ],
+            ),
+          ] else ...[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: LinearProgressIndicator(
+                value: percent,
+                minHeight: 8,
+                backgroundColor: isDark ? AppTheme.borderPrimary : const Color(0xFFF1F5F9),
+                valueColor: const AlwaysStoppedAnimation<Color>(
+                  AppTheme.primaryGreen,
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Saved: ${CurrencyFormatter.formatCents(saved)}',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: isDark ? AppTheme.pureWhite : AppTheme.primaryNavy,
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Saved: ${CurrencyFormatter.formatCents(saved)}',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? AppTheme.pureWhite : AppTheme.primaryNavy,
+                  ),
                 ),
-              ),
-              Text(
-                'Target: ${CurrencyFormatter.formatCents(target)}',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                Text(
+                  'Target: ${CurrencyFormatter.formatCents(target)}',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
+          ],
         ],
       ),
     );
@@ -1045,7 +1088,7 @@ class DashboardScreen extends StatelessWidget {
             icon: const Icon(Icons.add_rounded, size: 18),
             label: Text(buttonText),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.primaryNavy,
+              backgroundColor: AppTheme.primaryGreen,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
