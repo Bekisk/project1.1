@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:personal_finance/core/database/database_helper.dart';
@@ -49,7 +50,9 @@ class DataBackupService {
 
     final buffer = StringBuffer();
     // CSV Header
-    buffer.writeln('ID,Date,Type,Amount(Cents),Amount(ETB),Description,Category,Account,Destination Account,Notes');
+    buffer.writeln(
+      'ID,Date,Type,Amount(Cents),Amount(ETB),Description,Category,Account,Destination Account,Notes',
+    );
 
     for (final row in transactions) {
       final id = _escapeCsv(row['id']?.toString() ?? '');
@@ -63,18 +66,25 @@ class DataBackupService {
       final destAcc = _escapeCsv(row['dest_account_name']?.toString() ?? '');
       final notes = _escapeCsv(row['notes']?.toString() ?? '');
 
-      buffer.writeln('$id,$date,$type,$cents,$etb,$desc,$cat,$acc,$destAcc,$notes');
+      buffer.writeln(
+        '$id,$date,$type,$cents,$etb,$desc,$cat,$acc,$destAcc,$notes',
+      );
     }
 
     return buffer.toString();
   }
 
   /// Atomically validates and imports financial data from JSON string
-  static Future<({bool success, String message, int importedTxCount})> importFinancialDataFromJson(String jsonString) async {
+  static Future<({bool success, String message, int importedTxCount})>
+  importFinancialDataFromJson(String jsonString) async {
     try {
       final dynamic decoded = jsonDecode(jsonString);
       if (decoded is! Map<String, dynamic> || !decoded.containsKey('data')) {
-        return (success: false, message: 'Invalid file format: Missing "data" section', importedTxCount: 0);
+        return (
+          success: false,
+          message: 'Invalid file format: Missing "data" section',
+          importedTxCount: 0,
+        );
       }
 
       final data = decoded['data'] as Map<String, dynamic>;
@@ -85,50 +95,86 @@ class DataBackupService {
       await db.transaction((txn) async {
         // 1. Accounts
         if (data.containsKey('accounts')) {
-          final accounts = List<Map<String, dynamic>>.from(data['accounts'] as List);
+          final accounts = List<Map<String, dynamic>>.from(
+            data['accounts'] as List,
+          );
           for (final acc in accounts) {
-            await txn.insert('accounts', acc, conflictAlgorithm: ConflictAlgorithm.replace);
+            await txn.insert(
+              'accounts',
+              acc,
+              conflictAlgorithm: ConflictAlgorithm.replace,
+            );
           }
         }
 
         // 2. Categories
         if (data.containsKey('categories')) {
-          final categories = List<Map<String, dynamic>>.from(data['categories'] as List);
+          final categories = List<Map<String, dynamic>>.from(
+            data['categories'] as List,
+          );
           for (final cat in categories) {
-            await txn.insert('categories', cat, conflictAlgorithm: ConflictAlgorithm.replace);
+            await txn.insert(
+              'categories',
+              cat,
+              conflictAlgorithm: ConflictAlgorithm.replace,
+            );
           }
         }
 
         // 3. Transactions
         if (data.containsKey('transactions')) {
-          final transactions = List<Map<String, dynamic>>.from(data['transactions'] as List);
+          final transactions = List<Map<String, dynamic>>.from(
+            data['transactions'] as List,
+          );
           for (final tx in transactions) {
-            await txn.insert('transactions', tx, conflictAlgorithm: ConflictAlgorithm.replace);
+            await txn.insert(
+              'transactions',
+              tx,
+              conflictAlgorithm: ConflictAlgorithm.replace,
+            );
             txCount++;
           }
         }
 
         // 4. Budgets
         if (data.containsKey('budgets')) {
-          final budgets = List<Map<String, dynamic>>.from(data['budgets'] as List);
+          final budgets = List<Map<String, dynamic>>.from(
+            data['budgets'] as List,
+          );
           for (final b in budgets) {
-            await txn.insert('budgets', b, conflictAlgorithm: ConflictAlgorithm.replace);
+            await txn.insert(
+              'budgets',
+              b,
+              conflictAlgorithm: ConflictAlgorithm.replace,
+            );
           }
         }
 
         // 5. Goals
         if (data.containsKey('savings_goals')) {
-          final goals = List<Map<String, dynamic>>.from(data['savings_goals'] as List);
+          final goals = List<Map<String, dynamic>>.from(
+            data['savings_goals'] as List,
+          );
           for (final g in goals) {
-            await txn.insert('savings_goals', g, conflictAlgorithm: ConflictAlgorithm.replace);
+            await txn.insert(
+              'savings_goals',
+              g,
+              conflictAlgorithm: ConflictAlgorithm.replace,
+            );
           }
         }
 
         // 6. Contributions
         if (data.containsKey('goal_contributions')) {
-          final contributions = List<Map<String, dynamic>>.from(data['goal_contributions'] as List);
+          final contributions = List<Map<String, dynamic>>.from(
+            data['goal_contributions'] as List,
+          );
           for (final c in contributions) {
-            await txn.insert('goal_contributions', c, conflictAlgorithm: ConflictAlgorithm.replace);
+            await txn.insert(
+              'goal_contributions',
+              c,
+              conflictAlgorithm: ConflictAlgorithm.replace,
+            );
           }
         }
       });
@@ -140,7 +186,11 @@ class DataBackupService {
       );
     } catch (e) {
       debugPrint('Error importing data: $e');
-      return (success: false, message: 'Failed to import: $e', importedTxCount: 0);
+      return (
+        success: false,
+        message: 'Failed to import: $e',
+        importedTxCount: 0,
+      );
     }
   }
 

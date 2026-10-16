@@ -14,9 +14,8 @@ class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
   static void navigate(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const ProfileScreen()),
-    );
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (_) => const ProfileScreen()));
   }
 
   @override
@@ -48,11 +47,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
       Account? savingsAcc;
 
       if (profile.mainAccountId != null) {
-        final res = await db.query('accounts', where: 'id = ?', whereArgs: [profile.mainAccountId]);
+        final res = await db.query(
+          'accounts',
+          where: 'id = ?',
+          whereArgs: [profile.mainAccountId],
+        );
         if (res.isNotEmpty) mainAcc = Account.fromMap(res.first);
       }
       if (profile.designatedSavingsAccountId != null) {
-        final res = await db.query('accounts', where: 'id = ?', whereArgs: [profile.designatedSavingsAccountId]);
+        final res = await db.query(
+          'accounts',
+          where: 'id = ?',
+          whereArgs: [profile.designatedSavingsAccountId],
+        );
         if (res.isNotEmpty) savingsAcc = Account.fromMap(res.first);
       }
 
@@ -91,9 +98,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       body: LiquidAtmosphereBackground(
         child: profile == null
-            ? const Center(child: Text('No profile found. Please complete profile setup.'))
+            ? const Center(
+                child: Text('No profile found. Please complete profile setup.'),
+              )
             : ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
                 children: [
                   // 1. Hero Avatar & Identity Card
                   FintechCard(
@@ -108,24 +120,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         const SizedBox(height: 14),
                         Text(
                           profile.displayName,
-                          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 20, letterSpacing: -0.4),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 20,
+                            letterSpacing: -0.4,
+                          ),
                         ),
-                        if (profile.fullName != null && profile.fullName!.isNotEmpty) ...[
+                        if (profile.fullName != null &&
+                            profile.fullName!.isNotEmpty) ...[
                           const SizedBox(height: 2),
                           Text(
                             profile.fullName!,
                             style: TextStyle(
                               fontSize: 13,
-                              color: isDark ? AppTheme.secondaryText : AppTheme.textSecondaryLight,
+                              color: isDark
+                                  ? AppTheme.secondaryText
+                                  : AppTheme.textSecondaryLight,
                             ),
                           ),
                         ],
                         if (profile.occupation != null) ...[
                           const SizedBox(height: 6),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
-                              color: AppTheme.primaryGreen.withValues(alpha: isDark ? 0.2 : 0.12),
+                              color: AppTheme.primaryGreen.withValues(
+                                alpha: isDark ? 0.2 : 0.12,
+                              ),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
@@ -133,7 +157,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
-                                color: isDark ? AppTheme.primaryAccent : AppTheme.primaryGreen,
+                                color: isDark
+                                    ? AppTheme.primaryAccent
+                                    : AppTheme.primaryGreen,
                               ),
                             ),
                           ),
@@ -148,7 +174,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           label: const Text('Edit Profile Details'),
                           style: OutlinedButton.styleFrom(
                             visualDensity: VisualDensity.compact,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                           ),
                         ),
                       ],
@@ -159,19 +187,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   // 2. Personal Information Section
                   _buildSectionHeader('PERSONAL DETAILS', isDark),
                   FintechCard(
-                    padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 14),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 6,
+                      horizontal: 14,
+                    ),
                     child: Column(
                       children: [
-                        _buildInfoRow('Nickname', profile.nickname ?? 'Not specified', isDark),
+                        _buildInfoRow(
+                          'Nickname',
+                          profile.nickname ?? 'Not specified',
+                          isDark,
+                        ),
                         _buildDivider(isDark),
-                        _buildInfoRow('Age Range', profile.ageRange ?? 'Prefer not to say', isDark),
+                        _buildInfoRow(
+                          'Age Range',
+                          profile.ageRange ?? 'Prefer not to say',
+                          isDark,
+                        ),
                         _buildDivider(isDark),
-                        _buildInfoRow('Country / Region', profile.countryOrRegion ?? 'Ethiopia', isDark),
+                        _buildInfoRow(
+                          'Country / Region',
+                          profile.countryOrRegion ?? 'Ethiopia',
+                          isDark,
+                        ),
                         _buildDivider(isDark),
-                        _buildInfoRow('Discovery Source', profile.discoverySource ?? 'Not provided', isDark),
+                        _buildInfoRow(
+                          'Discovery Source',
+                          profile.discoverySource ?? 'Not provided',
+                          isDark,
+                        ),
                         if (profile.discoverySourceOther != null) ...[
                           _buildDivider(isDark),
-                          _buildInfoRow('Other Source Note', profile.discoverySourceOther!, isDark),
+                          _buildInfoRow(
+                            'Other Source Note',
+                            profile.discoverySourceOther!,
+                            isDark,
+                          ),
                         ],
                       ],
                     ),
@@ -181,18 +232,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   // 3. Financial Preferences & Roles
                   _buildSectionHeader('FINANCIAL ROLES & PREFERENCES', isDark),
                   FintechCard(
-                    padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 14),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 6,
+                      horizontal: 14,
+                    ),
                     child: Column(
                       children: [
                         _buildInfoRow(
                           'Main Account',
                           _isLoadingAccounts
                               ? 'Loading...'
-                              : (_mainAccount?.name ?? 'Not selected (Default wallet used)'),
+                              : (_mainAccount?.name ??
+                                    'Not selected (Default wallet used)'),
                           isDark,
                           trailingAction: TextButton(
-                            onPressed: () => AccountsManagementScreen.navigate(context),
-                            child: const Text('Manage', style: TextStyle(fontSize: 12)),
+                            onPressed: () =>
+                                AccountsManagementScreen.navigate(context),
+                            child: const Text(
+                              'Manage',
+                              style: TextStyle(fontSize: 12),
+                            ),
                           ),
                         ),
                         _buildDivider(isDark),
@@ -203,28 +262,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               : (_savingsAccount?.name ?? 'None designated'),
                           isDark,
                           trailingAction: TextButton(
-                            onPressed: () => AccountsManagementScreen.navigate(context),
-                            child: const Text('Manage', style: TextStyle(fontSize: 12)),
+                            onPressed: () =>
+                                AccountsManagementScreen.navigate(context),
+                            child: const Text(
+                              'Manage',
+                              style: TextStyle(fontSize: 12),
+                            ),
                           ),
                         ),
                         _buildDivider(isDark),
-                        _buildInfoRow('Display Currency', profile.preferredCurrency, isDark),
+                        _buildInfoRow(
+                          'Display Currency',
+                          profile.preferredCurrency,
+                          isDark,
+                        ),
                         _buildDivider(isDark),
-                        _buildInfoRow('Language', profile.preferredLanguage, isDark),
+                        _buildInfoRow(
+                          'Language',
+                          profile.preferredLanguage,
+                          isDark,
+                        ),
                       ],
                     ),
                   ),
                   const SizedBox(height: 20),
 
                   // 4. Financial Motivation / Goal
-                  if (profile.personalGoal != null && profile.personalGoal!.isNotEmpty) ...[
+                  if (profile.personalGoal != null &&
+                      profile.personalGoal!.isNotEmpty) ...[
                     _buildSectionHeader('PRIMARY FINANCIAL GOAL', isDark),
                     FintechCard(
                       padding: const EdgeInsets.all(16),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Icon(Icons.flag_rounded, color: AppTheme.primaryGreen, size: 20),
+                          const Icon(
+                            Icons.flag_rounded,
+                            color: AppTheme.primaryGreen,
+                            size: 20,
+                          ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
@@ -232,7 +308,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               style: TextStyle(
                                 fontSize: 13,
                                 height: 1.4,
-                                color: isDark ? AppTheme.primaryText : AppTheme.textDark,
+                                color: isDark
+                                    ? AppTheme.primaryText
+                                    : AppTheme.textDark,
                               ),
                             ),
                           ),
@@ -248,14 +326,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(Icons.lock_rounded, size: 18, color: AppTheme.primaryGreen),
+                        const Icon(
+                          Icons.lock_rounded,
+                          size: 18,
+                          color: AppTheme.primaryGreen,
+                        ),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             "Your personal profile is saved locally in your device's encrypted app storage. No profile data or photos are uploaded to any cloud server.",
                             style: TextStyle(
                               fontSize: 11,
-                              color: isDark ? AppTheme.secondaryText : AppTheme.textSecondaryLight,
+                              color: isDark
+                                  ? AppTheme.secondaryText
+                                  : AppTheme.textSecondaryLight,
                               height: 1.4,
                             ),
                           ),
@@ -278,14 +362,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
         style: TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w700,
-          color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+          color: isDark
+              ? AppTheme.textSecondaryDark
+              : AppTheme.textSecondaryLight,
           letterSpacing: 0.8,
         ),
       ),
     );
   }
 
-  Widget _buildInfoRow(String label, String value, bool isDark, {Widget? trailingAction}) {
+  Widget _buildInfoRow(
+    String label,
+    String value,
+    bool isDark, {
+    Widget? trailingAction,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
@@ -295,7 +386,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             label,
             style: TextStyle(
               fontSize: 13,
-              color: isDark ? AppTheme.secondaryText : AppTheme.textSecondaryLight,
+              color: isDark
+                  ? AppTheme.secondaryText
+                  : AppTheme.textSecondaryLight,
             ),
           ),
           const SizedBox(width: 8),
@@ -307,7 +400,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Text(
                     value,
                     textAlign: TextAlign.end,
-                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
                   ),
                 ),
                 ?trailingAction,

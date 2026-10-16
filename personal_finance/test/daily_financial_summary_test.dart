@@ -131,7 +131,8 @@ void main() {
       final utcLoc = tz.getLocation('UTC');
 
       // Schedule for 8:00 PM (20:00)
-      final scheduledTime = NotificationService.instance.calculateNextScheduledTime(20, 0, utcLoc);
+      final scheduledTime = NotificationService.instance
+          .calculateNextScheduledTime(20, 0, utcLoc);
       final now = tz.TZDateTime.now(utcLoc);
 
       expect(scheduledTime.isAfter(now), isTrue);

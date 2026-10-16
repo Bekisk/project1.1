@@ -73,10 +73,14 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
     _amountController = TextEditingController(
       text: editTx != null ? (editTx.amount / 100).toStringAsFixed(2) : '',
     );
-    _descriptionController = TextEditingController(text: editTx?.description ?? '');
+    _descriptionController = TextEditingController(
+      text: editTx?.description ?? '',
+    );
     _notesController = TextEditingController(text: editTx?.notes ?? '');
 
-    _selectedDate = editTx != null ? editTx.transactionDate.toLocal() : DateTime.now();
+    _selectedDate = editTx != null
+        ? editTx.transactionDate.toLocal()
+        : DateTime.now();
     if (editTx != null) {
       _selectedTime = TimeOfDay.fromDateTime(editTx.transactionDate.toLocal());
       _selectedAccountId = editTx.accountId;
@@ -118,7 +122,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
             }
 
             if (_accounts.length > 1) {
-              _selectedDestinationAccountId = _accounts.firstWhere((a) => a.id != _selectedAccountId).id;
+              _selectedDestinationAccountId = _accounts
+                  .firstWhere((a) => a.id != _selectedAccountId)
+                  .id;
             }
             _filterCategoriesForType();
           } else {
@@ -139,10 +145,15 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
   }
 
   void _filterCategoriesForType() {
-    final typeStr = _selectedType == TransactionType.income ? 'income' : 'expense';
-    final matching = _categories.where((c) => c.transactionType == typeStr).toList();
+    final typeStr = _selectedType == TransactionType.income
+        ? 'income'
+        : 'expense';
+    final matching = _categories
+        .where((c) => c.transactionType == typeStr)
+        .toList();
     if (matching.isNotEmpty) {
-      if (_selectedCategoryId == null || !matching.any((c) => c.id == _selectedCategoryId)) {
+      if (_selectedCategoryId == null ||
+          !matching.any((c) => c.id == _selectedCategoryId)) {
         _selectedCategoryId = matching.first.id;
       }
     } else {
@@ -185,19 +196,26 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
     if (_selectedType == TransactionType.transfer) {
       if (_selectedDestinationAccountId == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please select a destination account for the transfer.')),
+          const SnackBar(
+            content: Text(
+              'Please select a destination account for the transfer.',
+            ),
+          ),
         );
         return;
       }
       if (_selectedAccountId == _selectedDestinationAccountId) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Source and destination accounts must be different.')),
+          const SnackBar(
+            content: Text('Source and destination accounts must be different.'),
+          ),
         );
         return;
       }
     }
 
-    final double enteredAmount = double.tryParse(_amountController.text.trim()) ?? 0;
+    final double enteredAmount =
+        double.tryParse(_amountController.text.trim()) ?? 0;
     final int amountCents = (enteredAmount * 100).round();
 
     if (amountCents <= 0) {
@@ -222,7 +240,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
         _selectedTime.minute,
       );
 
-      final transactionId = _isEditing ? widget.transactionToEdit!.id : uuid.v4();
+      final transactionId = _isEditing
+          ? widget.transactionToEdit!.id
+          : uuid.v4();
       final createdAt = _isEditing ? widget.transactionToEdit!.createdAt : now;
 
       final updatedTx = FinancialTransaction(
@@ -233,13 +253,22 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
             : null,
         type: _selectedType,
         amount: amountCents,
-        categoryId: _selectedType == TransactionType.transfer ? null : _selectedCategoryId,
+        categoryId: _selectedType == TransactionType.transfer
+            ? null
+            : _selectedCategoryId,
         description: _descriptionController.text.trim().isEmpty
             ? (_selectedType == TransactionType.transfer
-                ? 'Account Transfer'
-                : (_categories.firstWhere((c) => c.id == _selectedCategoryId, orElse: () => _categories.first).name))
+                  ? 'Account Transfer'
+                  : (_categories
+                        .firstWhere(
+                          (c) => c.id == _selectedCategoryId,
+                          orElse: () => _categories.first,
+                        )
+                        .name))
             : _descriptionController.text.trim(),
-        notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+        notes: _notesController.text.trim().isEmpty
+            ? null
+            : _notesController.text.trim(),
         transactionDate: combinedDateTime,
         createdAt: createdAt,
         updatedAt: now,
@@ -267,10 +296,16 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
           SnackBar(
             backgroundColor: AppTheme.primaryGreen,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             content: Row(
               children: [
-                const Icon(Icons.check_circle_rounded, color: Colors.white, size: 20),
+                const Icon(
+                  Icons.check_circle_rounded,
+                  color: Colors.white,
+                  size: 20,
+                ),
                 const SizedBox(width: 8),
                 Text(
                   _isEditing
@@ -285,9 +320,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
     } catch (e) {
       if (mounted) {
         setState(() => _isSubmitting = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error saving transaction: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error saving transaction: $e')));
       }
     }
   }
@@ -299,7 +334,11 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
     final mediaQuery = MediaQuery.of(context);
 
     final matchingCategories = _categories
-        .where((c) => c.transactionType == (_selectedType == TransactionType.income ? 'income' : 'expense'))
+        .where(
+          (c) =>
+              c.transactionType ==
+              (_selectedType == TransactionType.income ? 'income' : 'expense'),
+        )
         .toList();
 
     return Container(
@@ -325,7 +364,12 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
         ],
       ),
       child: _isLoadingData
-          ? const Center(child: Padding(padding: EdgeInsets.all(40), child: CircularProgressIndicator()))
+          ? const Center(
+              child: Padding(
+                padding: EdgeInsets.all(40),
+                child: CircularProgressIndicator(),
+              ),
+            )
           : Form(
               key: _formKey,
               child: SingleChildScrollView(
@@ -339,7 +383,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                         width: 44,
                         height: 5,
                         decoration: BoxDecoration(
-                          color: isDark ? AppTheme.disabledGray : Colors.grey[300],
+                          color: isDark
+                              ? AppTheme.disabledGray
+                              : Colors.grey[300],
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
@@ -369,10 +415,14 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                     Container(
                       padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
-                        color: isDark ? AppTheme.inputCharcoal : const Color(0xFFF1F5F9),
+                        color: isDark
+                            ? AppTheme.inputCharcoal
+                            : const Color(0xFFF1F5F9),
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(
-                          color: isDark ? AppTheme.borderPrimary : Colors.transparent,
+                          color: isDark
+                              ? AppTheme.borderPrimary
+                              : Colors.transparent,
                           width: 1,
                         ),
                       ),
@@ -403,29 +453,44 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                       'Amount (ETB)',
                       style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                        color: isDark
+                            ? AppTheme.textSecondaryDark
+                            : AppTheme.textSecondaryLight,
                       ),
                     ),
                     const SizedBox(height: 6),
                     TextFormField(
                       controller: _amountController,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
                       autofocus: !_isEditing,
-                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
                       decoration: InputDecoration(
                         prefixIcon: const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
                           child: Text(
                             'ብር',
-                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                         hintText: '0.00',
                       ),
                       validator: (val) {
-                        if (val == null || val.trim().isEmpty) return 'Enter amount';
+                        if (val == null || val.trim().isEmpty)
+                          return 'Enter amount';
                         final num = double.tryParse(val.trim());
-                        if (num == null || num <= 0) return 'Enter a valid amount';
+                        if (num == null || num <= 0)
+                          return 'Enter a valid amount';
                         return null;
                       },
                     ),
@@ -438,14 +503,18 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                             'Frequent Presets',
                             style: theme.textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.w600,
-                              color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                              color: isDark
+                                  ? AppTheme.textSecondaryDark
+                                  : AppTheme.textSecondaryLight,
                             ),
                           ),
                           Text(
                             '1-tap auto-fill',
                             style: TextStyle(
                               fontSize: 11,
-                              color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                              color: isDark
+                                  ? AppTheme.textSecondaryDark
+                                  : AppTheme.textSecondaryLight,
                             ),
                           ),
                         ],
@@ -473,7 +542,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                       'Description',
                       style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                        color: isDark
+                            ? AppTheme.textSecondaryDark
+                            : AppTheme.textSecondaryLight,
                       ),
                     ),
                     const SizedBox(height: 6),
@@ -490,7 +561,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                           return 'Enter transaction description';
                         }
                         // Enforce minimum 3 alphanumeric characters
-                        final alphanumericCount = RegExp(r'[a-zA-Z0-9\u1200-\u137F]').allMatches(trimmed).length;
+                        final alphanumericCount = RegExp(
+                          r'[a-zA-Z0-9\u1200-\u137F]',
+                        ).allMatches(trimmed).length;
                         if (alphanumericCount < 3) {
                           return 'Must contain at least 3 letters or numbers';
                         }
@@ -505,7 +578,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                         'Category',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                          color: isDark
+                              ? AppTheme.textSecondaryDark
+                              : AppTheme.textSecondaryLight,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -519,19 +594,35 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                             final cat = matchingCategories[idx];
                             final isSelected = cat.id == _selectedCategoryId;
                             return GestureDetector(
-                              onTap: () => setState(() => _selectedCategoryId = cat.id),
+                              onTap: () =>
+                                  setState(() => _selectedCategoryId = cat.id),
                               child: AnimatedContainer(
                                 duration: const Duration(milliseconds: 180),
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
                                 decoration: BoxDecoration(
                                   color: isSelected
-                                      ? (isDark ? AppTheme.pureWhite.withValues(alpha: 0.15) : AppTheme.primaryGreen.withValues(alpha: 0.15))
-                                      : (isDark ? AppTheme.elevatedCharcoal : const Color(0xFFF8FAFC)),
+                                      ? (isDark
+                                            ? AppTheme.pureWhite.withValues(
+                                                alpha: 0.15,
+                                              )
+                                            : AppTheme.primaryGreen.withValues(
+                                                alpha: 0.15,
+                                              ))
+                                      : (isDark
+                                            ? AppTheme.elevatedCharcoal
+                                            : const Color(0xFFF8FAFC)),
                                   borderRadius: BorderRadius.circular(14),
                                   border: Border.all(
                                     color: isSelected
-                                        ? (isDark ? AppTheme.pureWhite : AppTheme.primaryGreen)
-                                        : (isDark ? AppTheme.borderPrimary : const Color(0xFFE2E8F0)),
+                                        ? (isDark
+                                              ? AppTheme.pureWhite
+                                              : AppTheme.primaryGreen)
+                                        : (isDark
+                                              ? AppTheme.borderPrimary
+                                              : const Color(0xFFE2E8F0)),
                                     width: isSelected ? 2 : 1,
                                   ),
                                 ),
@@ -549,10 +640,17 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                                       cat.name,
                                       style: TextStyle(
                                         fontSize: 11,
-                                        fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                                        fontWeight: isSelected
+                                            ? FontWeight.bold
+                                            : FontWeight.w500,
                                         color: isSelected
-                                            ? (isDark ? Colors.white : AppTheme.primaryNavy)
-                                            : (isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight),
+                                            ? (isDark
+                                                  ? Colors.white
+                                                  : AppTheme.primaryNavy)
+                                            : (isDark
+                                                  ? AppTheme.textSecondaryDark
+                                                  : AppTheme
+                                                        .textSecondaryLight),
                                       ),
                                     ),
                                   ],
@@ -574,17 +672,24 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                _selectedType == TransactionType.transfer ? 'From Account' : 'Account',
+                                _selectedType == TransactionType.transfer
+                                    ? 'From Account'
+                                    : 'Account',
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                   fontWeight: FontWeight.w600,
-                                  color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                                  color: isDark
+                                      ? AppTheme.textSecondaryDark
+                                      : AppTheme.textSecondaryLight,
                                 ),
                               ),
                               const SizedBox(height: 6),
                               DropdownButtonFormField<String>(
                                 initialValue: _selectedAccountId,
                                 decoration: const InputDecoration(
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                  contentPadding: EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 10,
+                                  ),
                                 ),
                                 items: _accounts.map((acc) {
                                   return DropdownMenuItem(
@@ -596,7 +701,8 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                                     ),
                                   );
                                 }).toList(),
-                                onChanged: (val) => setState(() => _selectedAccountId = val),
+                                onChanged: (val) =>
+                                    setState(() => _selectedAccountId = val),
                               ),
                             ],
                           ),
@@ -611,7 +717,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                                 'Date',
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                   fontWeight: FontWeight.w600,
-                                  color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                                  color: isDark
+                                      ? AppTheme.textSecondaryDark
+                                      : AppTheme.textSecondaryLight,
                                 ),
                               ),
                               const SizedBox(height: 6),
@@ -619,21 +727,35 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                                 onTap: _pickDate,
                                 borderRadius: BorderRadius.circular(14),
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 13),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 13,
+                                  ),
                                   decoration: BoxDecoration(
-                                    color: isDark ? AppTheme.inputCharcoal : const Color(0xFFF1F5F9),
+                                    color: isDark
+                                        ? AppTheme.inputCharcoal
+                                        : const Color(0xFFF1F5F9),
                                     borderRadius: BorderRadius.circular(14),
                                     border: Border.all(
-                                      color: isDark ? AppTheme.borderPrimary : const Color(0xFFE2E8F0),
+                                      color: isDark
+                                          ? AppTheme.borderPrimary
+                                          : const Color(0xFFE2E8F0),
                                     ),
                                   ),
                                   child: Row(
                                     children: [
-                                      const Icon(Icons.calendar_today_rounded, size: 16),
+                                      const Icon(
+                                        Icons.calendar_today_rounded,
+                                        size: 16,
+                                      ),
                                       const SizedBox(width: 8),
                                       Text(
-                                        DateFormat('MMM dd, yyyy').format(_selectedDate),
-                                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                                        DateFormat('MMM dd, yyyy')
+                                            .format(_selectedDate),
+                                        style: const TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -651,14 +773,19 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                         'To Destination Account',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                          color: isDark
+                              ? AppTheme.textSecondaryDark
+                              : AppTheme.textSecondaryLight,
                         ),
                       ),
                       const SizedBox(height: 6),
                       DropdownButtonFormField<String>(
                         initialValue: _selectedDestinationAccountId,
                         decoration: const InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 10,
+                          ),
                         ),
                         items: _accounts.map((acc) {
                           return DropdownMenuItem(
@@ -670,7 +797,8 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                             ),
                           );
                         }).toList(),
-                        onChanged: (val) => setState(() => _selectedDestinationAccountId = val),
+                        onChanged: (val) =>
+                            setState(() => _selectedDestinationAccountId = val),
                       ),
                     ],
 
@@ -687,7 +815,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                                 'Time',
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                   fontWeight: FontWeight.w600,
-                                  color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                                  color: isDark
+                                      ? AppTheme.textSecondaryDark
+                                      : AppTheme.textSecondaryLight,
                                 ),
                               ),
                               const SizedBox(height: 6),
@@ -695,21 +825,34 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                                 onTap: _pickTime,
                                 borderRadius: BorderRadius.circular(14),
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 13),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 13,
+                                  ),
                                   decoration: BoxDecoration(
-                                    color: isDark ? AppTheme.inputCharcoal : const Color(0xFFF1F5F9),
+                                    color: isDark
+                                        ? AppTheme.inputCharcoal
+                                        : const Color(0xFFF1F5F9),
                                     borderRadius: BorderRadius.circular(14),
                                     border: Border.all(
-                                      color: isDark ? AppTheme.borderPrimary : const Color(0xFFE2E8F0),
+                                      color: isDark
+                                          ? AppTheme.borderPrimary
+                                          : const Color(0xFFE2E8F0),
                                     ),
                                   ),
                                   child: Row(
                                     children: [
-                                      const Icon(Icons.access_time_rounded, size: 16),
+                                      const Icon(
+                                        Icons.access_time_rounded,
+                                        size: 16,
+                                      ),
                                       const SizedBox(width: 8),
                                       Text(
                                         _selectedTime.format(context),
-                                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                                        style: const TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -727,7 +870,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                       'Notes (Optional)',
                       style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                        color: isDark
+                            ? AppTheme.textSecondaryDark
+                            : AppTheme.textSecondaryLight,
                       ),
                     ),
                     const SizedBox(height: 6),
@@ -748,7 +893,8 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                       child: ElevatedButton(
                         onPressed: _isSubmitting ? null : _submitTransaction,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: _selectedType == TransactionType.expense
+                          backgroundColor:
+                              _selectedType == TransactionType.expense
                               ? AppTheme.primaryNavy
                               : AppTheme.primaryGreen,
                           foregroundColor: Colors.white,
@@ -761,7 +907,10 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                             ? const SizedBox(
                                 width: 22,
                                 height: 22,
-                                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
                               )
                             : Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -772,7 +921,10 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                                     _isEditing
                                         ? 'Update ${_selectedType.name.toUpperCase()}'
                                         : 'Save ${_selectedType.name.toUpperCase()}',
-                                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -816,7 +968,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
             boxShadow: isSelected
                 ? [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: isDark ? 0.4 : 0.08),
+                      color: Colors.black.withValues(
+                        alpha: isDark ? 0.4 : 0.08,
+                      ),
                       blurRadius: 6,
                       offset: const Offset(0, 2),
                     ),
@@ -831,7 +985,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                 color: isSelected
                     ? activeColor
-                    : (isDark ? AppTheme.secondaryGray : AppTheme.textSecondaryLight),
+                    : (isDark
+                          ? AppTheme.secondaryGray
+                          : AppTheme.textSecondaryLight),
               ),
             ),
           ),
@@ -846,16 +1002,22 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
         setState(() {
           _descriptionController.text = title;
           if (_categories.isNotEmpty) {
-            final match = _categories.where((c) =>
-                c.transactionType == 'expense' &&
-                c.name.toLowerCase().contains(categoryHint.toLowerCase()));
+            final match = _categories.where(
+              (c) =>
+                  c.transactionType == 'expense' &&
+                  c.name.toLowerCase().contains(categoryHint.toLowerCase()),
+            );
             if (match.isNotEmpty) {
               _selectedCategoryId = match.first.id;
             }
           }
         });
       },
-      avatar: Icon(Icons.flash_on_rounded, size: 14, color: isDark ? AppTheme.pureWhite : AppTheme.primaryNavy),
+      avatar: Icon(
+        Icons.flash_on_rounded,
+        size: 14,
+        color: isDark ? AppTheme.pureWhite : AppTheme.primaryNavy,
+      ),
       label: Text(
         title,
         style: TextStyle(
@@ -864,7 +1026,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
           color: isDark ? AppTheme.pureWhite : AppTheme.textDark,
         ),
       ),
-      backgroundColor: isDark ? AppTheme.elevatedCharcoal : const Color(0xFFF1F5F9),
+      backgroundColor: isDark
+          ? AppTheme.elevatedCharcoal
+          : const Color(0xFFF1F5F9),
       side: BorderSide(
         color: isDark ? AppTheme.borderPrimary : const Color(0xFFCBD5E1),
       ),

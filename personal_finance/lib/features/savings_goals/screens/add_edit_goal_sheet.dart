@@ -72,27 +72,69 @@ class _AddEditGoalSheetState extends State<AddEditGoalSheet> {
   bool _isSaving = false;
 
   final List<Map<String, dynamic>> _categories = [
-    {'name': 'Emergency Fund', 'icon': 'emergency', 'iconData': Icons.health_and_safety_rounded, 'color': AppTheme.primaryGreen},
-    {'name': 'Education', 'icon': 'school', 'iconData': Icons.school_rounded, 'color': AppTheme.accentTeal},
-    {'name': 'Technology', 'icon': 'laptop', 'iconData': Icons.laptop_mac_rounded, 'color': AppTheme.accentBlue},
-    {'name': 'Business', 'icon': 'business', 'iconData': Icons.business_center_rounded, 'color': AppTheme.accentPurple},
-    {'name': 'Travel', 'icon': 'flight', 'iconData': Icons.flight_takeoff_rounded, 'color': AppTheme.accentAmber},
-    {'name': 'Housing', 'icon': 'home', 'iconData': Icons.home_rounded, 'color': AppTheme.accentCoral},
-    {'name': 'Personal', 'icon': 'person', 'iconData': Icons.person_rounded, 'color': AppTheme.accentIndigo},
-    {'name': 'General Savings', 'icon': 'savings', 'iconData': Icons.savings_rounded, 'color': AppTheme.primaryNavy},
+    {
+      'name': 'Emergency Fund',
+      'icon': 'emergency',
+      'iconData': Icons.health_and_safety_rounded,
+      'color': AppTheme.primaryGreen,
+    },
+    {
+      'name': 'Education',
+      'icon': 'school',
+      'iconData': Icons.school_rounded,
+      'color': AppTheme.accentTeal,
+    },
+    {
+      'name': 'Technology',
+      'icon': 'laptop',
+      'iconData': Icons.laptop_mac_rounded,
+      'color': AppTheme.accentBlue,
+    },
+    {
+      'name': 'Business',
+      'icon': 'business',
+      'iconData': Icons.business_center_rounded,
+      'color': AppTheme.accentPurple,
+    },
+    {
+      'name': 'Travel',
+      'icon': 'flight',
+      'iconData': Icons.flight_takeoff_rounded,
+      'color': AppTheme.accentAmber,
+    },
+    {
+      'name': 'Housing',
+      'icon': 'home',
+      'iconData': Icons.home_rounded,
+      'color': AppTheme.accentCoral,
+    },
+    {
+      'name': 'Personal',
+      'icon': 'person',
+      'iconData': Icons.person_rounded,
+      'color': AppTheme.accentIndigo,
+    },
+    {
+      'name': 'General Savings',
+      'icon': 'savings',
+      'iconData': Icons.savings_rounded,
+      'color': AppTheme.primaryNavy,
+    },
   ];
 
   @override
   void initState() {
     super.initState();
     final g = widget.goalToEdit;
-    _nameController = TextEditingController(text: g?.name ?? widget.initialName ?? '');
+    _nameController = TextEditingController(
+      text: g?.name ?? widget.initialName ?? '',
+    );
     _targetAmountController = TextEditingController(
       text: g != null
           ? (g.targetAmount / 100.0).toStringAsFixed(2)
           : (widget.initialTargetAmount != null
-              ? (widget.initialTargetAmount! / 100.0).toStringAsFixed(0)
-              : ''),
+                ? (widget.initialTargetAmount! / 100.0).toStringAsFixed(0)
+                : ''),
     );
     _descriptionController = TextEditingController(text: g?.description ?? '');
     _notesController = TextEditingController(text: g?.notes ?? '');
@@ -103,7 +145,8 @@ class _AddEditGoalSheetState extends State<AddEditGoalSheet> {
           : '',
     );
 
-    _selectedCategory = g?.category ?? widget.initialCategory ?? 'General Savings';
+    _selectedCategory =
+        g?.category ?? widget.initialCategory ?? 'General Savings';
     _selectedIconKey = g?.iconKey ?? widget.initialIconKey ?? 'savings';
     _selectedPriority = g?.priority ?? GoalPriority.medium;
     _selectedTargetDate = g?.targetDate;
@@ -125,7 +168,8 @@ class _AddEditGoalSheetState extends State<AddEditGoalSheet> {
 
   Future<void> _pickTargetDate() async {
     final now = DateTime.now();
-    final initialDate = _selectedTargetDate ?? now.add(const Duration(days: 90));
+    final initialDate =
+        _selectedTargetDate ?? now.add(const Duration(days: 90));
     final picked = await showDatePicker(
       context: context,
       initialDate: initialDate.isBefore(now) ? now : initialDate,
@@ -143,18 +187,22 @@ class _AddEditGoalSheetState extends State<AddEditGoalSheet> {
     if (_isSaving) return; // Prevent double-tap
     if (!_formKey.currentState!.validate()) return;
 
-    final targetParsed = double.tryParse(_targetAmountController.text.trim()) ?? 0;
+    final targetParsed =
+        double.tryParse(_targetAmountController.text.trim()) ?? 0;
     final targetCents = (targetParsed * 100).round();
     if (targetCents <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Target amount must be greater than zero')),
+        const SnackBar(
+          content: Text('Target amount must be greater than zero'),
+        ),
       );
       return;
     }
 
     int? plannedAmountCents;
     if (_enablePlan && _plannedAmountController.text.trim().isNotEmpty) {
-      final pParsed = double.tryParse(_plannedAmountController.text.trim()) ?? 0;
+      final pParsed =
+          double.tryParse(_plannedAmountController.text.trim()) ?? 0;
       if (pParsed > 0) {
         plannedAmountCents = (pParsed * 100).round();
       }
@@ -162,11 +210,15 @@ class _AddEditGoalSheetState extends State<AddEditGoalSheet> {
 
     int initialCents = 0;
     if (widget.goalToEdit == null && _addInitialContribution) {
-      final initParsed = double.tryParse(_initialContribController.text.trim()) ?? 0;
+      final initParsed =
+          double.tryParse(_initialContribController.text.trim()) ?? 0;
       initialCents = (initParsed * 100).round();
-      if (_initialContribMode == ContributionMode.accountTransfer && _initialSourceAccountId == null) {
+      if (_initialContribMode == ContributionMode.accountTransfer &&
+          _initialSourceAccountId == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please select a source account for transfer')),
+          const SnackBar(
+            content: Text('Please select a source account for transfer'),
+          ),
         );
         return;
       }
@@ -183,16 +235,22 @@ class _AddEditGoalSheetState extends State<AddEditGoalSheet> {
           targetAmount: targetCents,
           targetDate: _selectedTargetDate,
           clearTargetDate: _selectedTargetDate == null,
-          description: _descriptionController.text.trim().isEmpty ? null : _descriptionController.text.trim(),
+          description: _descriptionController.text.trim().isEmpty
+              ? null
+              : _descriptionController.text.trim(),
           category: _selectedCategory,
           iconKey: _selectedIconKey,
           priority: _selectedPriority,
           linkedAccountId: _selectedLinkedAccountId,
           clearLinkedAccount: _selectedLinkedAccountId == null,
-          planFrequency: _enablePlan ? (_selectedPlanFrequency ?? ContributionPlanFrequency.monthly) : null,
+          planFrequency: _enablePlan
+              ? (_selectedPlanFrequency ?? ContributionPlanFrequency.monthly)
+              : null,
           plannedPeriodicAmount: _enablePlan ? plannedAmountCents : null,
           clearPlan: !_enablePlan,
-          notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+          notes: _notesController.text.trim().isEmpty
+              ? null
+              : _notesController.text.trim(),
         );
 
         final success = await provider.updateGoal(updated);
@@ -223,7 +281,9 @@ class _AddEditGoalSheetState extends State<AddEditGoalSheet> {
           iconKey: _selectedIconKey,
           priority: _selectedPriority,
           linkedAccountId: _selectedLinkedAccountId,
-          planFrequency: _enablePlan ? (_selectedPlanFrequency ?? ContributionPlanFrequency.monthly) : null,
+          planFrequency: _enablePlan
+              ? (_selectedPlanFrequency ?? ContributionPlanFrequency.monthly)
+              : null,
           plannedPeriodicAmount: _enablePlan ? plannedAmountCents : null,
           notes: _notesController.text.trim(),
           initialContributionAmount: initialCents,
@@ -251,9 +311,8 @@ class _AddEditGoalSheetState extends State<AddEditGoalSheet> {
     } catch (e) {
       if (mounted) {
         setState(() => _isSaving = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     }
   }
@@ -324,7 +383,9 @@ class _AddEditGoalSheetState extends State<AddEditGoalSheet> {
                   labelText: 'Goal Name *',
                   hintText: 'e.g. Laptop Purchase, Emergency Fund',
                   prefixIcon: const Icon(Icons.flag_rounded),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) {
@@ -338,12 +399,16 @@ class _AddEditGoalSheetState extends State<AddEditGoalSheet> {
               // Target Amount
               TextFormField(
                 controller: _targetAmountController,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 decoration: InputDecoration(
                   labelText: 'Target Amount (ETB) *',
                   hintText: '40000.00',
                   prefixIcon: const Icon(Icons.payments_rounded),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) {
@@ -366,7 +431,8 @@ class _AddEditGoalSheetState extends State<AddEditGoalSheet> {
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: _categories.length,
-                  separatorBuilder: (context, index) => const SizedBox(width: 8),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(width: 8),
                   itemBuilder: (context, i) {
                     final cat = _categories[i];
                     final isSelected = _selectedCategory == cat['name'];
@@ -380,7 +446,9 @@ class _AddEditGoalSheetState extends State<AddEditGoalSheet> {
                         ],
                       ),
                       selected: isSelected,
-                      selectedColor: (cat['color'] as Color).withValues(alpha: 0.25),
+                      selectedColor: (cat['color'] as Color).withValues(
+                        alpha: 0.25,
+                      ),
                       onSelected: (selected) {
                         if (selected) {
                           setState(() {
@@ -401,7 +469,10 @@ class _AddEditGoalSheetState extends State<AddEditGoalSheet> {
               SegmentedButton<GoalPriority>(
                 segments: const [
                   ButtonSegment(value: GoalPriority.low, label: Text('Low')),
-                  ButtonSegment(value: GoalPriority.medium, label: Text('Medium')),
+                  ButtonSegment(
+                    value: GoalPriority.medium,
+                    label: Text('Medium'),
+                  ),
                   ButtonSegment(value: GoalPriority.high, label: Text('High')),
                 ],
                 selected: {_selectedPriority},
@@ -422,7 +493,9 @@ class _AddEditGoalSheetState extends State<AddEditGoalSheet> {
                       ? 'Target Date: ${DateFormat('MMM dd, yyyy').format(_selectedTargetDate!)}'
                       : 'Set Target Date (Optional)',
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: _selectedTargetDate != null ? FontWeight.bold : FontWeight.normal,
+                    fontWeight: _selectedTargetDate != null
+                        ? FontWeight.bold
+                        : FontWeight.normal,
                   ),
                 ),
                 subtitle: Text(
@@ -434,7 +507,8 @@ class _AddEditGoalSheetState extends State<AddEditGoalSheet> {
                 trailing: _selectedTargetDate != null
                     ? IconButton(
                         icon: const Icon(Icons.clear_rounded),
-                        onPressed: () => setState(() => _selectedTargetDate = null),
+                        onPressed: () =>
+                            setState(() => _selectedTargetDate = null),
                       )
                     : OutlinedButton(
                         onPressed: _pickTargetDate,
@@ -450,9 +524,14 @@ class _AddEditGoalSheetState extends State<AddEditGoalSheet> {
                   initialValue: _selectedLinkedAccountId,
                   decoration: InputDecoration(
                     labelText: 'Linked Savings Account (Optional)',
-                    helperText: 'Earmark savings into a dedicated bank or wallet',
-                    prefixIcon: const Icon(Icons.account_balance_wallet_rounded),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    helperText:
+                        'Earmark savings into a dedicated bank or wallet',
+                    prefixIcon: const Icon(
+                      Icons.account_balance_wallet_rounded,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   items: [
                     const DropdownMenuItem<String?>(
@@ -466,7 +545,8 @@ class _AddEditGoalSheetState extends State<AddEditGoalSheet> {
                       ),
                     ),
                   ],
-                  onChanged: (val) => setState(() => _selectedLinkedAccountId = val),
+                  onChanged: (val) =>
+                      setState(() => _selectedLinkedAccountId = val),
                 ),
                 const SizedBox(height: 14),
               ],
@@ -481,7 +561,8 @@ class _AddEditGoalSheetState extends State<AddEditGoalSheet> {
                   setState(() {
                     _enablePlan = val;
                     if (val && _selectedPlanFrequency == null) {
-                      _selectedPlanFrequency = ContributionPlanFrequency.monthly;
+                      _selectedPlanFrequency =
+                          ContributionPlanFrequency.monthly;
                     }
                   });
                 },
@@ -492,10 +573,14 @@ class _AddEditGoalSheetState extends State<AddEditGoalSheet> {
                     Expanded(
                       flex: 1,
                       child: DropdownButtonFormField<ContributionPlanFrequency>(
-                        initialValue: _selectedPlanFrequency ?? ContributionPlanFrequency.monthly,
+                        initialValue:
+                            _selectedPlanFrequency ??
+                            ContributionPlanFrequency.monthly,
                         decoration: InputDecoration(
                           labelText: 'Frequency',
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                         items: const [
                           DropdownMenuItem(
@@ -507,7 +592,8 @@ class _AddEditGoalSheetState extends State<AddEditGoalSheet> {
                             child: Text('Monthly'),
                           ),
                         ],
-                        onChanged: (val) => setState(() => _selectedPlanFrequency = val),
+                        onChanged: (val) =>
+                            setState(() => _selectedPlanFrequency = val),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -515,11 +601,15 @@ class _AddEditGoalSheetState extends State<AddEditGoalSheet> {
                       flex: 1,
                       child: TextFormField(
                         controller: _plannedAmountController,
-                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
                         decoration: InputDecoration(
                           labelText: 'Planned (ETB)',
                           hintText: '1000.00',
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                       ),
                     ),
@@ -533,18 +623,25 @@ class _AddEditGoalSheetState extends State<AddEditGoalSheet> {
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
                   title: const Text('Add Initial Contribution'),
-                  subtitle: const Text('Deposit or earmark money immediately upon creation'),
+                  subtitle: const Text(
+                    'Deposit or earmark money immediately upon creation',
+                  ),
                   value: _addInitialContribution,
-                  onChanged: (val) => setState(() => _addInitialContribution = val),
+                  onChanged: (val) =>
+                      setState(() => _addInitialContribution = val),
                 ),
                 if (_addInitialContribution) ...[
                   TextFormField(
                     controller: _initialContribController,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     decoration: InputDecoration(
                       labelText: 'Initial Amount (ETB)',
                       prefixIcon: const Icon(Icons.add_circle_outline_rounded),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -560,15 +657,19 @@ class _AddEditGoalSheetState extends State<AddEditGoalSheet> {
                       ),
                     ],
                     selected: {_initialContribMode},
-                    onSelectionChanged: (set) => setState(() => _initialContribMode = set.first),
+                    onSelectionChanged: (set) =>
+                        setState(() => _initialContribMode = set.first),
                   ),
-                  if (_initialContribMode == ContributionMode.accountTransfer) ...[
+                  if (_initialContribMode ==
+                      ContributionMode.accountTransfer) ...[
                     const SizedBox(height: 10),
                     DropdownButtonFormField<String>(
                       initialValue: _initialSourceAccountId,
                       decoration: InputDecoration(
                         labelText: 'Source Account',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                       items: accounts.map((acc) {
                         return DropdownMenuItem(
@@ -576,7 +677,8 @@ class _AddEditGoalSheetState extends State<AddEditGoalSheet> {
                           child: Text(acc.name),
                         );
                       }).toList(),
-                      onChanged: (val) => setState(() => _initialSourceAccountId = val),
+                      onChanged: (val) =>
+                          setState(() => _initialSourceAccountId = val),
                     ),
                   ],
                   const SizedBox(height: 14),
@@ -589,7 +691,9 @@ class _AddEditGoalSheetState extends State<AddEditGoalSheet> {
                 maxLines: 2,
                 decoration: InputDecoration(
                   labelText: 'Description (Optional)',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -601,19 +705,29 @@ class _AddEditGoalSheetState extends State<AddEditGoalSheet> {
                 child: FilledButton(
                   onPressed: _isSaving ? null : _saveGoal,
                   style: FilledButton.styleFrom(
-                    backgroundColor: isDark ? AppTheme.primaryGreen : AppTheme.primaryNavy,
+                    backgroundColor: isDark
+                        ? AppTheme.primaryGreen
+                        : AppTheme.primaryNavy,
                     foregroundColor: isDark ? AppTheme.deepNavy : Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                   ),
                   child: _isSaving
                       ? const SizedBox(
                           width: 24,
                           height: 24,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
                         )
                       : Text(
                           isEdit ? 'Update Savings Goal' : 'Save Goal',
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
                         ),
                 ),
               ),

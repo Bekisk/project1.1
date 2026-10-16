@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+
 import '../models/savings_goal.dart';
 import '../models/goal_contribution.dart';
 
@@ -249,7 +250,11 @@ class SavingsCalculationService {
         final targetMonth = now.month + periodsNeeded;
         final targetYear = now.year + ((targetMonth - 1) ~/ 12);
         final normalizedMonth = ((targetMonth - 1) % 12) + 1;
-        projected = DateTime(targetYear, normalizedMonth, math.min(now.day, 28));
+        projected = DateTime(
+          targetYear,
+          normalizedMonth,
+          math.min(now.day, 28),
+        );
       }
       return ProjectedCompletionResult(
         projectedDate: projected,
@@ -299,7 +304,10 @@ class SavingsCalculationService {
     final targetAmount = goal.targetAmount;
     final remainingAmount = calculateRemainingAmount(totalSaved, targetAmount);
     final excessAmount = calculateExcessAmount(totalSaved, targetAmount);
-    final progressPercent = calculateProgressPercentage(totalSaved, targetAmount);
+    final progressPercent = calculateProgressPercentage(
+      totalSaved,
+      targetAmount,
+    );
     final visualClamped = (progressPercent / 100.0).clamp(0.0, 1.0);
     final isCompleted = totalSaved >= targetAmount && targetAmount > 0;
 
@@ -361,7 +369,10 @@ class SavingsCalculationService {
           activeCount++;
           totalActiveTarget += goal.targetAmount;
           totalActiveSaved += saved;
-          totalActiveRemaining += calculateRemainingAmount(saved, goal.targetAmount);
+          totalActiveRemaining += calculateRemainingAmount(
+            saved,
+            goal.targetAmount,
+          );
           break;
         case GoalStatus.completed:
           completedCount++;

@@ -26,10 +26,7 @@ class SettleDebtDialog extends StatefulWidget {
   }) {
     return showDialog(
       context: context,
-      builder: (ctx) => SettleDebtDialog(
-        debt: debt,
-        accounts: accounts,
-      ),
+      builder: (ctx) => SettleDebtDialog(debt: debt, accounts: accounts),
     );
   }
 
@@ -56,7 +53,9 @@ class _SettleDebtDialogState extends State<SettleDebtDialog> {
           ? 'Settlement received from ${widget.debt.personName}'
           : 'Settlement paid to ${widget.debt.personName}',
     );
-    _selectedWalletId = widget.debt.linkedWalletId ?? (widget.accounts.isNotEmpty ? widget.accounts.first.id : null);
+    _selectedWalletId =
+        widget.debt.linkedWalletId ??
+        (widget.accounts.isNotEmpty ? widget.accounts.first.id : null);
   }
 
   @override
@@ -91,19 +90,29 @@ class _SettleDebtDialogState extends State<SettleDebtDialog> {
                       Container(
                         padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
-                          color: (isReceiving ? AppTheme.primaryGreen : AppTheme.expenseRed).withOpacity(0.15),
+                          color:
+                              (isReceiving
+                                      ? AppTheme.primaryGreen
+                                      : AppTheme.expenseRed)
+                                  .withOpacity(0.15),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Icon(
-                          isReceiving ? Icons.arrow_downward : Icons.arrow_upward,
-                          color: isReceiving ? AppTheme.primaryGreen : AppTheme.expenseRed,
+                          isReceiving
+                              ? Icons.arrow_downward
+                              : Icons.arrow_upward,
+                          color: isReceiving
+                              ? AppTheme.primaryGreen
+                              : AppTheme.expenseRed,
                           size: 18,
                         ),
                       ),
                       const SizedBox(width: 10),
                       Text(
                         isReceiving ? 'Record Repayment' : 'Pay Off Debt',
-                        style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
@@ -119,7 +128,9 @@ class _SettleDebtDialogState extends State<SettleDebtDialog> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+                  color: isDark
+                      ? const Color(0xFF1E293B)
+                      : const Color(0xFFF1F5F9),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
@@ -130,14 +141,19 @@ class _SettleDebtDialogState extends State<SettleDebtDialog> {
                       children: [
                         Text(
                           widget.debt.personName,
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
                         ),
                         Text(
                           isReceiving ? 'Owes You' : 'You Owe',
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
-                            color: isReceiving ? AppTheme.primaryGreen : AppTheme.expenseRed,
+                            color: isReceiving
+                                ? AppTheme.primaryGreen
+                                : AppTheme.expenseRed,
                           ),
                         ),
                       ],
@@ -147,7 +163,9 @@ class _SettleDebtDialogState extends State<SettleDebtDialog> {
                       'Remaining Balance: ${CurrencyFormatter.formatCents(widget.debt.remainingAmount)}',
                       style: TextStyle(
                         fontSize: 12,
-                        color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                        color: isDark
+                            ? AppTheme.textSecondaryDark
+                            : AppTheme.textSecondaryLight,
                       ),
                     ),
                   ],
@@ -161,23 +179,36 @@ class _SettleDebtDialogState extends State<SettleDebtDialog> {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                  color: isDark
+                      ? AppTheme.textSecondaryDark
+                      : AppTheme.textSecondaryLight,
                 ),
               ),
               const SizedBox(height: 6),
               TextFormField(
                 controller: _amountCtrl,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 decoration: InputDecoration(
                   hintText: '0.00',
                   filled: true,
-                  fillColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  fillColor: isDark
+                      ? const Color(0xFF1E293B)
+                      : const Color(0xFFF1F5F9),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
                 ),
                 validator: (val) {
                   final parsed = double.tryParse(val ?? '');
-                  if (parsed == null || parsed <= 0) return 'Enter a valid amount';
+                  if (parsed == null || parsed <= 0)
+                    return 'Enter a valid amount';
                   if ((parsed * 100).round() > widget.debt.remainingAmount) {
                     return 'Cannot settle more than remaining amount';
                   }
@@ -192,7 +223,9 @@ class _SettleDebtDialogState extends State<SettleDebtDialog> {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                  color: isDark
+                      ? AppTheme.textSecondaryDark
+                      : AppTheme.textSecondaryLight,
                 ),
               ),
               const SizedBox(height: 6),
@@ -200,9 +233,17 @@ class _SettleDebtDialogState extends State<SettleDebtDialog> {
                 value: _selectedWalletId,
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  fillColor: isDark
+                      ? const Color(0xFF1E293B)
+                      : const Color(0xFFF1F5F9),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
                 ),
                 dropdownColor: isDark ? const Color(0xFF1E293B) : Colors.white,
                 items: widget.accounts.map((a) {
@@ -231,7 +272,9 @@ class _SettleDebtDialogState extends State<SettleDebtDialog> {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                  color: isDark
+                      ? AppTheme.textSecondaryDark
+                      : AppTheme.textSecondaryLight,
                 ),
               ),
               const SizedBox(height: 6),
@@ -249,9 +292,14 @@ class _SettleDebtDialogState extends State<SettleDebtDialog> {
                   }
                 },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+                    color: isDark
+                        ? const Color(0xFF1E293B)
+                        : const Color(0xFFF1F5F9),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
@@ -259,7 +307,10 @@ class _SettleDebtDialogState extends State<SettleDebtDialog> {
                     children: [
                       Text(
                         DateFormat('MMM dd, yyyy').format(_settlementDate),
-                        style: TextStyle(fontSize: 13, color: isDark ? Colors.white70 : Colors.black87),
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: isDark ? Colors.white70 : Colors.black87,
+                        ),
                       ),
                       const Icon(Icons.calendar_today_rounded, size: 16),
                     ],
@@ -274,15 +325,25 @@ class _SettleDebtDialogState extends State<SettleDebtDialog> {
                 height: 48,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: isReceiving ? AppTheme.primaryGreen : AppTheme.expenseRed,
+                    backgroundColor: isReceiving
+                        ? AppTheme.primaryGreen
+                        : AppTheme.expenseRed,
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   onPressed: _isSaving ? null : _settle,
                   child: _isSaving
-                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
                       : Text(
-                          isReceiving ? 'Confirm & Receive Funds' : 'Confirm & Settle Payment',
+                          isReceiving
+                              ? 'Confirm & Receive Funds'
+                              : 'Confirm & Settle Payment',
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                 ),
@@ -301,12 +362,12 @@ class _SettleDebtDialogState extends State<SettleDebtDialog> {
     try {
       final settleCents = (double.parse(_amountCtrl.text.trim()) * 100).round();
       final success = await context.read<DebtsProvider>().settleDebt(
-            debt: widget.debt,
-            settleAmountCents: settleCents,
-            walletId: _selectedWalletId,
-            settlementDate: _settlementDate,
-            note: _noteCtrl.text.trim(),
-          );
+        debt: widget.debt,
+        settleAmountCents: settleCents,
+        walletId: _selectedWalletId,
+        settlementDate: _settlementDate,
+        note: _noteCtrl.text.trim(),
+      );
 
       if (success && mounted) {
         // Refresh transactions and dashboard providers
@@ -318,16 +379,18 @@ class _SettleDebtDialogState extends State<SettleDebtDialog> {
             backgroundColor: AppTheme.primaryGreen,
             content: Text(
               'Settled ${CurrencyFormatter.formatCents(settleCents)}! Linked wallet updated.',
-              style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error settling debt: $e')),
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Error settling debt: $e')));
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);

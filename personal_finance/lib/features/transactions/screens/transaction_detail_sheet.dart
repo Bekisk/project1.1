@@ -17,7 +17,10 @@ class TransactionDetailSheet extends StatelessWidget {
 
   const TransactionDetailSheet({super.key, required this.transaction});
 
-  static Future<void> show(BuildContext context, FinancialTransaction transaction) {
+  static Future<void> show(
+    BuildContext context,
+    FinancialTransaction transaction,
+  ) {
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -53,7 +56,9 @@ class TransactionDetailSheet extends StatelessWidget {
     );
 
     if (confirmed == true && context.mounted) {
-      final success = await context.read<TransactionsProvider>().deleteTransaction(transaction.id);
+      final success = await context
+          .read<TransactionsProvider>()
+          .deleteTransaction(transaction.id);
       if (context.mounted) {
         if (success) {
           context.read<DashboardProvider>().loadDashboardData();
@@ -64,7 +69,11 @@ class TransactionDetailSheet extends StatelessWidget {
               backgroundColor: AppTheme.primaryNavy,
               content: const Row(
                 children: [
-                  Icon(Icons.check_circle_rounded, color: Colors.white, size: 20),
+                  Icon(
+                    Icons.check_circle_rounded,
+                    color: Colors.white,
+                    size: 20,
+                  ),
                   SizedBox(width: 8),
                   Text('Transaction deleted successfully.'),
                 ],
@@ -98,17 +107,21 @@ class TransactionDetailSheet extends StatelessWidget {
     final color = isExpense
         ? AppTheme.expenseRed
         : isIncome
-            ? AppTheme.incomeGreen
-            : AppTheme.transferBlue;
+        ? AppTheme.incomeGreen
+        : AppTheme.transferBlue;
 
     final prefix = isExpense ? '-' : (isIncome ? '+' : '');
 
-    final sourceAccount = provider.accountMap[transaction.accountId]?.name ?? 'Unknown Account';
+    final sourceAccount =
+        provider.accountMap[transaction.accountId]?.name ?? 'Unknown Account';
     final destinationAccount = transaction.destinationAccountId != null
-        ? (provider.accountMap[transaction.destinationAccountId]?.name ?? 'Unknown Account')
+        ? (provider.accountMap[transaction.destinationAccountId]?.name ??
+              'Unknown Account')
         : null;
 
-    final category = transaction.categoryId != null ? provider.categoryMap[transaction.categoryId] : null;
+    final category = transaction.categoryId != null
+        ? provider.categoryMap[transaction.categoryId]
+        : null;
 
     return Container(
       padding: const EdgeInsets.only(top: 16, left: 20, right: 20, bottom: 28),
@@ -123,185 +136,211 @@ class TransactionDetailSheet extends StatelessWidget {
       child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
-        children: [
-          // Handle bar
-          Container(
-            width: 44,
-            height: 5,
-            decoration: BoxDecoration(
-              color: isDark ? AppTheme.disabledGray : Colors.grey[300],
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-          const SizedBox(height: 20),
-
-          // Header Badge & Amount
-          if (category != null)
-            CategoryIconBadge(
-              iconKey: category.iconKey,
-              colorKey: category.colorKey,
-              size: 56,
-              iconSize: 28,
-            )
-          else
+          children: [
+            // Handle bar
             Container(
-              width: 56,
-              height: 56,
+              width: 44,
+              height: 5,
               decoration: BoxDecoration(
-                color: color.withValues(alpha: isDark ? 0.2 : 0.12),
-                shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: Icon(
-                  isExpense
-                      ? Icons.arrow_upward_rounded
-                      : isIncome
-                          ? Icons.arrow_downward_rounded
-                          : Icons.swap_horiz_rounded,
-                  color: color,
-                  size: 28,
-                ),
+                color: isDark ? AppTheme.disabledGray : Colors.grey[300],
+                borderRadius: BorderRadius.circular(10),
               ),
             ),
-          const SizedBox(height: 12),
+            const SizedBox(height: 20),
 
-          Text(
-            transaction.description,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 6),
-
-          Text(
-            '$prefix${CurrencyFormatter.formatCents(transaction.amount)}',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.w800,
-              color: color,
-              letterSpacing: -0.5,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            CurrencyFormatter.formatCents(transaction.amount, amharicSuffix: true),
-            style: TextStyle(
-              fontSize: 13,
-              color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
-            ),
-          ),
-          const SizedBox(height: 20),
-
-          // Detail Info Tiles in a FintechCard
-          FintechCard(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Column(
-              children: [
-                _buildInfoRow(
-                  context,
-                  label: 'Type',
-                  value: transaction.type.name.toUpperCase(),
-                  valueColor: color,
-                  isDark: isDark,
+            // Header Badge & Amount
+            if (category != null)
+              CategoryIconBadge(
+                iconKey: category.iconKey,
+                colorKey: category.colorKey,
+                size: 56,
+                iconSize: 28,
+              )
+            else
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: isDark ? 0.2 : 0.12),
+                  shape: BoxShape.circle,
                 ),
-                _buildDivider(isDark),
-                _buildInfoRow(
-                  context,
-                  label: 'Date & Time',
-                  value: DateFormat('EEEE, MMM d, yyyy • hh:mm a').format(transaction.transactionDate.toLocal()),
-                  isDark: isDark,
+                child: Center(
+                  child: Icon(
+                    isExpense
+                        ? Icons.arrow_upward_rounded
+                        : isIncome
+                        ? Icons.arrow_downward_rounded
+                        : Icons.swap_horiz_rounded,
+                    color: color,
+                    size: 28,
+                  ),
                 ),
-                _buildDivider(isDark),
-                if (!isTransfer) ...[
+              ),
+            const SizedBox(height: 12),
+
+            Text(
+              transaction.description,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 6),
+
+            Text(
+              '$prefix${CurrencyFormatter.formatCents(transaction.amount)}',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.w800,
+                color: color,
+                letterSpacing: -0.5,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              CurrencyFormatter.formatCents(
+                transaction.amount,
+                amharicSuffix: true,
+              ),
+              style: TextStyle(
+                fontSize: 13,
+                color: isDark
+                    ? AppTheme.textSecondaryDark
+                    : AppTheme.textSecondaryLight,
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Detail Info Tiles in a FintechCard
+            FintechCard(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Column(
+                children: [
                   _buildInfoRow(
                     context,
-                    label: 'Account',
-                    value: sourceAccount,
+                    label: 'Type',
+                    value: transaction.type.name.toUpperCase(),
+                    valueColor: color,
                     isDark: isDark,
                   ),
-                  if (category != null) ...[
+                  _buildDivider(isDark),
+                  _buildInfoRow(
+                    context,
+                    label: 'Date & Time',
+                    value: DateFormat('EEEE, MMM d, yyyy • hh:mm a')
+                        .format(transaction.transactionDate.toLocal()),
+                    isDark: isDark,
+                  ),
+                  _buildDivider(isDark),
+                  if (!isTransfer) ...[
+                    _buildInfoRow(
+                      context,
+                      label: 'Account',
+                      value: sourceAccount,
+                      isDark: isDark,
+                    ),
+                    if (category != null) ...[
+                      _buildDivider(isDark),
+                      _buildInfoRow(
+                        context,
+                        label: 'Category',
+                        value: category.name,
+                        isDark: isDark,
+                      ),
+                    ],
+                  ] else ...[
+                    _buildInfoRow(
+                      context,
+                      label: 'From Account',
+                      value: sourceAccount,
+                      isDark: isDark,
+                    ),
                     _buildDivider(isDark),
                     _buildInfoRow(
                       context,
-                      label: 'Category',
-                      value: category.name,
+                      label: 'To Account',
+                      value: destinationAccount ?? '—',
                       isDark: isDark,
                     ),
                   ],
-                ] else ...[
-                  _buildInfoRow(
-                    context,
-                    label: 'From Account',
-                    value: sourceAccount,
-                    isDark: isDark,
-                  ),
-                  _buildDivider(isDark),
-                  _buildInfoRow(
-                    context,
-                    label: 'To Account',
-                    value: destinationAccount ?? '—',
-                    isDark: isDark,
-                  ),
+                  if (transaction.notes != null &&
+                      transaction.notes!.trim().isNotEmpty) ...[
+                    _buildDivider(isDark),
+                    _buildInfoRow(
+                      context,
+                      label: 'Notes',
+                      value: transaction.notes!,
+                      isDark: isDark,
+                    ),
+                  ],
+                  if (transaction.notes != null &&
+                      (transaction.notes!.contains('Auto-imported') ||
+                          transaction.notes!.contains(
+                            'Confirmed from Bank SMS',
+                          ) ||
+                          transaction.notes!.contains('Auto-synced'))) ...[
+                    _buildDivider(isDark),
+                    _buildInfoRow(
+                      context,
+                      label: 'Import Source',
+                      value: 'Bank SMS Alert (Local)',
+                      valueColor: AppTheme.primaryGreen,
+                      isDark: isDark,
+                    ),
+                  ],
                 ],
-                if (transaction.notes != null && transaction.notes!.trim().isNotEmpty) ...[
-                  _buildDivider(isDark),
-                  _buildInfoRow(
-                    context,
-                    label: 'Notes',
-                    value: transaction.notes!,
-                    isDark: isDark,
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Actions: Edit and Delete
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () => _confirmAndDelete(context),
+                    icon: const Icon(
+                      Icons.delete_outline_rounded,
+                      color: AppTheme.expenseRed,
+                    ),
+                    label: const Text(
+                      'Delete',
+                      style: TextStyle(color: AppTheme.expenseRed),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(
+                        color: AppTheme.expenseRed,
+                        width: 1.2,
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
                   ),
-                ],
-                if (transaction.notes != null &&
-                    (transaction.notes!.contains('Auto-imported') ||
-                     transaction.notes!.contains('Confirmed from Bank SMS') ||
-                     transaction.notes!.contains('Auto-synced'))) ...[
-                  _buildDivider(isDark),
-                  _buildInfoRow(
-                    context,
-                    label: 'Import Source',
-                    value: 'Bank SMS Alert (Local)',
-                    valueColor: AppTheme.primaryGreen,
-                    isDark: isDark,
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: FilledButton.icon(
+                    onPressed: () => _openEdit(context),
+                    icon: const Icon(Icons.edit_rounded),
+                    label: const Text('Edit'),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: isDark
+                          ? AppTheme.primaryGreen
+                          : AppTheme.primaryNavy,
+                      foregroundColor: isDark
+                          ? AppTheme.deepNavy
+                          : Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
                   ),
-                ],
+                ),
               ],
             ),
-          ),
-          const SizedBox(height: 24),
-
-          // Actions: Edit and Delete
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () => _confirmAndDelete(context),
-                  icon: const Icon(Icons.delete_outline_rounded, color: AppTheme.expenseRed),
-                  label: const Text('Delete', style: TextStyle(color: AppTheme.expenseRed)),
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: AppTheme.expenseRed, width: 1.2),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: FilledButton.icon(
-                  onPressed: () => _openEdit(context),
-                  icon: const Icon(Icons.edit_rounded),
-                  label: const Text('Edit'),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: isDark ? AppTheme.primaryGreen : AppTheme.primaryNavy,
-                    foregroundColor: isDark ? AppTheme.deepNavy : Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
+          ],
+        ),
       ),
     );
   }
@@ -328,7 +367,9 @@ class TransactionDetailSheet extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 13,
-            color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+            color: isDark
+                ? AppTheme.textSecondaryDark
+                : AppTheme.textSecondaryLight,
             fontWeight: FontWeight.w500,
           ),
         ),

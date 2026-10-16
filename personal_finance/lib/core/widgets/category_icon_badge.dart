@@ -76,11 +76,7 @@ class CategoryIconBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(size * 0.32),
       ),
       child: Center(
-        child: Icon(
-          getIcon(iconKey),
-          color: color,
-          size: iconSize,
-        ),
+        child: Icon(getIcon(iconKey), color: color, size: iconSize),
       ),
     );
   }

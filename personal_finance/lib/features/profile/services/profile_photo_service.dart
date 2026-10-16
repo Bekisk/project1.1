@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
@@ -7,7 +8,8 @@ import 'package:path_provider/path_provider.dart';
 class ProfilePhotoService {
   final ImagePicker _picker;
 
-  ProfilePhotoService({ImagePicker? picker}) : _picker = picker ?? ImagePicker();
+  ProfilePhotoService({ImagePicker? picker})
+    : _picker = picker ?? ImagePicker();
 
   /// Picks an image from device gallery, saves a managed local copy, and returns the persistent path.
   Future<String?> pickAndSaveProfilePhoto() async {
@@ -36,7 +38,9 @@ class ProfilePhotoService {
       await profileDir.create(recursive: true);
     }
 
-    final ext = p.extension(sourceFile.path).isNotEmpty ? p.extension(sourceFile.path) : '.jpg';
+    final ext = p.extension(sourceFile.path).isNotEmpty
+        ? p.extension(sourceFile.path)
+        : '.jpg';
     final fileName = 'avatar_${DateTime.now().millisecondsSinceEpoch}$ext';
     final targetPath = p.join(profileDir.path, fileName);
 

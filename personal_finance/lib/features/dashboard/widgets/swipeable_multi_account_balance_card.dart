@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:personal_finance/app/theme/app_theme.dart';
 import 'package:personal_finance/core/widgets/animated_balance_text.dart';
 import 'package:personal_finance/features/accounts/models/account.dart';
+import 'package:personal_finance/features/accounts/services/account_balance_service.dart';
 import 'package:personal_finance/features/accounts/screens/accounts_management_screen.dart';
 
 /// Representation of an account item for the Swipeable Multi-Account Balance Carousel
 class AccountCardItem {
   final Account account;
   final int balance;
+  final AccountBalanceInfo? balanceInfo;
   final bool isMain;
   final bool isSavings;
   final String roleBadge;
@@ -15,6 +17,7 @@ class AccountCardItem {
   const AccountCardItem({
     required this.account,
     required this.balance,
+    this.balanceInfo,
     required this.isMain,
     required this.isSavings,
     required this.roleBadge,
@@ -60,6 +63,7 @@ class AccountCardItem {
 class SwipeableMultiAccountBalanceCard extends StatefulWidget {
   final List<Account> accounts;
   final Map<String, int> accountBalances;
+  final Map<String, AccountBalanceInfo> accountBalanceInfos;
   final String? mainAccountId;
   final String? designatedSavingsAccountId;
   final bool isDark;
@@ -69,6 +73,7 @@ class SwipeableMultiAccountBalanceCard extends StatefulWidget {
     super.key,
     required this.accounts,
     required this.accountBalances,
+    this.accountBalanceInfos = const {},
     this.mainAccountId,
     this.designatedSavingsAccountId,
     required this.isDark,
@@ -99,6 +104,7 @@ class _SwipeableMultiAccountBalanceCardState
     super.didUpdateWidget(oldWidget);
     if (oldWidget.accounts != widget.accounts ||
         oldWidget.accountBalances != widget.accountBalances ||
+        oldWidget.accountBalanceInfos != widget.accountBalanceInfos ||
         oldWidget.mainAccountId != widget.mainAccountId ||
         oldWidget.designatedSavingsAccountId !=
             widget.designatedSavingsAccountId) {
@@ -159,15 +165,18 @@ class _SwipeableMultiAccountBalanceCardState
 
     _items = ordered.map((acc) {
       final isMain = (acc.id == (mainAccount?.id ?? rawAccounts.first.id));
-      final isSavings = (acc.id == savingsId) ||
+      final isSavings =
+          (acc.id == savingsId) ||
           (!isMain && acc.accountType.toLowerCase() == 'savings');
       final role = isMain
           ? 'MAIN'
           : (isSavings ? 'SAVINGS' : acc.accountType.toUpperCase());
       final balance = widget.accountBalances[acc.id] ?? acc.openingBalance;
+      final info = widget.accountBalanceInfos[acc.id];
       return AccountCardItem(
         account: acc,
         balance: balance,
+        balanceInfo: info,
         isMain: isMain,
         isSavings: isSavings,
         roleBadge: role,
@@ -272,18 +281,12 @@ class _SwipeableMultiAccountBalanceCardState
                 decoration: BoxDecoration(
                   gradient: widget.isDark
                       ? const LinearGradient(
-                          colors: [
-                            Color(0xFF141414),
-                            Color(0xFF0D0D0D),
-                          ],
+                          colors: [Color(0xFF141414), Color(0xFF0D0D0D)],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                         )
                       : const LinearGradient(
-                          colors: [
-                            Color(0xFA083D33),
-                            Color(0xFA04261F),
-                          ],
+                          colors: [Color(0xFA083D33), Color(0xFA04261F)],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                         ),
@@ -341,11 +344,11 @@ class _SwipeableMultiAccountBalanceCardState
                                   decoration: BoxDecoration(
                                     color: isActive
                                         ? (widget.isDark
-                                            ? AppTheme.pureWhite
-                                            : AppTheme.primaryAccent)
+                                              ? AppTheme.pureWhite
+                                              : AppTheme.primaryAccent)
                                         : (widget.isDark
-                                            ? AppTheme.disabledGray
-                                            : const Color(0xFF325E54)),
+                                              ? AppTheme.disabledGray
+                                              : const Color(0xFF325E54)),
                                     borderRadius: BorderRadius.circular(3),
                                   ),
                                 );
@@ -419,22 +422,34 @@ class _SwipeableMultiAccountBalanceCardState
             end: Alignment.bottomRight,
           )
         : (isSavings
-            ? const LinearGradient(
-                colors: [Color(0xFF0D9488), Color(0xFF14B8A6), Color(0xFF06B6D4)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              )
-            : (isMain
-                ? const LinearGradient(
-                    colors: [Color(0xFF0284C7), Color(0xFF06B6D4), Color(0xFF14B8A6)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  )
-                : const LinearGradient(
-                    colors: [Color(0xFF4F46E5), Color(0xFF6366F1), Color(0xFF38BDF8)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  )));
+              ? const LinearGradient(
+                  colors: [
+                    Color(0xFF0D9488),
+                    Color(0xFF14B8A6),
+                    Color(0xFF06B6D4),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                )
+              : (isMain
+                    ? const LinearGradient(
+                        colors: [
+                          Color(0xFF0284C7),
+                          Color(0xFF06B6D4),
+                          Color(0xFF14B8A6),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      )
+                    : const LinearGradient(
+                        colors: [
+                          Color(0xFF4F46E5),
+                          Color(0xFF6366F1),
+                          Color(0xFF38BDF8),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      )));
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 280),
@@ -493,7 +508,9 @@ class _SwipeableMultiAccountBalanceCardState
                 Text(
                   item.subtitleLabel,
                   style: TextStyle(
-                    color: widget.isDark ? AppTheme.secondaryGray : Colors.white70,
+                    color: widget.isDark
+                        ? AppTheme.secondaryGray
+                        : Colors.white70,
                     fontSize: 10,
                     fontWeight: FontWeight.w500,
                     letterSpacing: 0.3,
@@ -571,16 +588,21 @@ class _SwipeableMultiAccountBalanceCardState
                     ),
                     const SizedBox(width: 5),
                     Container(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 5,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: widget.isDark
                             ? const Color(0xFF202020)
                             : (item.isMain
-                                ? AppTheme.primaryAccent.withValues(alpha: 0.2)
-                                : (item.isSavings
-                                    ? const Color(0xFF14B8A6).withValues(alpha: 0.25)
-                                    : Colors.white12)),
+                                  ? AppTheme.primaryAccent.withValues(
+                                      alpha: 0.2,
+                                    )
+                                  : (item.isSavings
+                                        ? const Color(0xFF14B8A6)
+                                              .withValues(alpha: 0.25)
+                                        : Colors.white12)),
                         borderRadius: BorderRadius.circular(5),
                       ),
                       child: Text(
@@ -589,10 +611,10 @@ class _SwipeableMultiAccountBalanceCardState
                           color: widget.isDark
                               ? AppTheme.pureWhite
                               : (item.isMain
-                                  ? AppTheme.primaryAccent
-                                  : (item.isSavings
-                                      ? const Color(0xFF5EEAD4)
-                                      : Colors.white70)),
+                                    ? AppTheme.primaryAccent
+                                    : (item.isSavings
+                                          ? const Color(0xFF5EEAD4)
+                                          : Colors.white70)),
                           fontSize: 8.5,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 0.3,
@@ -603,38 +625,71 @@ class _SwipeableMultiAccountBalanceCardState
                 ),
               ),
               const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
-                decoration: BoxDecoration(
-                  color: widget.isDark
-                      ? const Color(0xFF181818)
-                      : AppTheme.primaryAccent.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: widget.isDark
-                        ? AppTheme.borderPrimary
-                        : AppTheme.primaryAccent.withValues(alpha: 0.35),
-                    width: 1,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.lock_outline_rounded,
-                      color: widget.isDark ? AppTheme.secondaryGray : AppTheme.primaryAccent,
-                      size: 10,
+              Builder(
+                builder: (context) {
+                  final info = item.balanceInfo;
+                  final status =
+                      info?.status ?? AccountBalanceStatus.calculated;
+                  Color badgeColor;
+                  IconData badgeIcon;
+                  String badgeText;
+
+                  switch (status) {
+                    case AccountBalanceStatus.confirmed:
+                      badgeColor = const Color(0xFF10B981);
+                      badgeIcon = Icons.verified_rounded;
+                      badgeText = 'Bank Confirmed';
+                      break;
+                    case AccountBalanceStatus.discrepancy:
+                      badgeColor = const Color(0xFFF59E0B);
+                      badgeIcon = Icons.sync_problem_rounded;
+                      badgeText = 'Reconcile';
+                      break;
+                    case AccountBalanceStatus.unconfirmedBaseline:
+                      badgeColor = const Color(0xFF3B82F6);
+                      badgeIcon = Icons.info_outline_rounded;
+                      badgeText = 'Set Baseline';
+                      break;
+                    case AccountBalanceStatus.calculated:
+                      badgeColor = widget.isDark
+                          ? AppTheme.secondaryGray
+                          : AppTheme.primaryAccent;
+                      badgeIcon = Icons.auto_awesome_rounded;
+                      badgeText = 'Calculated';
+                      break;
+                  }
+
+                  return Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 7,
+                      vertical: 2.5,
                     ),
-                    const SizedBox(width: 3),
-                    Text(
-                      'Encrypted',
-                      style: TextStyle(
-                        color: widget.isDark ? AppTheme.secondaryGray : AppTheme.primaryAccent,
-                        fontSize: 9,
-                        fontWeight: FontWeight.bold,
+                    decoration: BoxDecoration(
+                      color: badgeColor.withValues(
+                        alpha: widget.isDark ? 0.18 : 0.15,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: badgeColor.withValues(alpha: 0.4),
+                        width: 1,
                       ),
                     ),
-                  ],
-                ),
+                    child: Row(
+                      children: [
+                        Icon(badgeIcon, color: badgeColor, size: 10),
+                        const SizedBox(width: 3),
+                        Text(
+                          badgeText,
+                          style: TextStyle(
+                            color: badgeColor,
+                            fontSize: 9,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
               ),
             ],
           ),
@@ -762,7 +817,9 @@ class _SwipeableMultiAccountBalanceCardState
             'Add your main bank account or savings wallet to view your balances.',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: widget.isDark ? AppTheme.secondaryGray : const Color(0xFF8DAFA5),
+              color: widget.isDark
+                  ? AppTheme.secondaryGray
+                  : const Color(0xFF8DAFA5),
               fontSize: 12,
             ),
           ),
@@ -778,8 +835,12 @@ class _SwipeableMultiAccountBalanceCardState
             icon: const Icon(Icons.add_rounded, size: 18),
             label: const Text('Add Account'),
             style: FilledButton.styleFrom(
-              backgroundColor: widget.isDark ? AppTheme.pureWhite : AppTheme.primaryAccent,
-              foregroundColor: widget.isDark ? AppTheme.pureBlack : const Color(0xFF04261F),
+              backgroundColor: widget.isDark
+                  ? AppTheme.pureWhite
+                  : AppTheme.primaryAccent,
+              foregroundColor: widget.isDark
+                  ? AppTheme.pureBlack
+                  : const Color(0xFF04261F),
             ),
           ),
         ],
@@ -828,14 +889,7 @@ class _PocketScoopClipper extends CustomClipper<Path> {
       size.width / 2,
       scoopDepth,
     );
-    path.cubicTo(
-      rightX - 24,
-      scoopDepth,
-      rightX - 16,
-      0,
-      rightX,
-      0,
-    );
+    path.cubicTo(rightX - 24, scoopDepth, rightX - 16, 0, rightX, 0);
 
     path.lineTo(size.width, 0);
     path.lineTo(size.width, size.height);

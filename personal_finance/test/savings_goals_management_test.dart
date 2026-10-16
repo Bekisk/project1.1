@@ -57,7 +57,10 @@ void main() {
       // 25% milestone reached (10,000 ETB = 1,000,000 cents)
       final m25 = summary.milestones.firstWhere((m) => m.percentage == 25);
       expect(m25.isReached, isTrue);
-      expect(m25.reachedAt, equals(DateTime(2026, 10, 10))); // reached on 2nd contribution
+      expect(
+        m25.reachedAt,
+        equals(DateTime(2026, 10, 10)),
+      ); // reached on 2nd contribution
 
       // 50% milestone not reached (20,000 ETB = 2,000,000 cents)
       final m50 = summary.milestones.firstWhere((m) => m.percentage == 50);
@@ -325,35 +328,50 @@ void main() {
     // ==========================================
     // Test G — Milestone Persistence & Recalculation
     // ==========================================
-    test('Test G — Milestones recalculate accurately if target is modified', () {
-      final contribs = [
-        GoalContribution(
-          id: 'c-1',
-          goalId: 'g1',
-          amount: 500000, // 5,000 ETB
-          contributionDate: DateTime(2026, 10, 2),
-          mode: ContributionMode.manual,
-          createdAt: baseTime,
-          updatedAt: baseTime,
-        ),
-      ];
+    test(
+      'Test G — Milestones recalculate accurately if target is modified',
+      () {
+        final contribs = [
+          GoalContribution(
+            id: 'c-1',
+            goalId: 'g1',
+            amount: 500000, // 5,000 ETB
+            contributionDate: DateTime(2026, 10, 2),
+            mode: ContributionMode.manual,
+            createdAt: baseTime,
+            updatedAt: baseTime,
+          ),
+        ];
 
-      // Target = 10,000 ETB -> 5,000 ETB reaches 10%, 25%, 50%
-      var milestones = SavingsCalculationService.calculateMilestones(
-        targetAmount: 1000000,
-        contributions: contribs,
-      );
-      expect(milestones.firstWhere((m) => m.percentage == 50).isReached, isTrue);
-      expect(milestones.firstWhere((m) => m.percentage == 75).isReached, isFalse);
+        // Target = 10,000 ETB -> 5,000 ETB reaches 10%, 25%, 50%
+        var milestones = SavingsCalculationService.calculateMilestones(
+          targetAmount: 1000000,
+          contributions: contribs,
+        );
+        expect(
+          milestones.firstWhere((m) => m.percentage == 50).isReached,
+          isTrue,
+        );
+        expect(
+          milestones.firstWhere((m) => m.percentage == 75).isReached,
+          isFalse,
+        );
 
-      // Increase target to 20,000 ETB -> 5,000 ETB is now 25%, 50% is no longer reached
-      milestones = SavingsCalculationService.calculateMilestones(
-        targetAmount: 2000000,
-        contributions: contribs,
-      );
-      expect(milestones.firstWhere((m) => m.percentage == 25).isReached, isTrue);
-      expect(milestones.firstWhere((m) => m.percentage == 50).isReached, isFalse);
-    });
+        // Increase target to 20,000 ETB -> 5,000 ETB is now 25%, 50% is no longer reached
+        milestones = SavingsCalculationService.calculateMilestones(
+          targetAmount: 2000000,
+          contributions: contribs,
+        );
+        expect(
+          milestones.firstWhere((m) => m.percentage == 25).isReached,
+          isTrue,
+        );
+        expect(
+          milestones.firstWhere((m) => m.percentage == 50).isReached,
+          isFalse,
+        );
+      },
+    );
 
     // ==========================================
     // Test H — Account Consistency & Transfer Non-Duplication
@@ -387,7 +405,9 @@ void main() {
         updatedAt: baseTime,
       );
 
-      final totalSaved = SavingsCalculationService.calculateTotalSaved([contrib]);
+      final totalSaved = SavingsCalculationService.calculateTotalSaved([
+        contrib,
+      ]);
       expect(totalSaved, equals(transferAmount)); // 500 ETB
     });
 

@@ -10,13 +10,14 @@ class BankSmsIntegrationScreen extends StatefulWidget {
   const BankSmsIntegrationScreen({super.key});
 
   static void navigate(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const BankSmsIntegrationScreen()),
-    );
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const BankSmsIntegrationScreen()));
   }
 
   @override
-  State<BankSmsIntegrationScreen> createState() => _BankSmsIntegrationScreenState();
+  State<BankSmsIntegrationScreen> createState() =>
+      _BankSmsIntegrationScreenState();
 }
 
 enum IntegrationStatus {
@@ -52,8 +53,12 @@ class _BankSmsIntegrationScreenState extends State<BankSmsIntegrationScreen> {
     final notify = await _controller.isNotifyEnabled();
 
     final db = await DatabaseHelper.instance.database;
-    final pendingRows = await db.rawQuery("SELECT COUNT(*) as count FROM sms_import_logs WHERE status = 'pendingReview'");
-    final totalRows = await db.rawQuery("SELECT COUNT(*) as count FROM sms_import_logs");
+    final pendingRows = await db.rawQuery(
+      "SELECT COUNT(*) as count FROM sms_import_logs WHERE status = 'pendingReview'",
+    );
+    final totalRows = await db.rawQuery(
+      "SELECT COUNT(*) as count FROM sms_import_logs",
+    );
 
     _hasPermission = hasPerm;
     _isTrackingEnabled = tracking;
@@ -90,7 +95,9 @@ class _BankSmsIntegrationScreenState extends State<BankSmsIntegrationScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             backgroundColor: AppTheme.expenseRed,
-            content: Text('SMS permission was denied. You can still use Manual Import.'),
+            content: Text(
+              'SMS permission was denied. You can still use Manual Import.',
+            ),
           ),
         );
       }
@@ -185,20 +192,29 @@ class _BankSmsIntegrationScreenState extends State<BankSmsIntegrationScreen> {
                     GestureDetector(
                       onTap: () async {
                         await Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => const SmsReviewQueueScreen()),
+                          MaterialPageRoute(
+                            builder: (_) => const SmsReviewQueueScreen(),
+                          ),
                         );
                         _loadState();
                       },
                       child: Container(
                         padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
-                          color: AppTheme.accentAmber.withOpacity(isDark ? 0.2 : 0.12),
+                          color: AppTheme.accentAmber.withOpacity(
+                            isDark ? 0.2 : 0.12,
+                          ),
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: AppTheme.accentAmber.withOpacity(0.4)),
+                          border: Border.all(
+                            color: AppTheme.accentAmber.withOpacity(0.4),
+                          ),
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.pending_actions_rounded, color: AppTheme.accentAmber),
+                            const Icon(
+                              Icons.pending_actions_rounded,
+                              color: AppTheme.accentAmber,
+                            ),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Column(
@@ -206,7 +222,10 @@ class _BankSmsIntegrationScreenState extends State<BankSmsIntegrationScreen> {
                                 children: [
                                   Text(
                                     '$_pendingReviewCount Transactions Need Review',
-                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
                                   ),
                                   const SizedBox(height: 2),
                                   const Text(
@@ -216,7 +235,10 @@ class _BankSmsIntegrationScreenState extends State<BankSmsIntegrationScreen> {
                                 ],
                               ),
                             ),
-                            const Icon(Icons.chevron_right_rounded, color: AppTheme.accentAmber),
+                            const Icon(
+                              Icons.chevron_right_rounded,
+                              color: AppTheme.accentAmber,
+                            ),
                           ],
                         ),
                       ),
@@ -225,15 +247,34 @@ class _BankSmsIntegrationScreenState extends State<BankSmsIntegrationScreen> {
                   ],
 
                   // 3. Main Controls
-                  const Text('AUTOMATIC TRACKING CONTROLS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
+                  const Text(
+                    'AUTOMATIC TRACKING CONTROLS',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey,
+                    ),
+                  ),
                   const SizedBox(height: 8),
                   FintechCard(
-                    padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 14),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 4,
+                      horizontal: 14,
+                    ),
                     child: Column(
                       children: [
                         SwitchListTile(
-                          title: const Text('Enable SMS Transaction Tracking', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-                          subtitle: const Text('Detect incoming bank alerts when received', style: TextStyle(fontSize: 12)),
+                          title: const Text(
+                            'Enable SMS Transaction Tracking',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                          subtitle: const Text(
+                            'Detect incoming bank alerts when received',
+                            style: TextStyle(fontSize: 12),
+                          ),
                           value: _isTrackingEnabled,
                           activeColor: AppTheme.primaryGreen,
                           onChanged: (val) async {
@@ -241,10 +282,22 @@ class _BankSmsIntegrationScreenState extends State<BankSmsIntegrationScreen> {
                             setState(() => _isTrackingEnabled = val);
                           },
                         ),
-                        Divider(height: 1, color: isDark ? Colors.white10 : Colors.black12),
+                        Divider(
+                          height: 1,
+                          color: isDark ? Colors.white10 : Colors.black12,
+                        ),
                         SwitchListTile(
-                          title: const Text('Auto-Record High Confidence', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-                          subtitle: const Text('Automatically record exact bank alerts; ask for confirmation otherwise', style: TextStyle(fontSize: 12)),
+                          title: const Text(
+                            'Auto-Record High Confidence',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                          subtitle: const Text(
+                            'Automatically record exact bank alerts; ask for confirmation otherwise',
+                            style: TextStyle(fontSize: 12),
+                          ),
                           value: _isAutoRecordHighConfidence,
                           activeColor: AppTheme.primaryGreen,
                           onChanged: (val) async {
@@ -252,10 +305,22 @@ class _BankSmsIntegrationScreenState extends State<BankSmsIntegrationScreen> {
                             setState(() => _isAutoRecordHighConfidence = val);
                           },
                         ),
-                        Divider(height: 1, color: isDark ? Colors.white10 : Colors.black12),
+                        Divider(
+                          height: 1,
+                          color: isDark ? Colors.white10 : Colors.black12,
+                        ),
                         SwitchListTile(
-                          title: const Text('Detection Notifications', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-                          subtitle: const Text('Show a local alert when a transaction is detected', style: TextStyle(fontSize: 12)),
+                          title: const Text(
+                            'Detection Notifications',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                          subtitle: const Text(
+                            'Show a local alert when a transaction is detected',
+                            style: TextStyle(fontSize: 12),
+                          ),
                           value: _isNotifyEnabled,
                           activeColor: AppTheme.primaryGreen,
                           onChanged: (val) async {
@@ -269,38 +334,95 @@ class _BankSmsIntegrationScreenState extends State<BankSmsIntegrationScreen> {
                   const SizedBox(height: 20),
 
                   // 4. Quick Action Tools
-                  const Text('TOOLS & FALLBACKS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
+                  const Text(
+                    'TOOLS & FALLBACKS',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey,
+                    ),
+                  ),
                   const SizedBox(height: 8),
                   FintechCard(
-                    padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 14),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 6,
+                      horizontal: 14,
+                    ),
                     child: Column(
                       children: [
                         ListTile(
-                          leading: const Icon(Icons.paste_rounded, color: AppTheme.primaryGreen),
-                          title: const Text('Manual SMS Import / Paste', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-                          subtitle: const Text('Paste bank SMS text if auto-detection is not permitted', style: TextStyle(fontSize: 12)),
+                          leading: const Icon(
+                            Icons.paste_rounded,
+                            color: AppTheme.primaryGreen,
+                          ),
+                          title: const Text(
+                            'Manual SMS Import / Paste',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                          subtitle: const Text(
+                            'Paste bank SMS text if auto-detection is not permitted',
+                            style: TextStyle(fontSize: 12),
+                          ),
                           trailing: const Icon(Icons.chevron_right_rounded),
                           onTap: () => SmsScannerDialog.show(context),
                         ),
-                        Divider(height: 1, color: isDark ? Colors.white10 : Colors.black12),
+                        Divider(
+                          height: 1,
+                          color: isDark ? Colors.white10 : Colors.black12,
+                        ),
                         ListTile(
-                          leading: const Icon(Icons.history_rounded, color: AppTheme.transferBlue),
-                          title: const Text('Review Queue & Import History', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-                          subtitle: Text('$_totalImportedCount total messages parsed', style: const TextStyle(fontSize: 12)),
+                          leading: const Icon(
+                            Icons.history_rounded,
+                            color: AppTheme.transferBlue,
+                          ),
+                          title: const Text(
+                            'Review Queue & Import History',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                          subtitle: Text(
+                            '$_totalImportedCount total messages parsed',
+                            style: const TextStyle(fontSize: 12),
+                          ),
                           trailing: const Icon(Icons.chevron_right_rounded),
                           onTap: () async {
                             await Navigator.of(context).push(
-                              MaterialPageRoute(builder: (_) => const SmsReviewQueueScreen()),
+                              MaterialPageRoute(
+                                builder: (_) => const SmsReviewQueueScreen(),
+                              ),
                             );
                             _loadState();
                           },
                         ),
-                        Divider(height: 1, color: isDark ? Colors.white10 : Colors.black12),
+                        Divider(
+                          height: 1,
+                          color: isDark ? Colors.white10 : Colors.black12,
+                        ),
                         ListTile(
-                          leading: const Icon(Icons.account_balance_rounded, color: AppTheme.accentPurple),
-                          title: const Text('Supported Banks & Formats', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-                          subtitle: const Text('CBE, Telebirr, Awash, Abyssinia, Dashen', style: TextStyle(fontSize: 12)),
-                          trailing: const Icon(Icons.info_outline_rounded, size: 20),
+                          leading: const Icon(
+                            Icons.account_balance_rounded,
+                            color: AppTheme.accentPurple,
+                          ),
+                          title: const Text(
+                            'Supported Banks & Formats',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                          subtitle: const Text(
+                            'CBE, Telebirr, Awash, Abyssinia, Dashen',
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          trailing: const Icon(
+                            Icons.info_outline_rounded,
+                            size: 20,
+                          ),
                           onTap: () => _showSupportedBanksSheet(),
                         ),
                       ],
@@ -312,20 +434,28 @@ class _BankSmsIntegrationScreenState extends State<BankSmsIntegrationScreen> {
                   Container(
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+                      color: isDark
+                          ? const Color(0xFF1E293B)
+                          : const Color(0xFFF1F5F9),
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(Icons.info_rounded, size: 20, color: AppTheme.transferBlue),
+                        const Icon(
+                          Icons.info_rounded,
+                          size: 20,
+                          color: AppTheme.transferBlue,
+                        ),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             'Financial Integrity: Bank SMS detection only records financial activity locally inside this app. It never connects to, authenticates with, or initiates transfers from your real bank accounts.',
                             style: TextStyle(
                               fontSize: 12,
-                              color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                              color: isDark
+                                  ? AppTheme.textSecondaryDark
+                                  : AppTheme.textSecondaryLight,
                             ),
                           ),
                         ),
@@ -360,7 +490,8 @@ class _BankSmsIntegrationScreenState extends State<BankSmsIntegrationScreen> {
       case IntegrationStatus.permissionRequired:
         statusColor = AppTheme.accentAmber;
         statusTitle = 'Permission Required';
-        statusDesc = 'SMS read permission is needed to recognize incoming alerts.';
+        statusDesc =
+            'SMS read permission is needed to recognize incoming alerts.';
         statusIcon = Icons.warning_amber_rounded;
         break;
       case IntegrationStatus.permissionDenied:
@@ -399,14 +530,20 @@ class _BankSmsIntegrationScreenState extends State<BankSmsIntegrationScreen> {
                   children: [
                     Text(
                       statusTitle,
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: statusColor),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: statusColor,
+                      ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       statusDesc,
                       style: TextStyle(
                         fontSize: 12,
-                        color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                        color: isDark
+                            ? AppTheme.textSecondaryDark
+                            : AppTheme.textSecondaryLight,
                       ),
                     ),
                   ],
@@ -426,7 +563,9 @@ class _BankSmsIntegrationScreenState extends State<BankSmsIntegrationScreen> {
                   backgroundColor: AppTheme.primaryGreen,
                   foregroundColor: AppTheme.deepNavy,
                   padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
             ),
@@ -439,20 +578,40 @@ class _BankSmsIntegrationScreenState extends State<BankSmsIntegrationScreen> {
   void _showSupportedBanksSheet() {
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
       builder: (ctx) => Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Supported Bank SMS Formats', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text(
+              'Supported Bank SMS Formats',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 12),
-            _buildBankRow('Commercial Bank of Ethiopia (CBE)', 'Debits, Credits, CBE Birr, ATM, Fee charges'),
-            _buildBankRow('Telebirr', 'Transfers, Merchant payments, Cash In/Out, Ref IDs'),
-            _buildBankRow('Awash Bank', 'Account debits, deposits, reason/merchant extraction'),
-            _buildBankRow('Bank of Abyssinia', 'Transactional transfer alerts & balance reports'),
-            _buildBankRow('Dashen Bank (Amole)', 'Payment confirmations & account notices'),
+            _buildBankRow(
+              'Commercial Bank of Ethiopia (CBE)',
+              'Debits, Credits, CBE Birr, ATM, Fee charges',
+            ),
+            _buildBankRow(
+              'Telebirr',
+              'Transfers, Merchant payments, Cash In/Out, Ref IDs',
+            ),
+            _buildBankRow(
+              'Awash Bank',
+              'Account debits, deposits, reason/merchant extraction',
+            ),
+            _buildBankRow(
+              'Bank of Abyssinia',
+              'Transactional transfer alerts & balance reports',
+            ),
+            _buildBankRow(
+              'Dashen Bank (Amole)',
+              'Payment confirmations & account notices',
+            ),
             const SizedBox(height: 12),
             const Text(
               'Other formats will fall back safely to our generic parser or review queue.',
@@ -470,14 +629,27 @@ class _BankSmsIntegrationScreenState extends State<BankSmsIntegrationScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.check_circle_outline_rounded, size: 16, color: AppTheme.primaryGreen),
+          const Icon(
+            Icons.check_circle_outline_rounded,
+            size: 16,
+            color: AppTheme.primaryGreen,
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(bank, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-                Text(details, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                Text(
+                  bank,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
+                ),
+                Text(
+                  details,
+                  style: const TextStyle(fontSize: 11, color: Colors.grey),
+                ),
               ],
             ),
           ),

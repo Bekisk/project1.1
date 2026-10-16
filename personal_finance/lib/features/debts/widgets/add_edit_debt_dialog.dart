@@ -11,11 +11,7 @@ class AddEditDebtDialog extends StatefulWidget {
   final Debt? debtToEdit;
   final List<Account> accounts;
 
-  const AddEditDebtDialog({
-    super.key,
-    this.debtToEdit,
-    required this.accounts,
-  });
+  const AddEditDebtDialog({super.key, this.debtToEdit, required this.accounts});
 
   static Future<void> show(
     BuildContext context, {
@@ -24,10 +20,8 @@ class AddEditDebtDialog extends StatefulWidget {
   }) {
     return showDialog(
       context: context,
-      builder: (ctx) => AddEditDebtDialog(
-        debtToEdit: debtToEdit,
-        accounts: accounts,
-      ),
+      builder: (ctx) =>
+          AddEditDebtDialog(debtToEdit: debtToEdit, accounts: accounts),
     );
   }
 
@@ -56,7 +50,9 @@ class _AddEditDebtDialogState extends State<AddEditDebtDialog> {
     _notesCtrl = TextEditingController(text: d?.notes ?? '');
     _type = d?.type ?? DebtType.owesMe;
     _dueDate = d?.dueDate;
-    _selectedWalletId = d?.linkedWalletId ?? (widget.accounts.isNotEmpty ? widget.accounts.first.id : null);
+    _selectedWalletId =
+        d?.linkedWalletId ??
+        (widget.accounts.isNotEmpty ? widget.accounts.first.id : null);
   }
 
   @override
@@ -88,7 +84,9 @@ class _AddEditDebtDialogState extends State<AddEditDebtDialog> {
                 children: [
                   Text(
                     widget.debtToEdit == null ? 'New Debt / IOU' : 'Edit Debt',
-                    style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   IconButton(
                     icon: const Icon(Icons.close, size: 20),
@@ -107,7 +105,9 @@ class _AddEditDebtDialogState extends State<AddEditDebtDialog> {
                       selected: _type == DebtType.owesMe,
                       selectedColor: AppTheme.primaryGreen.withOpacity(0.2),
                       side: BorderSide(
-                        color: _type == DebtType.owesMe ? AppTheme.primaryGreen : Colors.transparent,
+                        color: _type == DebtType.owesMe
+                            ? AppTheme.primaryGreen
+                            : Colors.transparent,
                       ),
                       onSelected: (val) {
                         if (val) setState(() => _type = DebtType.owesMe);
@@ -121,7 +121,9 @@ class _AddEditDebtDialogState extends State<AddEditDebtDialog> {
                       selected: _type == DebtType.iOwe,
                       selectedColor: AppTheme.expenseRed.withOpacity(0.2),
                       side: BorderSide(
-                        color: _type == DebtType.iOwe ? AppTheme.expenseRed : Colors.transparent,
+                        color: _type == DebtType.iOwe
+                            ? AppTheme.expenseRed
+                            : Colors.transparent,
                       ),
                       onSelected: (val) {
                         if (val) setState(() => _type = DebtType.iOwe);
@@ -138,7 +140,9 @@ class _AddEditDebtDialogState extends State<AddEditDebtDialog> {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                  color: isDark
+                      ? AppTheme.textSecondaryDark
+                      : AppTheme.textSecondaryLight,
                 ),
               ),
               const SizedBox(height: 6),
@@ -147,11 +151,21 @@ class _AddEditDebtDialogState extends State<AddEditDebtDialog> {
                 decoration: InputDecoration(
                   hintText: 'e.g. Dawit, Bethlehem, Abebe',
                   filled: true,
-                  fillColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  fillColor: isDark
+                      ? const Color(0xFF1E293B)
+                      : const Color(0xFFF1F5F9),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
                 ),
-                validator: (val) => (val == null || val.trim().isEmpty) ? 'Enter person name' : null,
+                validator: (val) => (val == null || val.trim().isEmpty)
+                    ? 'Enter person name'
+                    : null,
               ),
               const SizedBox(height: 14),
 
@@ -161,7 +175,9 @@ class _AddEditDebtDialogState extends State<AddEditDebtDialog> {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                  color: isDark
+                      ? AppTheme.textSecondaryDark
+                      : AppTheme.textSecondaryLight,
                 ),
               ),
               const SizedBox(height: 6),
@@ -171,13 +187,22 @@ class _AddEditDebtDialogState extends State<AddEditDebtDialog> {
                 decoration: InputDecoration(
                   hintText: '0.00',
                   filled: true,
-                  fillColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  fillColor: isDark
+                      ? const Color(0xFF1E293B)
+                      : const Color(0xFFF1F5F9),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
                 ),
                 validator: (val) {
                   final parsed = double.tryParse(val ?? '');
-                  if (parsed == null || parsed <= 0) return 'Enter a valid amount';
+                  if (parsed == null || parsed <= 0)
+                    return 'Enter a valid amount';
                   return null;
                 },
               ),
@@ -189,7 +214,9 @@ class _AddEditDebtDialogState extends State<AddEditDebtDialog> {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                  color: isDark
+                      ? AppTheme.textSecondaryDark
+                      : AppTheme.textSecondaryLight,
                 ),
               ),
               const SizedBox(height: 6),
@@ -197,9 +224,17 @@ class _AddEditDebtDialogState extends State<AddEditDebtDialog> {
                 value: _selectedWalletId,
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  fillColor: isDark
+                      ? const Color(0xFF1E293B)
+                      : const Color(0xFFF1F5F9),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
                 ),
                 dropdownColor: isDark ? const Color(0xFF1E293B) : Colors.white,
                 items: widget.accounts.map((a) {
@@ -217,7 +252,9 @@ class _AddEditDebtDialogState extends State<AddEditDebtDialog> {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                  color: isDark
+                      ? AppTheme.textSecondaryDark
+                      : AppTheme.textSecondaryLight,
                 ),
               ),
               const SizedBox(height: 6),
@@ -235,17 +272,27 @@ class _AddEditDebtDialogState extends State<AddEditDebtDialog> {
                   }
                 },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+                    color: isDark
+                        ? const Color(0xFF1E293B)
+                        : const Color(0xFFF1F5F9),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        _dueDate != null ? DateFormat('MMM dd, yyyy').format(_dueDate!) : 'No Due Date Set',
-                        style: TextStyle(fontSize: 13, color: isDark ? Colors.white70 : Colors.black87),
+                        _dueDate != null
+                            ? DateFormat('MMM dd, yyyy').format(_dueDate!)
+                            : 'No Due Date Set',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: isDark ? Colors.white70 : Colors.black87,
+                        ),
                       ),
                       const Icon(Icons.calendar_today_rounded, size: 16),
                     ],
@@ -262,13 +309,21 @@ class _AddEditDebtDialogState extends State<AddEditDebtDialog> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primaryGreen,
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   onPressed: _isSaving ? null : _saveDebt,
                   child: _isSaving
-                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
                       : Text(
-                          widget.debtToEdit == null ? 'Create IOU Record' : 'Save Changes',
+                          widget.debtToEdit == null
+                              ? 'Create IOU Record'
+                              : 'Save Changes',
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                 ),
@@ -324,16 +379,18 @@ class _AddEditDebtDialogState extends State<AddEditDebtDialog> {
             backgroundColor: AppTheme.primaryGreen,
             content: Text(
               'Debt record saved successfully',
-              style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error saving debt: $e')),
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Error saving debt: $e')));
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -342,5 +399,6 @@ class _AddEditDebtDialogState extends State<AddEditDebtDialog> {
 }
 
 class TextInputTextInputTypeDouble extends TextInputType {
-  const TextInputTextInputTypeDouble({super.signed, super.decimal}) : super.numberWithOptions();
+  const TextInputTextInputTypeDouble({super.signed, super.decimal})
+    : super.numberWithOptions();
 }

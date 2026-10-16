@@ -118,7 +118,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void _showAddAccountDialog({Account? accountToEdit}) {
     final nameCtrl = TextEditingController(text: accountToEdit?.name ?? '');
     final openingCtrl = TextEditingController(
-      text: accountToEdit != null ? (accountToEdit.openingBalance / 100.0).toStringAsFixed(2) : '0.00',
+      text: accountToEdit != null
+          ? (accountToEdit.openingBalance / 100.0).toStringAsFixed(2)
+          : '0.00',
     );
     String selectedType = accountToEdit?.accountType ?? 'bank';
     final formKey = GlobalKey<FormState>();
@@ -128,8 +130,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       builder: (ctx) => StatefulBuilder(
         builder: (context, setDialogState) {
           return AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            title: Text(accountToEdit == null ? 'Add Financial Account' : 'Edit Account'),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            title: Text(
+              accountToEdit == null ? 'Add Financial Account' : 'Edit Account',
+            ),
             content: Form(
               key: formKey,
               child: SingleChildScrollView(
@@ -141,9 +147,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       decoration: InputDecoration(
                         labelText: 'Account Name *',
                         hintText: 'e.g. Commercial Bank of Ethiopia, Telebirr',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
-                      validator: (val) => val == null || val.trim().isEmpty ? 'Enter account name' : null,
+                      validator: (val) => val == null || val.trim().isEmpty
+                          ? 'Enter account name'
+                          : null,
                     ),
                     const SizedBox(height: 14),
                     DropdownButtonFormField<String>(
@@ -151,28 +161,65 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       isExpanded: true,
                       decoration: InputDecoration(
                         labelText: 'Account Type',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                       items: const [
-                        DropdownMenuItem(value: 'bank', child: Text('Bank Account (CBE, Awash, etc.)', overflow: TextOverflow.ellipsis)),
-                        DropdownMenuItem(value: 'savings', child: Text('Savings Account', overflow: TextOverflow.ellipsis)),
-                        DropdownMenuItem(value: 'mobile_money', child: Text('Mobile Money (Telebirr, CBE Birr)', overflow: TextOverflow.ellipsis)),
-                        DropdownMenuItem(value: 'cash', child: Text('Cash or Wallet', overflow: TextOverflow.ellipsis)),
-                        DropdownMenuItem(value: 'other', child: Text('Other Account', overflow: TextOverflow.ellipsis)),
+                        DropdownMenuItem(
+                          value: 'bank',
+                          child: Text(
+                            'Bank Account (CBE, Awash, etc.)',
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: 'savings',
+                          child: Text(
+                            'Savings Account',
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: 'mobile_money',
+                          child: Text(
+                            'Mobile Money (Telebirr, CBE Birr)',
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: 'cash',
+                          child: Text(
+                            'Cash or Wallet',
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: 'other',
+                          child: Text(
+                            'Other Account',
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
                       ],
                       onChanged: (val) {
-                        if (val != null) setDialogState(() => selectedType = val);
+                        if (val != null)
+                          setDialogState(() => selectedType = val);
                       },
                     ),
                     const SizedBox(height: 14),
                     TextFormField(
                       controller: openingCtrl,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
                       decoration: InputDecoration(
                         labelText: 'Opening Balance (ETB)',
                         hintText: '0.00',
                         helperText: 'Current available balance. This is NOT counted as income.',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                     ),
                   ],
@@ -180,11 +227,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
             ),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Cancel'),
+              ),
               FilledButton(
                 onPressed: () {
                   if (!formKey.currentState!.validate()) return;
-                  final rawAmount = double.tryParse(openingCtrl.text.trim()) ?? 0.0;
+                  final rawAmount =
+                      double.tryParse(openingCtrl.text.trim()) ?? 0.0;
                   final cents = (rawAmount * 100).round();
                   final now = DateTime.now();
 
@@ -202,11 +253,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       if (_draft.createdAccounts.length == 1) {
                         _draft.selectedMainAccountId = newAcc.id;
                       }
-                      if (selectedType == 'savings' && _draft.selectedSavingsAccountId == null) {
+                      if (selectedType == 'savings' &&
+                          _draft.selectedSavingsAccountId == null) {
                         _draft.selectedSavingsAccountId = newAcc.id;
                       }
                     } else {
-                      final idx = _draft.createdAccounts.indexWhere((a) => a.id == accountToEdit.id);
+                      final idx = _draft.createdAccounts.indexWhere(
+                        (a) => a.id == accountToEdit.id,
+                      );
                       if (idx != -1) {
                         _draft.createdAccounts[idx] = accountToEdit.copyWith(
                           name: nameCtrl.text.trim(),
@@ -246,7 +300,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
     if (_draft.displayName.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Display name is required. Please review Step 2.')),
+        const SnackBar(
+          content: Text('Display name is required. Please review Step 2.'),
+        ),
       );
       _pageController.jumpToPage(1);
       return;
@@ -294,17 +350,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       final profile = UserProfile(
         id: profileId,
         displayName: _draft.displayName.trim(),
-        fullName: _draft.fullName?.trim().isNotEmpty == true ? _draft.fullName!.trim() : null,
-        nickname: _draft.nickname?.trim().isNotEmpty == true ? _draft.nickname!.trim() : null,
+        fullName: _draft.fullName?.trim().isNotEmpty == true
+            ? _draft.fullName!.trim()
+            : null,
+        nickname: _draft.nickname?.trim().isNotEmpty == true
+            ? _draft.nickname!.trim()
+            : null,
         occupation: _draft.occupation,
         countryOrRegion: _draft.countryOrRegion,
         ageRange: _draft.ageRange,
         profileImagePath: _draft.profileImagePath,
         discoverySource: _draft.discoverySource,
-        discoverySourceOther: _draft.discoverySourceOther?.trim().isNotEmpty == true
+        discoverySourceOther:
+            _draft.discoverySourceOther?.trim().isNotEmpty == true
             ? _draft.discoverySourceOther!.trim()
             : null,
-        personalGoal: _draft.personalGoal?.trim().isNotEmpty == true ? _draft.personalGoal!.trim() : null,
+        personalGoal: _draft.personalGoal?.trim().isNotEmpty == true
+            ? _draft.personalGoal!.trim()
+            : null,
         preferredLanguage: _draft.preferredLanguage,
         preferredCurrency: _draft.preferredCurrency,
         mainAccountId: _draft.selectedMainAccountId,
@@ -362,7 +425,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               Expanded(
                 child: PageView(
                   controller: _pageController,
-                  physics: const NeverScrollableScrollPhysics(), // explicit buttons
+                  physics:
+                      const NeverScrollableScrollPhysics(), // explicit buttons
                   onPageChanged: (page) => setState(() => _currentStep = page),
                   children: [
                     _buildWelcomeStep(isDark),
@@ -399,7 +463,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: isDark ? AppTheme.primaryAccent : AppTheme.primaryGreen,
+                  color: isDark
+                      ? AppTheme.primaryAccent
+                      : AppTheme.primaryGreen,
                 ),
               ),
               Text(
@@ -407,7 +473,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
-                  color: isDark ? AppTheme.secondaryText : AppTheme.textSecondaryLight,
+                  color: isDark
+                      ? AppTheme.secondaryText
+                      : AppTheme.textSecondaryLight,
                 ),
               ),
             ],
@@ -418,7 +486,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             child: LinearProgressIndicator(
               value: (_currentStep + 1) / _totalSteps,
               minHeight: 6,
-              backgroundColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+              backgroundColor: isDark
+                  ? const Color(0xFF1E293B)
+                  : const Color(0xFFE2E8F0),
               valueColor: AlwaysStoppedAnimation<Color>(
                 isDark ? AppTheme.primaryAccent : AppTheme.primaryGreen,
               ),
@@ -458,7 +528,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
-        color: (isDark ? AppTheme.cardCharcoal : Colors.white).withValues(alpha: 0.95),
+        color: (isDark ? AppTheme.cardCharcoal : Colors.white).withValues(
+          alpha: 0.95,
+        ),
         border: Border(
           top: BorderSide(
             color: isDark ? AppTheme.borderPrimary : const Color(0xFFE2E8F0),
@@ -472,8 +544,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             OutlinedButton(
               onPressed: _isSaving ? null : _prevPage,
               style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18,
+                  vertical: 14,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
               child: const Text('Back'),
             ),
@@ -492,7 +569,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         _draft.personalGoal = _goalController.text.trim();
                       } else if (_currentStep == 2) {
                         if (_draft.discoverySource == 'Other') {
-                          _draft.discoverySourceOther = _otherDiscoveryController.text.trim();
+                          _draft.discoverySourceOther =
+                              _otherDiscoveryController.text.trim();
                         }
                       }
                       if (isLastStep) {
@@ -504,17 +582,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               style: FilledButton.styleFrom(
                 backgroundColor: AppTheme.primaryGreen,
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
               child: _isSaving
                   ? const SizedBox(
                       width: 20,
                       height: 20,
-                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
                     )
                   : Text(
                       isLastStep ? 'Finish Setup' : 'Continue',
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.white),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        color: Colors.white,
+                      ),
                     ),
             ),
           ),
@@ -549,14 +636,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ],
             ),
             child: const Center(
-              child: Icon(Icons.account_balance_wallet_rounded, color: AppTheme.primaryGreen, size: 44),
+              child: Icon(
+                Icons.account_balance_wallet_rounded,
+                color: AppTheme.primaryGreen,
+                size: 44,
+              ),
             ),
           ),
           const SizedBox(height: 28),
           const Text(
             'Welcome to your financial journey',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800, letterSpacing: -0.5),
+            style: TextStyle(
+              fontSize: 26,
+              fontWeight: FontWeight.w800,
+              letterSpacing: -0.5,
+            ),
           ),
           const SizedBox(height: 12),
           Text(
@@ -565,7 +660,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             style: TextStyle(
               fontSize: 14,
               height: 1.5,
-              color: isDark ? AppTheme.secondaryText : AppTheme.textSecondaryLight,
+              color: isDark
+                  ? AppTheme.secondaryText
+                  : AppTheme.textSecondaryLight,
             ),
           ),
           const SizedBox(height: 36),
@@ -602,7 +699,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  Widget _buildFeatureBullet(IconData icon, String title, String subtitle, bool isDark) {
+  Widget _buildFeatureBullet(
+    IconData icon,
+    String title,
+    String subtitle,
+    bool isDark,
+  ) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -619,13 +721,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
               const SizedBox(height: 2),
               Text(
                 subtitle,
                 style: TextStyle(
                   fontSize: 12,
-                  color: isDark ? AppTheme.secondaryText : AppTheme.textSecondaryLight,
+                  color: isDark
+                      ? AppTheme.secondaryText
+                      : AppTheme.textSecondaryLight,
                 ),
               ),
             ],
@@ -648,14 +758,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           children: [
             const Text(
               'Personal Information',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, letterSpacing: -0.4),
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                letterSpacing: -0.4,
+              ),
             ),
             const SizedBox(height: 6),
             Text(
               'Tell us how you would like to be addressed. Required fields are clearly marked.',
               style: TextStyle(
                 fontSize: 13,
-                color: isDark ? AppTheme.secondaryText : AppTheme.textSecondaryLight,
+                color: isDark
+                    ? AppTheme.secondaryText
+                    : AppTheme.textSecondaryLight,
               ),
             ),
             const SizedBox(height: 20),
@@ -667,7 +783,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 labelText: 'Display Name *',
                 hintText: 'e.g. Bereket or Alexander',
                 helperText: 'Shown on your dashboard greeting and cards',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
               validator: (val) {
                 if (val == null || val.trim().isEmpty) {
@@ -684,7 +802,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               decoration: InputDecoration(
                 labelText: 'Full Name (Optional)',
                 hintText: 'e.g. Bereket Tadesse',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -695,7 +815,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               decoration: InputDecoration(
                 labelText: 'Preferred Nickname (Optional)',
                 hintText: 'e.g. Beki',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -705,7 +827,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               value: _draft.occupation,
               decoration: InputDecoration(
                 labelText: 'Occupation (Optional)',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
               items: _occupations.map((occ) {
                 return DropdownMenuItem(value: occ, child: Text(occ));
@@ -719,7 +843,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               value: _draft.ageRange,
               decoration: InputDecoration(
                 labelText: 'Age Range (Optional)',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
               items: _ageRanges.map((age) {
                 return DropdownMenuItem(value: age, child: Text(age));
@@ -733,13 +859,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               value: _draft.countryOrRegion,
               decoration: InputDecoration(
                 labelText: 'Country / Region',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
               items: const [
                 DropdownMenuItem(value: 'Ethiopia', child: Text('Ethiopia')),
                 DropdownMenuItem(value: 'Kenya', child: Text('Kenya')),
-                DropdownMenuItem(value: 'United States', child: Text('United States')),
-                DropdownMenuItem(value: 'United Kingdom', child: Text('United Kingdom')),
+                DropdownMenuItem(
+                  value: 'United States',
+                  child: Text('United States'),
+                ),
+                DropdownMenuItem(
+                  value: 'United Kingdom',
+                  child: Text('United Kingdom'),
+                ),
                 DropdownMenuItem(value: 'Other', child: Text('Other')),
               ],
               onChanged: (val) {
@@ -755,7 +889,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               decoration: InputDecoration(
                 labelText: 'Primary Financial Goal (Optional)',
                 hintText: 'e.g. Save for a house, track daily living expenses',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
             ),
             const SizedBox(height: 24),
@@ -776,14 +912,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         children: [
           const Text(
             'Where did you hear about us?',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, letterSpacing: -0.4),
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              letterSpacing: -0.4,
+            ),
           ),
           const SizedBox(height: 6),
           Text(
             'Help us understand how people discover the app. This is completely optional.',
             style: TextStyle(
               fontSize: 13,
-              color: isDark ? AppTheme.secondaryText : AppTheme.textSecondaryLight,
+              color: isDark
+                  ? AppTheme.secondaryText
+                  : AppTheme.textSecondaryLight,
             ),
           ),
           const SizedBox(height: 18),
@@ -796,10 +938,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               return ChoiceChip(
                 label: Text(opt),
                 selected: isSelected,
-                selectedColor: AppTheme.primaryGreen.withValues(alpha: isDark ? 0.35 : 0.2),
+                selectedColor: AppTheme.primaryGreen.withValues(
+                  alpha: isDark ? 0.35 : 0.2,
+                ),
                 labelStyle: TextStyle(
                   color: isSelected
-                      ? (isDark ? AppTheme.primaryAccent : AppTheme.primaryGreen)
+                      ? (isDark
+                            ? AppTheme.primaryAccent
+                            : AppTheme.primaryGreen)
                       : (isDark ? AppTheme.primaryText : AppTheme.textDark),
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                   fontSize: 13,
@@ -808,8 +954,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   borderRadius: BorderRadius.circular(12),
                   side: BorderSide(
                     color: isSelected
-                        ? (isDark ? AppTheme.primaryGreen : AppTheme.primaryGreen)
-                        : (isDark ? AppTheme.borderPrimary : const Color(0xFFE2E8F0)),
+                        ? (isDark
+                              ? AppTheme.primaryGreen
+                              : AppTheme.primaryGreen)
+                        : (isDark
+                              ? AppTheme.borderPrimary
+                              : const Color(0xFFE2E8F0)),
                   ),
                 ),
                 onSelected: (selected) {
@@ -828,7 +978,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               decoration: InputDecoration(
                 labelText: 'Please specify (Optional)',
                 hintText: 'e.g. Word of mouth, Tech event',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
             ),
           ],
@@ -849,14 +1001,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         children: [
           const Text(
             "Let's organize your money",
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, letterSpacing: -0.4),
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              letterSpacing: -0.4,
+            ),
           ),
           const SizedBox(height: 6),
           Text(
             'Add the accounts you use to receive income, pay expenses, and save money. Enter the amount currently available in each account as its opening balance.',
             style: TextStyle(
               fontSize: 13,
-              color: isDark ? AppTheme.secondaryText : AppTheme.textSecondaryLight,
+              color: isDark
+                  ? AppTheme.secondaryText
+                  : AppTheme.textSecondaryLight,
             ),
           ),
           const SizedBox(height: 18),
@@ -868,7 +1026,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             label: const Text('Add Account / Wallet'),
             style: OutlinedButton.styleFrom(
               minimumSize: const Size(double.infinity, 48),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
             ),
           ),
           const SizedBox(height: 16),
@@ -878,7 +1038,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
-                  Icon(Icons.account_balance_outlined, size: 40, color: isDark ? Colors.white38 : Colors.grey),
+                  Icon(
+                    Icons.account_balance_outlined,
+                    size: 40,
+                    color: isDark ? Colors.white38 : Colors.grey,
+                  ),
                   const SizedBox(height: 10),
                   const Text(
                     'No accounts added yet',
@@ -890,7 +1054,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 12,
-                      color: isDark ? AppTheme.secondaryText : AppTheme.textSecondaryLight,
+                      color: isDark
+                          ? AppTheme.secondaryText
+                          : AppTheme.textSecondaryLight,
                     ),
                   ),
                 ],
@@ -910,17 +1076,33 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           color: AppTheme.primaryGreen.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: Icon(_iconForAccountType(acc.accountType), color: AppTheme.primaryGreen, size: 22),
+                        child: Icon(
+                          _iconForAccountType(acc.accountType),
+                          color: AppTheme.primaryGreen,
+                          size: 22,
+                        ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(acc.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                             Text(
-                              acc.accountType.replaceAll('_', ' ').toUpperCase(),
-                              style: const TextStyle(fontSize: 11, color: Colors.grey, fontWeight: FontWeight.w600),
+                              acc.name,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                            Text(
+                              acc.accountType
+                                  .replaceAll('_', ' ')
+                                  .toUpperCase(),
+                              style: const TextStyle(
+                                fontSize: 11,
+                                color: Colors.grey,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ],
                         ),
@@ -930,26 +1112,39 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         children: [
                           Text(
                             CurrencyFormatter.formatCents(acc.openingBalance),
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
                           ),
                           Text(
                             'Opening Balance',
                             style: TextStyle(
                               fontSize: 10,
-                              color: isDark ? AppTheme.secondaryText : AppTheme.textSecondaryLight,
+                              color: isDark
+                                  ? AppTheme.secondaryText
+                                  : AppTheme.textSecondaryLight,
                             ),
                           ),
                         ],
                       ),
                       IconButton(
-                        icon: const Icon(Icons.delete_outline_rounded, size: 18, color: AppTheme.accentCoral),
+                        icon: const Icon(
+                          Icons.delete_outline_rounded,
+                          size: 18,
+                          color: AppTheme.accentCoral,
+                        ),
                         visualDensity: VisualDensity.compact,
                         onPressed: () {
                           setState(() {
-                            _draft.createdAccounts.removeWhere((a) => a.id == acc.id);
+                            _draft.createdAccounts.removeWhere(
+                              (a) => a.id == acc.id,
+                            );
                             if (_draft.selectedMainAccountId == acc.id) {
                               _draft.selectedMainAccountId =
-                                  _draft.createdAccounts.isNotEmpty ? _draft.createdAccounts.first.id : null;
+                                  _draft.createdAccounts.isNotEmpty
+                                  ? _draft.createdAccounts.first.id
+                                  : null;
                             }
                             if (_draft.selectedSavingsAccountId == acc.id) {
                               _draft.selectedSavingsAccountId = null;
@@ -982,14 +1177,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         children: [
           const Text(
             'Which account do you use most often?',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, letterSpacing: -0.4),
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              letterSpacing: -0.4,
+            ),
           ),
           const SizedBox(height: 6),
           Text(
             'Choose your main account to be used as default for new transactions.',
             style: TextStyle(
               fontSize: 13,
-              color: isDark ? AppTheme.secondaryText : AppTheme.textSecondaryLight,
+              color: isDark
+                  ? AppTheme.secondaryText
+                  : AppTheme.textSecondaryLight,
             ),
           ),
           const SizedBox(height: 18),
@@ -997,7 +1198,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           if (accounts.isEmpty) ...[
             FintechCard(
               padding: const EdgeInsets.all(16),
-              child: const Text('Add at least one account in Step 4 to select your main and savings accounts.'),
+              child: const Text(
+                'Add at least one account in Step 4 to select your main and savings accounts.',
+              ),
             ),
           ] else ...[
             // Main account selection
@@ -1006,7 +1209,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: InkWell(
-                  onTap: () => setState(() => _draft.selectedMainAccountId = acc.id),
+                  onTap: () =>
+                      setState(() => _draft.selectedMainAccountId = acc.id),
                   borderRadius: BorderRadius.circular(16),
                   child: Container(
                     padding: const EdgeInsets.all(14),
@@ -1014,18 +1218,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
                         color: isMain
-                            ? (isDark ? AppTheme.primaryGreen : AppTheme.primaryGreen)
-                            : (isDark ? AppTheme.borderPrimary : const Color(0xFFE2E8F0)),
+                            ? (isDark
+                                  ? AppTheme.primaryGreen
+                                  : AppTheme.primaryGreen)
+                            : (isDark
+                                  ? AppTheme.borderPrimary
+                                  : const Color(0xFFE2E8F0)),
                         width: isMain ? 2 : 1,
                       ),
                       color: isMain
-                          ? (isDark ? AppTheme.primaryGreen.withValues(alpha: 0.15) : const Color(0xFFE8F5E9))
+                          ? (isDark
+                                ? AppTheme.primaryGreen.withValues(alpha: 0.15)
+                                : const Color(0xFFE8F5E9))
                           : null,
                     ),
                     child: Row(
                       children: [
                         Icon(
-                          isMain ? Icons.radio_button_checked : Icons.radio_button_off,
+                          isMain
+                              ? Icons.radio_button_checked
+                              : Icons.radio_button_off,
                           color: isMain ? AppTheme.primaryGreen : Colors.grey,
                         ),
                         const SizedBox(width: 12),
@@ -1033,17 +1245,31 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(acc.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                               Text(
-                                acc.accountType.replaceAll('_', ' ').toUpperCase(),
-                                style: const TextStyle(fontSize: 11, color: Colors.grey),
+                                acc.name,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              Text(
+                                acc.accountType
+                                    .replaceAll('_', ' ')
+                                    .toUpperCase(),
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  color: Colors.grey,
+                                ),
                               ),
                             ],
                           ),
                         ),
                         Text(
                           CurrencyFormatter.formatCents(acc.openingBalance),
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
                         ),
                       ],
                     ),
@@ -1055,14 +1281,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             const SizedBox(height: 24),
             const Text(
               'Do you have a separate savings account?',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: -0.3),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                letterSpacing: -0.3,
+              ),
             ),
             const SizedBox(height: 6),
             Text(
               'Designate an account for your savings deposits (Optional).',
               style: TextStyle(
                 fontSize: 12,
-                color: isDark ? AppTheme.secondaryText : AppTheme.textSecondaryLight,
+                color: isDark
+                    ? AppTheme.secondaryText
+                    : AppTheme.textSecondaryLight,
               ),
             ),
             const SizedBox(height: 12),
@@ -1071,7 +1303,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               value: _draft.selectedSavingsAccountId,
               decoration: InputDecoration(
                 labelText: 'Designated Savings Account',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
               items: [
                 const DropdownMenuItem<String?>(
@@ -1081,11 +1315,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ...accounts.map((acc) {
                   return DropdownMenuItem<String?>(
                     value: acc.id,
-                    child: Text('${acc.name} (${CurrencyFormatter.formatCents(acc.openingBalance)})'),
+                    child: Text(
+                      '${acc.name} (${CurrencyFormatter.formatCents(acc.openingBalance)})',
+                    ),
                   );
                 }),
               ],
-              onChanged: (val) => setState(() => _draft.selectedSavingsAccountId = val),
+              onChanged: (val) =>
+                  setState(() => _draft.selectedSavingsAccountId = val),
             ),
           ],
           const SizedBox(height: 20),
@@ -1105,14 +1342,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         children: [
           const Text(
             'Profile Photo & Preferences',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, letterSpacing: -0.4),
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              letterSpacing: -0.4,
+            ),
           ),
           const SizedBox(height: 6),
           Text(
             'Personalize your visual profile. Adding a photo is completely optional.',
             style: TextStyle(
               fontSize: 13,
-              color: isDark ? AppTheme.secondaryText : AppTheme.textSecondaryLight,
+              color: isDark
+                  ? AppTheme.secondaryText
+                  : AppTheme.textSecondaryLight,
             ),
           ),
           const SizedBox(height: 24),
@@ -1123,7 +1366,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               children: [
                 ProfileAvatar(
                   imagePath: _draft.profileImagePath,
-                  displayName: _draft.displayName.isNotEmpty ? _draft.displayName : 'User',
+                  displayName: _draft.displayName.isNotEmpty
+                      ? _draft.displayName
+                      : 'User',
                   radius: 46,
                   showEditBadge: true,
                   onTap: _pickPhoto,
@@ -1135,17 +1380,27 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     OutlinedButton.icon(
                       onPressed: _pickPhoto,
                       icon: const Icon(Icons.photo_library_outlined, size: 18),
-                      label: Text(_draft.profileImagePath == null ? 'Choose Photo' : 'Change Photo'),
+                      label: Text(
+                        _draft.profileImagePath == null
+                            ? 'Choose Photo'
+                            : 'Change Photo',
+                      ),
                       style: OutlinedButton.styleFrom(
                         visualDensity: VisualDensity.compact,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
                     ),
                     if (_draft.profileImagePath != null) ...[
                       const SizedBox(width: 8),
                       TextButton(
-                        onPressed: () => setState(() => _draft.profileImagePath = null),
-                        child: const Text('Remove', style: TextStyle(color: AppTheme.accentCoral)),
+                        onPressed: () =>
+                            setState(() => _draft.profileImagePath = null),
+                        child: const Text(
+                          'Remove',
+                          style: TextStyle(color: AppTheme.accentCoral),
+                        ),
                       ),
                     ],
                   ],
@@ -1160,13 +1415,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             value: _draft.preferredCurrency,
             decoration: InputDecoration(
               labelText: 'Display Currency',
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
             ),
             items: const [
-              DropdownMenuItem(value: 'ETB', child: Text('Ethiopian Birr (ETB - ብር)')),
-              DropdownMenuItem(value: 'USD', child: Text('US Dollar (USD - \$)')),
+              DropdownMenuItem(
+                value: 'ETB',
+                child: Text('Ethiopian Birr (ETB - ብር)'),
+              ),
+              DropdownMenuItem(
+                value: 'USD',
+                child: Text('US Dollar (USD - \$)'),
+              ),
               DropdownMenuItem(value: 'EUR', child: Text('Euro (EUR - €)')),
-              DropdownMenuItem(value: 'GBP', child: Text('British Pound (GBP - £)')),
+              DropdownMenuItem(
+                value: 'GBP',
+                child: Text('British Pound (GBP - £)'),
+              ),
             ],
             onChanged: (val) {
               if (val != null) setState(() => _draft.preferredCurrency = val);
@@ -1179,7 +1445,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             value: _draft.preferredLanguage,
             decoration: InputDecoration(
               labelText: 'Preferred Language',
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
             ),
             items: const [
               DropdownMenuItem(value: 'English', child: Text('English')),
@@ -1206,14 +1474,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         children: [
           const Text(
             'Ready to start your journey!',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, letterSpacing: -0.4),
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              letterSpacing: -0.4,
+            ),
           ),
           const SizedBox(height: 6),
           Text(
             'Please review your details before finishing setup. You can always edit these in Settings.',
             style: TextStyle(
               fontSize: 13,
-              color: isDark ? AppTheme.secondaryText : AppTheme.textSecondaryLight,
+              color: isDark
+                  ? AppTheme.secondaryText
+                  : AppTheme.textSecondaryLight,
             ),
           ),
           const SizedBox(height: 20),
@@ -1225,7 +1499,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               children: [
                 ProfileAvatar(
                   imagePath: _draft.profileImagePath,
-                  displayName: _draft.displayName.isNotEmpty ? _draft.displayName : 'User',
+                  displayName: _draft.displayName.isNotEmpty
+                      ? _draft.displayName
+                      : 'User',
                   radius: 28,
                 ),
                 const SizedBox(width: 14),
@@ -1234,20 +1510,30 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _draft.displayName.isNotEmpty ? _draft.displayName : 'No name provided',
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        _draft.displayName.isNotEmpty
+                            ? _draft.displayName
+                            : 'No name provided',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
                       if (_draft.occupation != null)
                         Text(
                           _draft.occupation!,
                           style: TextStyle(
                             fontSize: 12,
-                            color: isDark ? AppTheme.secondaryText : AppTheme.textSecondaryLight,
+                            color: isDark
+                                ? AppTheme.secondaryText
+                                : AppTheme.textSecondaryLight,
                           ),
                         ),
                       Text(
                         '${_draft.countryOrRegion} • ${_draft.preferredCurrency}',
-                        style: const TextStyle(fontSize: 11, color: Colors.grey),
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: Colors.grey,
+                        ),
                       ),
                     ],
                   ),
@@ -1270,10 +1556,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('Configured Accounts', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                    const Text(
+                      'Configured Accounts',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
                     TextButton(
                       onPressed: () => _pageController.jumpToPage(3),
-                      style: TextButton.styleFrom(visualDensity: VisualDensity.compact),
+                      style: TextButton.styleFrom(
+                        visualDensity: VisualDensity.compact,
+                      ),
                       child: const Text('Edit Accounts'),
                     ),
                   ],
@@ -1296,7 +1590,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 Flexible(
                                   child: Text(
                                     acc.name,
-                                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 13,
+                                    ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -1304,27 +1601,47 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 if (isMain) ...[
                                   const SizedBox(width: 6),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                      vertical: 2,
+                                    ),
                                     decoration: BoxDecoration(
-                                      color: AppTheme.primaryGreen.withValues(alpha: 0.15),
+                                      color: AppTheme.primaryGreen.withValues(
+                                        alpha: 0.15,
+                                      ),
                                       borderRadius: BorderRadius.circular(6),
                                     ),
-                                    child: const Text('MAIN',
-                                        style: TextStyle(
-                                            fontSize: 9, fontWeight: FontWeight.bold, color: AppTheme.primaryGreen)),
+                                    child: const Text(
+                                      'MAIN',
+                                      style: TextStyle(
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppTheme.primaryGreen,
+                                      ),
+                                    ),
                                   ),
                                 ],
                                 if (isSavings) ...[
                                   const SizedBox(width: 6),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                      vertical: 2,
+                                    ),
                                     decoration: BoxDecoration(
-                                      color: AppTheme.transferBlue.withValues(alpha: 0.15),
+                                      color: AppTheme.transferBlue.withValues(
+                                        alpha: 0.15,
+                                      ),
                                       borderRadius: BorderRadius.circular(6),
                                     ),
-                                    child: const Text('SAVINGS',
-                                        style: TextStyle(
-                                            fontSize: 9, fontWeight: FontWeight.bold, color: AppTheme.transferBlue)),
+                                    child: const Text(
+                                      'SAVINGS',
+                                      style: TextStyle(
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppTheme.transferBlue,
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ],
@@ -1333,7 +1650,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           const SizedBox(width: 8),
                           Text(
                             CurrencyFormatter.formatCents(acc.openingBalance),
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                            ),
                           ),
                         ],
                       ),
@@ -1350,7 +1670,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.privacy_tip_outlined, size: 20, color: AppTheme.primaryGreen),
+                const Icon(
+                  Icons.privacy_tip_outlined,
+                  size: 20,
+                  color: AppTheme.primaryGreen,
+                ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
@@ -1358,7 +1682,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     style: TextStyle(
                       fontSize: 11,
                       height: 1.4,
-                      color: isDark ? AppTheme.secondaryText : AppTheme.textSecondaryLight,
+                      color: isDark
+                          ? AppTheme.secondaryText
+                          : AppTheme.textSecondaryLight,
                     ),
                   ),
                 ),

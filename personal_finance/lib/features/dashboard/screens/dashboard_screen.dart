@@ -59,7 +59,9 @@ class DashboardScreen extends StatelessWidget {
                 Text(
                   'Updating portfolio...',
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                    color: isDark
+                        ? AppTheme.textSecondaryDark
+                        : AppTheme.textSecondaryLight,
                   ),
                 ),
               ],
@@ -77,8 +79,13 @@ class DashboardScreen extends StatelessWidget {
             child: SafeArea(
               bottom: false,
               child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics(),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 12.0,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -89,8 +96,13 @@ class DashboardScreen extends StatelessWidget {
                     SwipeableMultiAccountBalanceCard(
                       accounts: summary.accounts,
                       accountBalances: summary.accountBalances,
-                      mainAccountId: context.watch<UserProfileProvider>().mainAccountId,
-                      designatedSavingsAccountId: context.watch<UserProfileProvider>().designatedSavingsAccountId,
+                      accountBalanceInfos: summary.accountBalanceInfos,
+                      mainAccountId: context
+                          .watch<UserProfileProvider>()
+                          .mainAccountId,
+                      designatedSavingsAccountId: context
+                          .watch<UserProfileProvider>()
+                          .designatedSavingsAccountId,
                       isDark: isDark,
                       onAddAccount: onAddTransaction,
                     ),
@@ -139,79 +151,92 @@ class DashboardScreen extends StatelessWidget {
                     _buildSavingsGoalProgressCard(context, summary, isDark),
                     const SizedBox(height: 24),
 
-                  // 5. Recent Transactions Header & Dynamic List
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            'Recent Transactions',
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: -0.3,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: isDark ? AppTheme.elevatedCharcoal : const Color(0xFFF1F5F9),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Text(
-                              '${summary.recentTransactions.length}',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: isDark ? AppTheme.pureWhite : AppTheme.primaryNavy,
+                    // 5. Recent Transactions Header & Dynamic List
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              'Recent Transactions',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: -0.3,
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                      TextButton(
-                        onPressed: onNavigateToTransactions,
-                        style: TextButton.styleFrom(
-                          visualDensity: VisualDensity.compact,
-                          foregroundColor: isDark ? AppTheme.primaryGreen : AppTheme.primaryNavy,
-                        ),
-                        child: const Row(
-                          children: [
-                            Text('View All', style: TextStyle(fontWeight: FontWeight.w600)),
-                            SizedBox(width: 2),
-                            Icon(Icons.chevron_right_rounded, size: 18),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: isDark
+                                    ? AppTheme.elevatedCharcoal
+                                    : const Color(0xFFF1F5F9),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Text(
+                                '${summary.recentTransactions.length}',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: isDark
+                                      ? AppTheme.pureWhite
+                                      : AppTheme.primaryNavy,
+                                ),
+                              ),
+                            ),
                           ],
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-
-                  if (!hasTransactions)
-                    _buildEmptyStateCard(
-                      context,
-                      title: 'No Transactions Recorded',
-                      description: 'Keep track of your income and day-to-day expenses with instant analytics.',
-                      buttonText: 'Add First Transaction',
-                      icon: Icons.receipt_long_rounded,
-                      onTap: () => AddTransactionSheet.show(context),
-                    )
-                  else
-                    ...summary.recentTransactions.map(
-                      (tx) => _buildTransactionTile(context, tx, summary, isDark),
+                        TextButton(
+                          onPressed: onNavigateToTransactions,
+                          style: TextButton.styleFrom(
+                            visualDensity: VisualDensity.compact,
+                            foregroundColor: isDark
+                                ? AppTheme.primaryGreen
+                                : AppTheme.primaryNavy,
+                          ),
+                          child: const Row(
+                            children: [
+                              Text(
+                                'View All',
+                                style: TextStyle(fontWeight: FontWeight.w600),
+                              ),
+                              SizedBox(width: 2),
+                              Icon(Icons.chevron_right_rounded, size: 18),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
+                    const SizedBox(height: 8),
 
-                  const SizedBox(height: 110),
-                ],
+                    if (!hasTransactions)
+                      _buildEmptyStateCard(
+                        context,
+                        title: 'No Transactions Recorded',
+                        description: 'Keep track of your income and day-to-day expenses with instant analytics.',
+                        buttonText: 'Add First Transaction',
+                        icon: Icons.receipt_long_rounded,
+                        onTap: () => AddTransactionSheet.show(context),
+                      )
+                    else
+                      ...summary.recentTransactions.map(
+                        (tx) =>
+                            _buildTransactionTile(context, tx, summary, isDark),
+                      ),
+
+                    const SizedBox(height: 110),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-      );
-    },
-  );
-}
+        );
+      },
+    );
+  }
 
   String _getTimeGreeting() {
     final hour = DateTime.now().hour;
@@ -257,7 +282,9 @@ class DashboardScreen extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
-                            color: isDark ? AppTheme.secondaryText : AppTheme.textSecondaryLight,
+                            color: isDark
+                                ? AppTheme.secondaryText
+                                : AppTheme.textSecondaryLight,
                             letterSpacing: 0.2,
                           ),
                         ),
@@ -268,7 +295,9 @@ class DashboardScreen extends StatelessWidget {
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
                             letterSpacing: -0.3,
-                            color: isDark ? AppTheme.primaryText : AppTheme.textDark,
+                            color: isDark
+                                ? AppTheme.primaryText
+                                : AppTheme.textDark,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -298,7 +327,9 @@ class DashboardScreen extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: isDark ? AppTheme.elevatedCharcoal : Colors.white,
                 border: Border.all(
-                  color: isDark ? AppTheme.borderPrimary : const Color(0xFFD1EBE3),
+                  color: isDark
+                      ? AppTheme.borderPrimary
+                      : const Color(0xFFD1EBE3),
                   width: 1,
                 ),
                 boxShadow: [
@@ -331,7 +362,10 @@ class DashboardScreen extends StatelessWidget {
             context,
             icon: Icons.north_east_rounded,
             label: 'Send',
-            onTap: () => AddTransactionSheet.show(context, initialType: TransactionType.expense),
+            onTap: () => AddTransactionSheet.show(
+              context,
+              initialType: TransactionType.expense,
+            ),
             isDark: isDark,
           ),
           _buildCircleActionButton(
@@ -345,14 +379,20 @@ class DashboardScreen extends StatelessWidget {
             context,
             icon: Icons.add_rounded,
             label: 'Add Money',
-            onTap: () => AddTransactionSheet.show(context, initialType: TransactionType.income),
+            onTap: () => AddTransactionSheet.show(
+              context,
+              initialType: TransactionType.income,
+            ),
             isDark: isDark,
           ),
           _buildCircleActionButton(
             context,
             icon: Icons.receipt_long_rounded,
             label: 'Paybill',
-            onTap: () => AddTransactionSheet.show(context, initialType: TransactionType.transfer),
+            onTap: () => AddTransactionSheet.show(
+              context,
+              initialType: TransactionType.transfer,
+            ),
             isDark: isDark,
           ),
         ],
@@ -380,7 +420,9 @@ class DashboardScreen extends StatelessWidget {
               shape: BoxShape.circle,
               color: isDark ? AppTheme.elevatedCharcoal : Colors.white,
               border: Border.all(
-                color: isDark ? AppTheme.borderPrimary : const Color(0xFFD1EBE3),
+                color: isDark
+                    ? AppTheme.borderPrimary
+                    : const Color(0xFFD1EBE3),
                 width: 1.2,
               ),
               boxShadow: [
@@ -441,18 +483,37 @@ class DashboardScreen extends StatelessWidget {
                       lastDate: DateTime.now().add(const Duration(days: 365)),
                     );
                     if (picked != null) {
-                      provider.setPeriod(DashboardPeriod.custom, customStart: picked.start, customEnd: picked.end);
+                      provider.setPeriod(
+                        DashboardPeriod.custom,
+                        customStart: picked.start,
+                        customEnd: picked.end,
+                      );
                     }
                   } else {
                     provider.setPeriod(period);
                   }
                 },
                 itemBuilder: (ctx) => [
-                  const PopupMenuItem(value: DashboardPeriod.thisMonth, child: Text('This Month')),
-                  const PopupMenuItem(value: DashboardPeriod.lastMonth, child: Text('Last Month')),
-                  const PopupMenuItem(value: DashboardPeriod.thisYear, child: Text('This Year')),
-                  const PopupMenuItem(value: DashboardPeriod.allTime, child: Text('All Time')),
-                  const PopupMenuItem(value: DashboardPeriod.custom, child: Text('Custom Date Range...')),
+                  const PopupMenuItem(
+                    value: DashboardPeriod.thisMonth,
+                    child: Text('This Month'),
+                  ),
+                  const PopupMenuItem(
+                    value: DashboardPeriod.lastMonth,
+                    child: Text('Last Month'),
+                  ),
+                  const PopupMenuItem(
+                    value: DashboardPeriod.thisYear,
+                    child: Text('This Year'),
+                  ),
+                  const PopupMenuItem(
+                    value: DashboardPeriod.allTime,
+                    child: Text('All Time'),
+                  ),
+                  const PopupMenuItem(
+                    value: DashboardPeriod.custom,
+                    child: Text('Custom Date Range...'),
+                  ),
                 ],
                 child: Row(
                   children: [
@@ -460,7 +521,9 @@ class DashboardScreen extends StatelessWidget {
                       '${summary.periodLabel} Flow',
                       style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                        color: isDark
+                            ? AppTheme.textSecondaryDark
+                            : AppTheme.textSecondaryLight,
                       ),
                     ),
                     const SizedBox(width: 4),
@@ -471,16 +534,23 @@ class DashboardScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: (netPositive ? AppTheme.primaryGreen : AppTheme.expenseRed)
-                      .withValues(alpha: isDark ? 0.2 : 0.1),
+                  color:
+                      (netPositive
+                              ? AppTheme.primaryGreen
+                              : AppTheme.expenseRed)
+                          .withValues(alpha: isDark ? 0.2 : 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
                   children: [
                     Icon(
-                      netPositive ? Icons.trending_up_rounded : Icons.trending_down_rounded,
+                      netPositive
+                          ? Icons.trending_up_rounded
+                          : Icons.trending_down_rounded,
                       size: 14,
-                      color: netPositive ? AppTheme.primaryGreen : AppTheme.expenseRed,
+                      color: netPositive
+                          ? AppTheme.primaryGreen
+                          : AppTheme.expenseRed,
                     ),
                     const SizedBox(width: 4),
                     Text(
@@ -488,7 +558,9 @@ class DashboardScreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
-                        color: netPositive ? AppTheme.primaryGreen : AppTheme.expenseRed,
+                        color: netPositive
+                            ? AppTheme.primaryGreen
+                            : AppTheme.expenseRed,
                       ),
                     ),
                   ],
@@ -564,7 +636,9 @@ class DashboardScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                  color: isDark
+                      ? AppTheme.textSecondaryDark
+                      : AppTheme.textSecondaryLight,
                 ),
               ),
             ],
@@ -589,7 +663,9 @@ class DashboardScreen extends StatelessWidget {
 
   Widget _buildCashflowVisualRatio(DashboardSummary summary, bool isDark) {
     final total = summary.monthIncome + summary.monthExpense;
-    final incomeRatio = total > 0 ? (summary.monthIncome / total).clamp(0.0, 1.0) : 0.5;
+    final incomeRatio = total > 0
+        ? (summary.monthIncome / total).clamp(0.0, 1.0)
+        : 0.5;
 
     return Column(
       children: [
@@ -617,11 +693,19 @@ class DashboardScreen extends StatelessWidget {
           children: [
             Text(
               '${(incomeRatio * 100).toStringAsFixed(0)}% Inflow',
-              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: AppTheme.incomeGreen),
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: AppTheme.incomeGreen,
+              ),
             ),
             Text(
               '${((1.0 - incomeRatio) * 100).toStringAsFixed(0)}% Outflow',
-              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: AppTheme.expenseRed),
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: AppTheme.expenseRed,
+              ),
             ),
           ],
         ),
@@ -655,10 +739,16 @@ class DashboardScreen extends StatelessWidget {
                 'Weekly Spending Trend',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                  color: isDark
+                      ? AppTheme.textSecondaryDark
+                      : AppTheme.textSecondaryLight,
                 ),
               ),
-              const Icon(Icons.bar_chart_rounded, size: 20, color: AppTheme.primaryGreen),
+              const Icon(
+                Icons.bar_chart_rounded,
+                size: 20,
+                color: AppTheme.primaryGreen,
+              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -672,20 +762,31 @@ class DashboardScreen extends StatelessWidget {
                 maxY: maxCents.toDouble() * 1.15,
                 barTouchData: BarTouchData(
                   touchTooltipData: BarTouchTooltipData(
-                    getTooltipColor: (_) => isDark ? AppTheme.elevatedCharcoal : Colors.black87,
+                    getTooltipColor: (_) =>
+                        isDark ? AppTheme.elevatedCharcoal : Colors.black87,
                     getTooltipItem: (group, groupIndex, rod, rodIndex) {
                       return BarTooltipItem(
                         CurrencyFormatter.formatCents(rod.toY.round()),
-                        const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                        const TextStyle(
+                          color: Colors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                        ),
                       );
                     },
                   ),
                 ),
                 titlesData: FlTitlesData(
                   show: true,
-                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  topTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  rightTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  leftTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
                   bottomTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
@@ -699,7 +800,9 @@ class DashboardScreen extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
-                                color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                                color: isDark
+                                    ? AppTheme.textSecondaryDark
+                                    : AppTheme.textSecondaryLight,
                               ),
                             ),
                           );
@@ -724,16 +827,30 @@ class DashboardScreen extends StatelessWidget {
                         gradient: LinearGradient(
                           colors: isLatest
                               ? (isDark
-                                  ? [AppTheme.primaryGreen, const Color(0xFF059669)]
-                                  : [const Color(0xFF10B981), const Color(0xFF059669)])
+                                    ? [
+                                        AppTheme.primaryGreen,
+                                        const Color(0xFF059669),
+                                      ]
+                                    : [
+                                        const Color(0xFF10B981),
+                                        const Color(0xFF059669),
+                                      ])
                               : (isDark
-                                  ? [const Color(0xFF334155), const Color(0xFF1E293B)]
-                                  : [const Color(0xFF94A3B8), const Color(0xFF64748B)]),
+                                    ? [
+                                        const Color(0xFF334155),
+                                        const Color(0xFF1E293B),
+                                      ]
+                                    : [
+                                        const Color(0xFF94A3B8),
+                                        const Color(0xFF64748B),
+                                      ]),
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                         ),
                         width: 16,
-                        borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(8),
+                        ),
                       ),
                     ],
                   );
@@ -749,7 +866,9 @@ class DashboardScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 12,
                   fontStyle: FontStyle.italic,
-                  color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                  color: isDark
+                      ? AppTheme.textSecondaryDark
+                      : AppTheme.textSecondaryLight,
                 ),
               ),
             ),
@@ -761,7 +880,9 @@ class DashboardScreen extends StatelessWidget {
               'Top Expense Categories',
               style: theme.textTheme.bodySmall?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                color: isDark
+                    ? AppTheme.textSecondaryDark
+                    : AppTheme.textSecondaryLight,
               ),
             ),
             const SizedBox(height: 10),
@@ -786,11 +907,19 @@ class DashboardScreen extends StatelessWidget {
                             children: [
                               Text(
                                 catSpend.category.name,
-                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                               Text(
-                                CurrencyFormatter.formatCents(catSpend.totalCents),
-                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                                CurrencyFormatter.formatCents(
+                                  catSpend.totalCents,
+                                ),
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ],
                           ),
@@ -800,9 +929,14 @@ class DashboardScreen extends StatelessWidget {
                             child: LinearProgressIndicator(
                               value: catSpend.percentage,
                               minHeight: 4,
-                              backgroundColor: isDark ? AppTheme.borderPrimary : const Color(0xFFF1F5F9),
+                              backgroundColor: isDark
+                                  ? AppTheme.borderPrimary
+                                  : const Color(0xFFF1F5F9),
                               valueColor: AlwaysStoppedAnimation<Color>(
-                                CategoryIconBadge.getColor(catSpend.category.colorKey, isDark: isDark),
+                                CategoryIconBadge.getColor(
+                                  catSpend.category.colorKey,
+                                  isDark: isDark,
+                                ),
                               ),
                             ),
                           ),
@@ -847,14 +981,20 @@ class DashboardScreen extends StatelessWidget {
                       color: AppTheme.accentAmber.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Icon(Icons.savings_rounded, color: AppTheme.accentAmber, size: 16),
+                    child: const Icon(
+                      Icons.savings_rounded,
+                      color: AppTheme.accentAmber,
+                      size: 16,
+                    ),
                   ),
                   const SizedBox(width: 8),
                   Text(
                     'Active Savings Goals',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                      color: isDark
+                          ? AppTheme.textSecondaryDark
+                          : AppTheme.textSecondaryLight,
                     ),
                   ),
                 ],
@@ -865,7 +1005,9 @@ class DashboardScreen extends StatelessWidget {
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 12,
-                    color: isDark ? AppTheme.primaryGreen : AppTheme.primaryNavy,
+                    color: isDark
+                        ? AppTheme.primaryGreen
+                        : AppTheme.primaryNavy,
                   ),
                 ),
             ],
@@ -879,13 +1021,19 @@ class DashboardScreen extends StatelessWidget {
                     'No active savings goals set. Tap to start building your emergency fund or target purchase.',
                     style: TextStyle(
                       fontSize: 12,
-                      color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                      color: isDark
+                          ? AppTheme.textSecondaryDark
+                          : AppTheme.textSecondaryLight,
                       height: 1.4,
                     ),
                   ),
                 ),
                 const SizedBox(width: 8),
-                const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppTheme.primaryGreen),
+                const Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 14,
+                  color: AppTheme.primaryGreen,
+                ),
               ],
             ),
           ] else ...[
@@ -894,7 +1042,9 @@ class DashboardScreen extends StatelessWidget {
               child: LinearProgressIndicator(
                 value: percent,
                 minHeight: 8,
-                backgroundColor: isDark ? AppTheme.borderPrimary : const Color(0xFFF1F5F9),
+                backgroundColor: isDark
+                    ? AppTheme.borderPrimary
+                    : const Color(0xFFF1F5F9),
                 valueColor: const AlwaysStoppedAnimation<Color>(
                   AppTheme.primaryGreen,
                 ),
@@ -916,7 +1066,9 @@ class DashboardScreen extends StatelessWidget {
                   'Target: ${CurrencyFormatter.formatCents(target)}',
                   style: TextStyle(
                     fontSize: 12,
-                    color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                    color: isDark
+                        ? AppTheme.textSecondaryDark
+                        : AppTheme.textSecondaryLight,
                   ),
                 ),
               ],
@@ -938,13 +1090,15 @@ class DashboardScreen extends StatelessWidget {
     final amountColor = isExpense
         ? AppTheme.expenseRed
         : isIncome
-            ? AppTheme.incomeGreen
-            : AppTheme.transferBlue;
+        ? AppTheme.incomeGreen
+        : AppTheme.transferBlue;
 
     final prefix = isExpense ? '-' : (isIncome ? '+' : '');
 
     // Category icon badge lookup
-    final cat = tx.categoryId != null ? summary.categoryMap[tx.categoryId] : null;
+    final cat = tx.categoryId != null
+        ? summary.categoryMap[tx.categoryId]
+        : null;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
@@ -960,9 +1114,13 @@ class DashboardScreen extends StatelessWidget {
                 height: 44,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isDark ? AppTheme.elevatedCharcoal : const Color(0xFFE2F4EE),
+                  color: isDark
+                      ? AppTheme.elevatedCharcoal
+                      : const Color(0xFFE2F4EE),
                   border: Border.all(
-                    color: isDark ? AppTheme.borderPrimary : const Color(0xFFC7EADB),
+                    color: isDark
+                        ? AppTheme.borderPrimary
+                        : const Color(0xFFC7EADB),
                     width: 1,
                   ),
                 ),
@@ -981,9 +1139,13 @@ class DashboardScreen extends StatelessWidget {
                 height: 44,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isDark ? AppTheme.elevatedCharcoal : const Color(0xFFE2F4EE),
+                  color: isDark
+                      ? AppTheme.elevatedCharcoal
+                      : const Color(0xFFE2F4EE),
                   border: Border.all(
-                    color: isDark ? AppTheme.borderPrimary : const Color(0xFFC7EADB),
+                    color: isDark
+                        ? AppTheme.borderPrimary
+                        : const Color(0xFFC7EADB),
                     width: 1,
                   ),
                 ),
@@ -992,8 +1154,8 @@ class DashboardScreen extends StatelessWidget {
                     isExpense
                         ? Icons.arrow_upward_rounded
                         : isIncome
-                            ? Icons.arrow_downward_rounded
-                            : Icons.swap_horiz_rounded,
+                        ? Icons.arrow_downward_rounded
+                        : Icons.swap_horiz_rounded,
                     color: amountColor,
                     size: 20,
                   ),
@@ -1020,7 +1182,9 @@ class DashboardScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w500,
-                      color: isDark ? AppTheme.secondaryText : AppTheme.textSecondaryLight,
+                      color: isDark
+                          ? AppTheme.secondaryText
+                          : AppTheme.textSecondaryLight,
                     ),
                   ),
                 ],
@@ -1060,10 +1224,18 @@ class DashboardScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: isDark ? AppTheme.elevatedCharcoal : const Color(0xFFF1F5F9),
+              color: isDark
+                  ? AppTheme.elevatedCharcoal
+                  : const Color(0xFFF1F5F9),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, size: 36, color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight),
+            child: Icon(
+              icon,
+              size: 36,
+              color: isDark
+                  ? AppTheme.textSecondaryDark
+                  : AppTheme.textSecondaryLight,
+            ),
           ),
           const SizedBox(height: 14),
           Text(
@@ -1078,7 +1250,9 @@ class DashboardScreen extends StatelessWidget {
             description,
             textAlign: TextAlign.center,
             style: theme.textTheme.bodySmall?.copyWith(
-              color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+              color: isDark
+                  ? AppTheme.textSecondaryDark
+                  : AppTheme.textSecondaryLight,
               height: 1.4,
             ),
           ),
@@ -1091,7 +1265,9 @@ class DashboardScreen extends StatelessWidget {
               backgroundColor: AppTheme.primaryGreen,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
               elevation: 0,
             ),
           ),
@@ -1100,4 +1276,3 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 }
-

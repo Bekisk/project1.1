@@ -11,17 +11,20 @@ class UserProfileProvider extends ChangeNotifier {
   bool _hasExistingFinancialData = false;
 
   UserProfileProvider({ProfilePhotoService? photoService})
-      : _photoService = photoService ?? ProfilePhotoService();
+    : _photoService = photoService ?? ProfilePhotoService();
 
   UserProfile? get profile => _profile;
   bool get isLoading => _isLoading;
   bool get isOnboardingCompleted => _profile?.onboardingCompleted ?? false;
   bool get hasProfile => _profile != null;
   bool get hasExistingFinancialData => _hasExistingFinancialData;
-  String get displayName => _profile?.displayName.isNotEmpty == true ? _profile!.displayName : 'Friend';
+  String get displayName => _profile?.displayName.isNotEmpty == true
+      ? _profile!.displayName
+      : 'Friend';
   String? get profileImagePath => _profile?.profileImagePath;
   String? get mainAccountId => _profile?.mainAccountId;
-  String? get designatedSavingsAccountId => _profile?.designatedSavingsAccountId;
+  String? get designatedSavingsAccountId =>
+      _profile?.designatedSavingsAccountId;
 
   Future<void> loadProfile() async {
     _isLoading = true;
@@ -39,17 +42,24 @@ class UserProfileProvider extends ChangeNotifier {
       }
 
       // 2. Check if there are existing transactions, budgets, or savings goals
-      final txCount = Sqflite.firstIntValue(
-        await db.rawQuery('SELECT COUNT(*) FROM transactions'),
-      ) ?? 0;
-      final budgetCount = Sqflite.firstIntValue(
-        await db.rawQuery('SELECT COUNT(*) FROM budgets'),
-      ) ?? 0;
-      final goalsCount = Sqflite.firstIntValue(
-        await db.rawQuery('SELECT COUNT(*) FROM savings_goals'),
-      ) ?? 0;
+      final txCount =
+          Sqflite.firstIntValue(
+            await db.rawQuery('SELECT COUNT(*) FROM transactions'),
+          ) ??
+          0;
+      final budgetCount =
+          Sqflite.firstIntValue(
+            await db.rawQuery('SELECT COUNT(*) FROM budgets'),
+          ) ??
+          0;
+      final goalsCount =
+          Sqflite.firstIntValue(
+            await db.rawQuery('SELECT COUNT(*) FROM savings_goals'),
+          ) ??
+          0;
 
-      _hasExistingFinancialData = (txCount > 0 || budgetCount > 0 || goalsCount > 0);
+      _hasExistingFinancialData =
+          (txCount > 0 || budgetCount > 0 || goalsCount > 0);
     } catch (e) {
       debugPrint('Error loading user profile: $e');
     } finally {
@@ -96,7 +106,8 @@ class UserProfileProvider extends ChangeNotifier {
   /// Updates profile image
   Future<void> updateProfileImage(String newPath) async {
     if (_profile == null) return;
-    if (_profile!.profileImagePath != null && _profile!.profileImagePath != newPath) {
+    if (_profile!.profileImagePath != null &&
+        _profile!.profileImagePath != newPath) {
       await _photoService.deleteManagedPhoto(_profile!.profileImagePath);
     }
     final updated = _profile!.copyWith(profileImagePath: newPath);

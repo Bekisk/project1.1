@@ -26,7 +26,8 @@ class FintechCard extends StatefulWidget {
   State<FintechCard> createState() => _FintechCardState();
 }
 
-class _FintechCardState extends State<FintechCard> with SingleTickerProviderStateMixin {
+class _FintechCardState extends State<FintechCard>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
 
@@ -37,9 +38,10 @@ class _FintechCardState extends State<FintechCard> with SingleTickerProviderStat
       vsync: this,
       duration: const Duration(milliseconds: 100),
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.98).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.98,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -65,16 +67,18 @@ class _FintechCardState extends State<FintechCard> with SingleTickerProviderStat
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final defaultBg = widget.backgroundColor ??
+    final defaultBg =
+        widget.backgroundColor ??
         (isDark ? AppTheme.cardCharcoal : Colors.white);
-    final defaultBorder = widget.border ??
+    final defaultBorder =
+        widget.border ??
         Border.all(
           color: isDark ? AppTheme.borderPrimary : const Color(0xFFE5E7EB),
           width: 1,
         );
 
-    final defaultGradient = widget.gradient ??
-        (isDark ? AppTheme.glassCardGradient : null);
+    final defaultGradient =
+        widget.gradient ?? (isDark ? AppTheme.glassCardGradient : null);
 
     final content = AnimatedBuilder(
       animation: _scaleAnimation,

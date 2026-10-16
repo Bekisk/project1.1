@@ -19,11 +19,31 @@ class FloatingGlassNavBar extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final navItems = [
-      _NavItemData(icon: Icons.home_rounded, unselectedIcon: Icons.home_outlined, label: 'Home'),
-      _NavItemData(icon: Icons.bar_chart_rounded, unselectedIcon: Icons.bar_chart_outlined, label: 'Analytics'),
-      _NavItemData(icon: Icons.receipt_long_rounded, unselectedIcon: Icons.receipt_long_outlined, label: 'History'),
-      _NavItemData(icon: Icons.savings_rounded, unselectedIcon: Icons.savings_outlined, label: 'Goals'),
-      _NavItemData(icon: Icons.person_rounded, unselectedIcon: Icons.person_outline_rounded, label: 'Profile'),
+      _NavItemData(
+        icon: Icons.home_rounded,
+        unselectedIcon: Icons.home_outlined,
+        label: 'Home',
+      ),
+      _NavItemData(
+        icon: Icons.bar_chart_rounded,
+        unselectedIcon: Icons.bar_chart_outlined,
+        label: 'Analytics',
+      ),
+      _NavItemData(
+        icon: Icons.receipt_long_rounded,
+        unselectedIcon: Icons.receipt_long_outlined,
+        label: 'History',
+      ),
+      _NavItemData(
+        icon: Icons.savings_rounded,
+        unselectedIcon: Icons.savings_outlined,
+        label: 'Goals',
+      ),
+      _NavItemData(
+        icon: Icons.person_rounded,
+        unselectedIcon: Icons.person_outline_rounded,
+        label: 'Profile',
+      ),
     ];
 
     return SafeArea(
@@ -75,15 +95,19 @@ class FloatingGlassNavBar extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: isSelected
                             ? (isDark
-                                ? const Color(0xFF202020)
-                                : AppTheme.primaryAccent.withValues(alpha: 0.18))
+                                  ? const Color(0xFF202020)
+                                  : AppTheme.primaryAccent.withValues(
+                                      alpha: 0.18,
+                                    ))
                             : Colors.transparent,
                         shape: BoxShape.circle,
                         border: isSelected
                             ? Border.all(
                                 color: isDark
                                     ? AppTheme.borderTertiary
-                                    : AppTheme.primaryAccent.withValues(alpha: 0.6),
+                                    : AppTheme.primaryAccent.withValues(
+                                        alpha: 0.6,
+                                      ),
                                 width: 1.2,
                               )
                             : null,
@@ -92,8 +116,12 @@ class FloatingGlassNavBar extends StatelessWidget {
                         isSelected ? item.icon : item.unselectedIcon,
                         size: 22,
                         color: isSelected
-                            ? (isDark ? AppTheme.pureWhite : const Color(0xFF065F46))
-                            : (isDark ? AppTheme.tertiaryGray : const Color(0xFF6B8B82)),
+                            ? (isDark
+                                  ? AppTheme.pureWhite
+                                  : const Color(0xFF065F46))
+                            : (isDark
+                                  ? AppTheme.tertiaryGray
+                                  : const Color(0xFF6B8B82)),
                       ),
                     ),
                   ),

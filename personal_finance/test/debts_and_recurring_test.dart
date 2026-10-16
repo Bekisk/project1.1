@@ -43,51 +43,57 @@ void main() {
   });
 
   group('FEATURE 4: Recurring Expenses & Subscription Tests', () {
-    test('Monthly commitment computes normalized fixed costs across frequencies', () {
-      final now = DateTime.now();
-      final weeklyGym = RecurringSchedule(
-        id: 'rec-1',
-        name: 'Personal Trainer',
-        amount: 25000, // 250.00 ETB / week
-        accountId: 'acc-1',
-        frequency: RecurringFrequency.weekly,
-        startDate: now,
-        nextOccurrence: now.add(const Duration(days: 7)),
-        createdAt: now,
-        updatedAt: now,
-      );
+    test(
+      'Monthly commitment computes normalized fixed costs across frequencies',
+      () {
+        final now = DateTime.now();
+        final weeklyGym = RecurringSchedule(
+          id: 'rec-1',
+          name: 'Personal Trainer',
+          amount: 25000, // 250.00 ETB / week
+          accountId: 'acc-1',
+          frequency: RecurringFrequency.weekly,
+          startDate: now,
+          nextOccurrence: now.add(const Duration(days: 7)),
+          createdAt: now,
+          updatedAt: now,
+        );
 
-      final monthlyNet = RecurringSchedule(
-        id: 'rec-2',
-        name: 'Fiber Internet',
-        amount: 150000, // 1500.00 ETB / month
-        accountId: 'acc-1',
-        frequency: RecurringFrequency.monthly,
-        startDate: now,
-        nextOccurrence: now.add(const Duration(days: 30)),
-        createdAt: now,
-        updatedAt: now,
-      );
+        final monthlyNet = RecurringSchedule(
+          id: 'rec-2',
+          name: 'Fiber Internet',
+          amount: 150000, // 1500.00 ETB / month
+          accountId: 'acc-1',
+          frequency: RecurringFrequency.monthly,
+          startDate: now,
+          nextOccurrence: now.add(const Duration(days: 30)),
+          createdAt: now,
+          updatedAt: now,
+        );
 
-      final yearlyHosting = RecurringSchedule(
-        id: 'rec-3',
-        name: 'Domain & Hosting',
-        amount: 120000, // 1200.00 ETB / year -> 100.00 ETB / month
-        accountId: 'acc-1',
-        frequency: RecurringFrequency.yearly,
-        startDate: now,
-        nextOccurrence: now.add(const Duration(days: 365)),
-        createdAt: now,
-        updatedAt: now,
-      );
+        final yearlyHosting = RecurringSchedule(
+          id: 'rec-3',
+          name: 'Domain & Hosting',
+          amount: 120000, // 1200.00 ETB / year -> 100.00 ETB / month
+          accountId: 'acc-1',
+          frequency: RecurringFrequency.yearly,
+          startDate: now,
+          nextOccurrence: now.add(const Duration(days: 365)),
+          createdAt: now,
+          updatedAt: now,
+        );
 
-      expect(monthlyNet.monthlyCostCents, 150000);
-      expect(yearlyHosting.monthlyCostCents, 10000);
-      // Weekly: (25000 * 52 / 12) = 108333 cents
-      expect(weeklyGym.monthlyCostCents, (25000 * 52 / 12).round());
+        expect(monthlyNet.monthlyCostCents, 150000);
+        expect(yearlyHosting.monthlyCostCents, 10000);
+        // Weekly: (25000 * 52 / 12) = 108333 cents
+        expect(weeklyGym.monthlyCostCents, (25000 * 52 / 12).round());
 
-      final total = weeklyGym.monthlyCostCents + monthlyNet.monthlyCostCents + yearlyHosting.monthlyCostCents;
-      expect(total, 150000 + 10000 + (25000 * 52 / 12).round());
-    });
+        final total =
+            weeklyGym.monthlyCostCents +
+            monthlyNet.monthlyCostCents +
+            yearlyHosting.monthlyCostCents;
+        expect(total, 150000 + 10000 + (25000 * 52 / 12).round());
+      },
+    );
   });
 }

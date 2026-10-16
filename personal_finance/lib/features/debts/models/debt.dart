@@ -1,13 +1,9 @@
 enum DebtType {
-  iOwe,    // User owes money to someone (e.g. payable)
-  owesMe,  // Someone owes money to user (e.g. receivable)
+  iOwe, // User owes money to someone (e.g. payable)
+  owesMe, // Someone owes money to user (e.g. receivable)
 }
 
-enum DebtStatus {
-  unpaid,
-  partial,
-  settled,
-}
+enum DebtStatus { unpaid, partial, settled }
 
 class Debt {
   final String id;
@@ -38,7 +34,8 @@ class Debt {
     required this.updatedAt,
   });
 
-  int get remainingAmount => (totalAmount - settledAmount).clamp(0, totalAmount);
+  int get remainingAmount =>
+      (totalAmount - settledAmount).clamp(0, totalAmount);
 
   double get progressPercentage {
     if (totalAmount <= 0) return 1.0;
@@ -69,8 +66,11 @@ class Debt {
   }
 
   factory Debt.fromMap(Map<String, dynamic> map) {
-    final rawType = (map['type'] ?? map['debt_type'] ?? 'I_OWE').toString().toUpperCase();
-    final debtType = (rawType == 'OWES_ME' || rawType == 'LENT' || rawType == 'RECEIVABLE')
+    final rawType = (map['type'] ?? map['debt_type'] ?? 'I_OWE')
+        .toString()
+        .toUpperCase();
+    final debtType =
+        (rawType == 'OWES_ME' || rawType == 'LENT' || rawType == 'RECEIVABLE')
         ? DebtType.owesMe
         : DebtType.iOwe;
 
@@ -84,16 +84,22 @@ class Debt {
       debtStatus = DebtStatus.unpaid;
     }
 
-    final total = (map['total_amount'] as int?) ?? (map['original_amount'] as int?) ?? 0;
+    final total =
+        (map['total_amount'] as int?) ?? (map['original_amount'] as int?) ?? 0;
     final settled = (map['settled_amount'] as int?) ?? 0;
 
     return Debt(
       id: map['id'] as String,
-      personName: (map['person_name'] as String?) ?? (map['name'] as String?) ?? 'Unknown Person',
+      personName:
+          (map['person_name'] as String?) ??
+          (map['name'] as String?) ??
+          'Unknown Person',
       type: debtType,
       totalAmount: total,
       settledAmount: settled,
-      dueDate: map['due_date'] != null ? DateTime.tryParse(map['due_date'] as String) : null,
+      dueDate: map['due_date'] != null
+          ? DateTime.tryParse(map['due_date'] as String)
+          : null,
       startDate: map['start_date'] != null
           ? DateTime.tryParse(map['start_date'] as String) ?? DateTime.now()
           : DateTime.now(),

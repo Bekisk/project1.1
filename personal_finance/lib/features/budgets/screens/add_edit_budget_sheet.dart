@@ -74,42 +74,61 @@ class _AddEditBudgetSheetState extends State<AddEditBudgetSheet> {
     final edit = widget.budgetToEdit;
 
     _budgetType = edit?.budgetType ?? BudgetType.category;
-    _frequency = edit?.frequency ?? widget.initialFrequency ?? BudgetFrequency.monthly;
+    _frequency =
+        edit?.frequency ?? widget.initialFrequency ?? BudgetFrequency.monthly;
     _selectedCategoryId = edit?.categoryId;
     _selectedAccountId = edit?.accountId;
     _warningThreshold = edit?.warningThreshold ?? 0.8;
 
-    _nameController = TextEditingController(text: edit?.name ?? widget.initialName ?? '');
+    _nameController = TextEditingController(
+      text: edit?.name ?? widget.initialName ?? '',
+    );
     _amountController = TextEditingController(
       text: edit != null
           ? (edit.amount / 100).toStringAsFixed(0)
           : (widget.initialAmount != null
-              ? (widget.initialAmount! / 100).toStringAsFixed(0)
-              : ''),
+                ? (widget.initialAmount! / 100).toStringAsFixed(0)
+                : ''),
     );
     _notesController = TextEditingController(text: edit?.notes ?? '');
 
     final now = DateTime.now();
-    _startDate = edit?.periodStart.toLocal() ?? DateTime(now.year, now.month, 1);
-    final nextMonth = now.month == 12 ? DateTime(now.year + 1, 1, 1) : DateTime(now.year, now.month + 1, 1);
-    _endDate = edit?.periodEnd.toLocal() ?? nextMonth.subtract(const Duration(milliseconds: 1));
+    _startDate =
+        edit?.periodStart.toLocal() ?? DateTime(now.year, now.month, 1);
+    final nextMonth = now.month == 12
+        ? DateTime(now.year + 1, 1, 1)
+        : DateTime(now.year, now.month + 1, 1);
+    _endDate =
+        edit?.periodEnd.toLocal() ??
+        nextMonth.subtract(const Duration(milliseconds: 1));
 
     // Auto-select template category or first expense category if category budget
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final categories = context.read<BudgetsProvider>().categories;
-      final List<Category> expenseCats =
-          categories.where((Category c) => c.transactionType == 'expense').toList();
-      if (_budgetType == BudgetType.category && _selectedCategoryId == null && expenseCats.isNotEmpty) {
+      final List<Category> expenseCats = categories
+          .where((Category c) => c.transactionType == 'expense')
+          .toList();
+      if (_budgetType == BudgetType.category &&
+          _selectedCategoryId == null &&
+          expenseCats.isNotEmpty) {
         setState(() {
           if (widget.initialCategoryName != null) {
-            final matched = expenseCats.where((c) =>
-                c.name.toLowerCase().contains(widget.initialCategoryName!.toLowerCase()));
-            _selectedCategoryId = matched.isNotEmpty ? matched.first.id : expenseCats.first.id;
+            final matched = expenseCats.where(
+              (c) => c.name.toLowerCase().contains(
+                widget.initialCategoryName!.toLowerCase(),
+              ),
+            );
+            _selectedCategoryId = matched.isNotEmpty
+                ? matched.first.id
+                : expenseCats.first.id;
           } else {
             _selectedCategoryId = expenseCats.first.id;
           }
           if (_nameController.text.trim().isEmpty) {
-            final selected = expenseCats.firstWhere((c) => c.id == _selectedCategoryId, orElse: () => expenseCats.first);
+            final selected = expenseCats.firstWhere(
+              (c) => c.id == _selectedCategoryId,
+              orElse: () => expenseCats.first,
+            );
             _nameController.text = '${selected.name} Budget';
           }
         });
@@ -133,11 +152,21 @@ class _AddEditBudgetSheetState extends State<AddEditBudgetSheet> {
         case BudgetFrequency.weekly:
           final weekday = now.weekday;
           _startDate = DateTime(now.year, now.month, now.day - (weekday - 1));
-          _endDate = DateTime(_startDate.year, _startDate.month, _startDate.day + 6, 23, 59, 59, 999);
+          _endDate = DateTime(
+            _startDate.year,
+            _startDate.month,
+            _startDate.day + 6,
+            23,
+            59,
+            59,
+            999,
+          );
           break;
         case BudgetFrequency.monthly:
           _startDate = DateTime(now.year, now.month, 1);
-          final nextM = now.month == 12 ? DateTime(now.year + 1, 1, 1) : DateTime(now.year, now.month + 1, 1);
+          final nextM = now.month == 12
+              ? DateTime(now.year + 1, 1, 1)
+              : DateTime(now.year, now.month + 1, 1);
           _endDate = nextM.subtract(const Duration(milliseconds: 1));
           break;
         case BudgetFrequency.yearly:
@@ -161,7 +190,15 @@ class _AddEditBudgetSheetState extends State<AddEditBudgetSheet> {
     if (picked != null) {
       setState(() {
         _startDate = picked.start;
-        _endDate = DateTime(picked.end.year, picked.end.month, picked.end.day, 23, 59, 59, 999);
+        _endDate = DateTime(
+          picked.end.year,
+          picked.end.month,
+          picked.end.day,
+          23,
+          59,
+          59,
+          999,
+        );
         _frequency = BudgetFrequency.custom;
       });
     }
@@ -173,14 +210,18 @@ class _AddEditBudgetSheetState extends State<AddEditBudgetSheet> {
 
     if (_budgetType == BudgetType.category && _selectedCategoryId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select an expense category for this budget.')),
+        const SnackBar(
+          content: Text('Please select an expense category for this budget.'),
+        ),
       );
       return;
     }
 
     if (_endDate.isBefore(_startDate)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('End date cannot be earlier than start date.')),
+        const SnackBar(
+          content: Text('End date cannot be earlier than start date.'),
+        ),
       );
       return;
     }
@@ -190,7 +231,9 @@ class _AddEditBudgetSheetState extends State<AddEditBudgetSheet> {
 
     if (amountCents <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Budget limit must be greater than zero.')),
+        const SnackBar(
+          content: Text('Budget limit must be greater than zero.'),
+        ),
       );
       return;
     }
@@ -206,9 +249,13 @@ class _AddEditBudgetSheetState extends State<AddEditBudgetSheet> {
 
       final budget = Budget(
         id: budgetId,
-        name: _nameController.text.trim().isEmpty ? 'Budget' : _nameController.text.trim(),
+        name: _nameController.text.trim().isEmpty
+            ? 'Budget'
+            : _nameController.text.trim(),
         budgetType: _budgetType,
-        categoryId: _budgetType == BudgetType.category ? _selectedCategoryId : null,
+        categoryId: _budgetType == BudgetType.category
+            ? _selectedCategoryId
+            : null,
         amount: amountCents,
         periodStart: _startDate,
         periodEnd: _endDate,
@@ -216,12 +263,17 @@ class _AddEditBudgetSheetState extends State<AddEditBudgetSheet> {
         accountId: _selectedAccountId,
         warningThreshold: _warningThreshold,
         isArchived: false,
-        notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+        notes: _notesController.text.trim().isEmpty
+            ? null
+            : _notesController.text.trim(),
         createdAt: createdAt,
         updatedAt: now,
       );
 
-      final success = await context.read<BudgetsProvider>().saveBudget(budget, isEditing: _isEditing);
+      final success = await context.read<BudgetsProvider>().saveBudget(
+        budget,
+        isEditing: _isEditing,
+      );
 
       if (mounted) {
         if (success) {
@@ -230,12 +282,22 @@ class _AddEditBudgetSheetState extends State<AddEditBudgetSheet> {
             SnackBar(
               backgroundColor: AppTheme.primaryGreen,
               behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               content: Row(
                 children: [
-                  const Icon(Icons.check_circle_rounded, color: Colors.white, size: 20),
+                  const Icon(
+                    Icons.check_circle_rounded,
+                    color: Colors.white,
+                    size: 20,
+                  ),
                   const SizedBox(width: 8),
-                  Text(_isEditing ? 'Budget updated successfully!' : 'Budget created successfully!'),
+                  Text(
+                    _isEditing
+                        ? 'Budget updated successfully!'
+                        : 'Budget created successfully!',
+                  ),
                 ],
               ),
             ),
@@ -250,9 +312,8 @@ class _AddEditBudgetSheetState extends State<AddEditBudgetSheet> {
     } catch (e) {
       if (mounted) {
         setState(() => _isSubmitting = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     }
   }
@@ -264,8 +325,9 @@ class _AddEditBudgetSheetState extends State<AddEditBudgetSheet> {
     final provider = context.watch<BudgetsProvider>();
     final mediaQuery = MediaQuery.of(context);
 
-    final List<Category> expenseCategories =
-        provider.categories.where((Category c) => c.transactionType == 'expense').toList();
+    final List<Category> expenseCategories = provider.categories
+        .where((Category c) => c.transactionType == 'expense')
+        .toList();
 
     return Container(
       padding: EdgeInsets.only(
@@ -322,14 +384,24 @@ class _AddEditBudgetSheetState extends State<AddEditBudgetSheet> {
                     Container(
                       padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+                        color: isDark
+                            ? const Color(0xFF1E293B)
+                            : const Color(0xFFF1F5F9),
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: Row(
                         children: [
-                          _buildTypeTab('Category', BudgetType.category, isDark),
+                          _buildTypeTab(
+                            'Category',
+                            BudgetType.category,
+                            isDark,
+                          ),
                           _buildTypeTab('Overall', BudgetType.overall, isDark),
-                          _buildTypeTab('Custom', BudgetType.customPeriod, isDark),
+                          _buildTypeTab(
+                            'Custom',
+                            BudgetType.customPeriod,
+                            isDark,
+                          ),
                         ],
                       ),
                     ),
@@ -341,26 +413,44 @@ class _AddEditBudgetSheetState extends State<AddEditBudgetSheet> {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
-                        color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                        color: isDark
+                            ? AppTheme.textSecondaryDark
+                            : AppTheme.textSecondaryLight,
                       ),
                     ),
                     const SizedBox(height: 6),
                     TextFormField(
                       controller: _amountController,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
                       autofocus: !_isEditing,
-                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
                       decoration: const InputDecoration(
                         prefixIcon: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                          child: Text('ብር', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 12,
+                          ),
+                          child: Text(
+                            'ብር',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                         hintText: '0.00',
                       ),
                       validator: (val) {
-                        if (val == null || val.trim().isEmpty) return 'Enter budget amount';
+                        if (val == null || val.trim().isEmpty)
+                          return 'Enter budget amount';
                         final num = double.tryParse(val.trim());
-                        if (num == null || num <= 0) return 'Must be greater than zero';
+                        if (num == null || num <= 0)
+                          return 'Must be greater than zero';
                         return null;
                       },
                     ),
@@ -372,7 +462,9 @@ class _AddEditBudgetSheetState extends State<AddEditBudgetSheet> {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
-                        color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                        color: isDark
+                            ? AppTheme.textSecondaryDark
+                            : AppTheme.textSecondaryLight,
                       ),
                     ),
                     const SizedBox(height: 6),
@@ -382,7 +474,9 @@ class _AddEditBudgetSheetState extends State<AddEditBudgetSheet> {
                         hintText: 'e.g. Monthly Groceries, Dining Out',
                         prefixIcon: Icon(Icons.label_outline_rounded),
                       ),
-                      validator: (val) => val == null || val.trim().isEmpty ? 'Enter name' : null,
+                      validator: (val) => val == null || val.trim().isEmpty
+                          ? 'Enter name'
+                          : null,
                     ),
                     const SizedBox(height: 16),
 
@@ -393,7 +487,9 @@ class _AddEditBudgetSheetState extends State<AddEditBudgetSheet> {
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
-                          color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                          color: isDark
+                              ? AppTheme.textSecondaryDark
+                              : AppTheme.textSecondaryLight,
                         ),
                       ),
                       const SizedBox(height: 6),
@@ -403,15 +499,24 @@ class _AddEditBudgetSheetState extends State<AddEditBudgetSheet> {
                           prefixIcon: Icon(Icons.category_outlined),
                         ),
                         items: expenseCategories.map((Category c) {
-                          return DropdownMenuItem<String>(value: c.id, child: Text(c.name));
+                          return DropdownMenuItem<String>(
+                            value: c.id,
+                            child: Text(c.name),
+                          );
                         }).toList(),
                         onChanged: (val) {
                           setState(() {
                             _selectedCategoryId = val;
                             if (val != null) {
-                              final match = expenseCategories.firstWhere((c) => c.id == val);
+                              final match = expenseCategories.firstWhere(
+                                (c) => c.id == val,
+                              );
                               if (_nameController.text.trim().isEmpty ||
-                                  expenseCategories.any((c) => '${c.name} Budget' == _nameController.text.trim())) {
+                                  expenseCategories.any(
+                                    (c) =>
+                                        '${c.name} Budget' ==
+                                        _nameController.text.trim(),
+                                  )) {
                                 _nameController.text = '${match.name} Budget';
                               }
                             }
@@ -427,28 +532,52 @@ class _AddEditBudgetSheetState extends State<AddEditBudgetSheet> {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
-                        color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                        color: isDark
+                            ? AppTheme.textSecondaryDark
+                            : AppTheme.textSecondaryLight,
                       ),
                     ),
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        _buildFreqChip('Monthly', BudgetFrequency.monthly, isDark),
+                        _buildFreqChip(
+                          'Monthly',
+                          BudgetFrequency.monthly,
+                          isDark,
+                        ),
                         const SizedBox(width: 8),
-                        _buildFreqChip('Weekly', BudgetFrequency.weekly, isDark),
+                        _buildFreqChip(
+                          'Weekly',
+                          BudgetFrequency.weekly,
+                          isDark,
+                        ),
                         const SizedBox(width: 8),
-                        _buildFreqChip('Yearly', BudgetFrequency.yearly, isDark),
+                        _buildFreqChip(
+                          'Yearly',
+                          BudgetFrequency.yearly,
+                          isDark,
+                        ),
                         const SizedBox(width: 8),
-                        _buildFreqChip('Custom', BudgetFrequency.custom, isDark, onTapOverride: _pickCustomDates),
+                        _buildFreqChip(
+                          'Custom',
+                          BudgetFrequency.custom,
+                          isDark,
+                          onTapOverride: _pickCustomDates,
+                        ),
                       ],
                     ),
                     const SizedBox(height: 8),
 
                     // Active Range Details
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 10,
+                      ),
                       decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+                        color: isDark
+                            ? const Color(0xFF1E293B)
+                            : const Color(0xFFF1F5F9),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Row(
@@ -456,18 +585,27 @@ class _AddEditBudgetSheetState extends State<AddEditBudgetSheet> {
                         children: [
                           Row(
                             children: [
-                              const Icon(Icons.calendar_today_rounded, size: 16, color: AppTheme.primaryGreen),
+                              const Icon(
+                                Icons.calendar_today_rounded,
+                                size: 16,
+                                color: AppTheme.primaryGreen,
+                              ),
                               const SizedBox(width: 8),
                               Text(
                                 '${DateFormat('MMM d, yyyy').format(_startDate)} - ${DateFormat('MMM d, yyyy').format(_endDate)}',
-                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ],
                           ),
                           if (_frequency == BudgetFrequency.custom)
                             TextButton(
                               onPressed: _pickCustomDates,
-                              style: TextButton.styleFrom(visualDensity: VisualDensity.compact),
+                              style: TextButton.styleFrom(
+                                visualDensity: VisualDensity.compact,
+                              ),
                               child: const Text('Change'),
                             ),
                         ],
@@ -481,7 +619,9 @@ class _AddEditBudgetSheetState extends State<AddEditBudgetSheet> {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
-                        color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                        color: isDark
+                            ? AppTheme.textSecondaryDark
+                            : AppTheme.textSecondaryLight,
                       ),
                     ),
                     Slider(
@@ -491,7 +631,8 @@ class _AddEditBudgetSheetState extends State<AddEditBudgetSheet> {
                       divisions: 5,
                       activeColor: AppTheme.primaryGreen,
                       label: '${(_warningThreshold * 100).toInt()}%',
-                      onChanged: (val) => setState(() => _warningThreshold = val),
+                      onChanged: (val) =>
+                          setState(() => _warningThreshold = val),
                     ),
                     const SizedBox(height: 12),
 
@@ -501,14 +642,18 @@ class _AddEditBudgetSheetState extends State<AddEditBudgetSheet> {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
-                        color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                        color: isDark
+                            ? AppTheme.textSecondaryDark
+                            : AppTheme.textSecondaryLight,
                       ),
                     ),
                     const SizedBox(height: 6),
                     TextFormField(
                       controller: _notesController,
                       maxLines: 2,
-                      decoration: const InputDecoration(hintText: 'e.g. Keep groceries within limit this month'),
+                      decoration: const InputDecoration(
+                        hintText: 'e.g. Keep groceries within limit this month',
+                      ),
                     ),
                     const SizedBox(height: 24),
                   ],
@@ -523,15 +668,22 @@ class _AddEditBudgetSheetState extends State<AddEditBudgetSheet> {
               child: FilledButton(
                 onPressed: _isSubmitting ? null : _submit,
                 style: FilledButton.styleFrom(
-                  backgroundColor: isDark ? AppTheme.primaryGreen : AppTheme.primaryNavy,
+                  backgroundColor: isDark
+                      ? AppTheme.primaryGreen
+                      : AppTheme.primaryNavy,
                   foregroundColor: isDark ? AppTheme.deepNavy : Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                 ),
                 child: _isSubmitting
                     ? const SizedBox(
                         width: 22,
                         height: 22,
-                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
                       )
                     : Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -540,7 +692,10 @@ class _AddEditBudgetSheetState extends State<AddEditBudgetSheet> {
                           const SizedBox(width: 8),
                           Text(
                             _isEditing ? 'Update Budget' : 'Save Budget',
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ],
                       ),
@@ -590,7 +745,9 @@ class _AddEditBudgetSheetState extends State<AddEditBudgetSheet> {
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                 color: isSelected
                     ? (isDark ? Colors.white : AppTheme.primaryNavy)
-                    : (isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight),
+                    : (isDark
+                          ? AppTheme.textSecondaryDark
+                          : AppTheme.textSecondaryLight),
               ),
             ),
           ),
@@ -599,7 +756,12 @@ class _AddEditBudgetSheetState extends State<AddEditBudgetSheet> {
     );
   }
 
-  Widget _buildFreqChip(String label, BudgetFrequency freq, bool isDark, {VoidCallback? onTapOverride}) {
+  Widget _buildFreqChip(
+    String label,
+    BudgetFrequency freq,
+    bool isDark, {
+    VoidCallback? onTapOverride,
+  }) {
     final isSelected = _frequency == freq;
     return Expanded(
       child: GestureDetector(
@@ -632,7 +794,9 @@ class _AddEditBudgetSheetState extends State<AddEditBudgetSheet> {
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                 color: isSelected
                     ? AppTheme.primaryGreen
-                    : (isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight),
+                    : (isDark
+                          ? AppTheme.textSecondaryDark
+                          : AppTheme.textSecondaryLight),
               ),
             ),
           ),

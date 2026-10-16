@@ -16,9 +16,8 @@ class SmsReviewQueueScreen extends StatefulWidget {
   const SmsReviewQueueScreen({super.key});
 
   static void navigate(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const SmsReviewQueueScreen()),
-    );
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (_) => const SmsReviewQueueScreen()));
   }
 
   @override
@@ -58,9 +57,12 @@ class _SmsReviewQueueScreenState extends State<SmsReviewQueueScreen> {
   }
 
   Future<void> _confirmItem(SmsImportLog log) async {
-    String selectedAccountId = log.matchedAccountId ?? (_accounts.isNotEmpty ? _accounts.first.id : '');
+    String selectedAccountId =
+        log.matchedAccountId ??
+        (_accounts.isNotEmpty ? _accounts.first.id : '');
     String? selectedCategoryId;
-    final isIncome = log.transactionType.contains('incoming') ||
+    final isIncome =
+        log.transactionType.contains('incoming') ||
         log.transactionType.contains('deposit') ||
         log.transactionType.contains('interest');
 
@@ -69,7 +71,9 @@ class _SmsReviewQueueScreenState extends State<SmsReviewQueueScreen> {
         .toList();
 
     final TextEditingController descController = TextEditingController(
-      text: log.rawPreview.isNotEmpty ? log.rawPreview : '${log.sender} Transaction',
+      text: log.rawPreview.isNotEmpty
+          ? log.rawPreview
+          : '${log.sender} Transaction',
     );
     final TextEditingController merchantController = TextEditingController();
 
@@ -90,7 +94,9 @@ class _SmsReviewQueueScreenState extends State<SmsReviewQueueScreen> {
               ),
               decoration: BoxDecoration(
                 color: isDark ? AppTheme.cardCharcoal : Colors.white,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(28),
+                ),
                 border: Border.all(
                   color: isDark ? AppTheme.borderPrimary : Colors.transparent,
                   width: 1,
@@ -106,7 +112,9 @@ class _SmsReviewQueueScreenState extends State<SmsReviewQueueScreen> {
                         width: 40,
                         height: 4,
                         decoration: BoxDecoration(
-                          color: isDark ? AppTheme.disabledGray : Colors.grey[300],
+                          color: isDark
+                              ? AppTheme.disabledGray
+                              : Colors.grey[300],
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
@@ -114,14 +122,17 @@ class _SmsReviewQueueScreenState extends State<SmsReviewQueueScreen> {
                     const SizedBox(height: 16),
                     Text(
                       'Confirm & Record Transaction',
-                      style: Theme.of(modalCtx).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                      style: Theme.of(modalCtx).textTheme.titleLarge
+                          ?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       'Verify the details extracted from ${log.sender}.',
                       style: TextStyle(
                         fontSize: 13,
-                        color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                        color: isDark
+                            ? AppTheme.textSecondaryDark
+                            : AppTheme.textSecondaryLight,
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -136,22 +147,32 @@ class _SmsReviewQueueScreenState extends State<SmsReviewQueueScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                isIncome ? 'Incoming / Credit' : 'Outgoing / Debit',
+                                isIncome
+                                    ? 'Incoming / Credit'
+                                    : 'Outgoing / Debit',
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
-                                  color: isIncome ? AppTheme.incomeGreen : AppTheme.expenseRed,
+                                  color: isIncome
+                                      ? AppTheme.incomeGreen
+                                      : AppTheme.expenseRed,
                                 ),
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 CurrencyFormatter.formatCents(log.amountCents),
-                                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
+                                style: const TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w800,
+                                ),
                               ),
                             ],
                           ),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 6,
+                            ),
                             decoration: BoxDecoration(
                               color: AppTheme.accentAmber.withOpacity(0.15),
                               borderRadius: BorderRadius.circular(10),
@@ -171,23 +192,37 @@ class _SmsReviewQueueScreenState extends State<SmsReviewQueueScreen> {
                     const SizedBox(height: 16),
 
                     // Account selector
-                    const Text('Assign to Account', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                    const Text(
+                      'Assign to Account',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                     const SizedBox(height: 6),
                     DropdownButtonFormField<String>(
-                      value: _accounts.any((a) => a.id == selectedAccountId) ? selectedAccountId : null,
+                      value: _accounts.any((a) => a.id == selectedAccountId)
+                          ? selectedAccountId
+                          : null,
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: isDark ? AppTheme.inputCharcoal : const Color(0xFFF8FAFC),
+                        fillColor: isDark
+                            ? AppTheme.inputCharcoal
+                            : const Color(0xFFF8FAFC),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
                           borderSide: BorderSide(
-                            color: isDark ? AppTheme.borderPrimary : const Color(0xFFE2E8F0),
+                            color: isDark
+                                ? AppTheme.borderPrimary
+                                : const Color(0xFFE2E8F0),
                           ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
                           borderSide: BorderSide(
-                            color: isDark ? AppTheme.borderPrimary : const Color(0xFFE2E8F0),
+                            color: isDark
+                                ? AppTheme.borderPrimary
+                                : const Color(0xFFE2E8F0),
                           ),
                         ),
                       ),
@@ -198,60 +233,95 @@ class _SmsReviewQueueScreenState extends State<SmsReviewQueueScreen> {
                         );
                       }).toList(),
                       onChanged: (val) {
-                        if (val != null) setModalState(() => selectedAccountId = val);
+                        if (val != null) {
+                          setModalState(() => selectedAccountId = val);
+                        }
                       },
                     ),
                     const SizedBox(height: 14),
 
                     // Category selector
-                    const Text('Category (Optional)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                    const Text(
+                      'Category (Optional)',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                     const SizedBox(height: 6),
                     DropdownButtonFormField<String?>(
                       value: selectedCategoryId,
                       hint: const Text('Select a category'),
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: isDark ? AppTheme.inputCharcoal : const Color(0xFFF8FAFC),
+                        fillColor: isDark
+                            ? AppTheme.inputCharcoal
+                            : const Color(0xFFF8FAFC),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
                           borderSide: BorderSide(
-                            color: isDark ? AppTheme.borderPrimary : const Color(0xFFE2E8F0),
+                            color: isDark
+                                ? AppTheme.borderPrimary
+                                : const Color(0xFFE2E8F0),
                           ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
                           borderSide: BorderSide(
-                            color: isDark ? AppTheme.borderPrimary : const Color(0xFFE2E8F0),
+                            color: isDark
+                                ? AppTheme.borderPrimary
+                                : const Color(0xFFE2E8F0),
                           ),
                         ),
                       ),
                       items: [
-                        const DropdownMenuItem(value: null, child: Text('Uncategorized')),
-                        ...relevantCategories.map((c) => DropdownMenuItem(value: c.id, child: Text(c.name))),
+                        const DropdownMenuItem(
+                          value: null,
+                          child: Text('Uncategorized'),
+                        ),
+                        ...relevantCategories.map(
+                          (c) => DropdownMenuItem(
+                            value: c.id,
+                            child: Text(c.name),
+                          ),
+                        ),
                       ],
-                      onChanged: (val) => setModalState(() => selectedCategoryId = val),
+                      onChanged: (val) =>
+                          setModalState(() => selectedCategoryId = val),
                     ),
                     const SizedBox(height: 14),
 
                     // Description
-                    const Text('Description / Purpose', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                    const Text(
+                      'Description / Purpose',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                     const SizedBox(height: 6),
                     TextField(
                       controller: descController,
                       decoration: InputDecoration(
                         hintText: 'What was this transaction for?',
                         filled: true,
-                        fillColor: isDark ? AppTheme.inputCharcoal : const Color(0xFFF8FAFC),
+                        fillColor: isDark
+                            ? AppTheme.inputCharcoal
+                            : const Color(0xFFF8FAFC),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
                           borderSide: BorderSide(
-                            color: isDark ? AppTheme.borderPrimary : const Color(0xFFE2E8F0),
+                            color: isDark
+                                ? AppTheme.borderPrimary
+                                : const Color(0xFFE2E8F0),
                           ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
                           borderSide: BorderSide(
-                            color: isDark ? AppTheme.borderPrimary : const Color(0xFFE2E8F0),
+                            color: isDark
+                                ? AppTheme.borderPrimary
+                                : const Color(0xFFE2E8F0),
                           ),
                         ),
                       ),
@@ -265,17 +335,23 @@ class _SmsReviewQueueScreenState extends State<SmsReviewQueueScreen> {
                         labelText: 'Remember category rule for this merchant (optional)',
                         hintText: 'e.g. TotalEnergies, Cafe, Supermarket',
                         filled: true,
-                        fillColor: isDark ? AppTheme.inputCharcoal : const Color(0xFFF8FAFC),
+                        fillColor: isDark
+                            ? AppTheme.inputCharcoal
+                            : const Color(0xFFF8FAFC),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
                           borderSide: BorderSide(
-                            color: isDark ? AppTheme.borderPrimary : const Color(0xFFE2E8F0),
+                            color: isDark
+                                ? AppTheme.borderPrimary
+                                : const Color(0xFFE2E8F0),
                           ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
                           borderSide: BorderSide(
-                            color: isDark ? AppTheme.borderPrimary : const Color(0xFFE2E8F0),
+                            color: isDark
+                                ? AppTheme.borderPrimary
+                                : const Color(0xFFE2E8F0),
                           ),
                         ),
                       ),
@@ -292,7 +368,9 @@ class _SmsReviewQueueScreenState extends State<SmsReviewQueueScreen> {
                           backgroundColor: AppTheme.primaryGreen,
                           foregroundColor: AppTheme.deepNavy,
                           padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
                         ),
                       ),
                     ),
@@ -310,8 +388,12 @@ class _SmsReviewQueueScreenState extends State<SmsReviewQueueScreen> {
         log: log,
         accountId: selectedAccountId,
         categoryId: selectedCategoryId,
-        customDescription: descController.text.trim().isNotEmpty ? descController.text.trim() : null,
-        merchantToLearn: merchantController.text.trim().isNotEmpty ? merchantController.text.trim() : null,
+        customDescription: descController.text.trim().isNotEmpty
+            ? descController.text.trim()
+            : null,
+        merchantToLearn: merchantController.text.trim().isNotEmpty
+            ? merchantController.text.trim()
+            : null,
       );
 
       if (savedTx != null && mounted) {
@@ -369,171 +451,219 @@ class _SmsReviewQueueScreenState extends State<SmsReviewQueueScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _pendingLogs.isEmpty
-              ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(32),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            color: AppTheme.primaryGreen.withOpacity(0.12),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(Icons.check_circle_outline_rounded, size: 54, color: AppTheme.primaryGreen),
-                        ),
-                        const SizedBox(height: 16),
-                        const Text(
-                          'All Caught Up!',
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          'No bank SMS alerts currently pending confirmation.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
-                          ),
-                        ),
-                      ],
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primaryGreen.withOpacity(0.12),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.check_circle_outline_rounded,
+                        size: 54,
+                        color: AppTheme.primaryGreen,
+                      ),
                     ),
-                  ),
-                )
-              : ListView.separated(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: _pendingLogs.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
-                  itemBuilder: (ctx, index) {
-                    final log = _pendingLogs[index];
-                    final isIncome = log.transactionType.contains('incoming') ||
-                        log.transactionType.contains('deposit');
+                    const SizedBox(height: 16),
+                    const Text(
+                      'All Caught Up!',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'No bank SMS alerts currently pending confirmation.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: isDark
+                            ? AppTheme.textSecondaryDark
+                            : AppTheme.textSecondaryLight,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          : ListView.separated(
+              padding: const EdgeInsets.all(16),
+              itemCount: _pendingLogs.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              itemBuilder: (ctx, index) {
+                final log = _pendingLogs[index];
+                final isIncome =
+                    log.transactionType.contains('incoming') ||
+                    log.transactionType.contains('deposit');
 
-                    return FintechCard(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                return FintechCard(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: (isIncome ? AppTheme.incomeGreen : AppTheme.expenseRed)
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color:
+                                      (isIncome
+                                              ? AppTheme.incomeGreen
+                                              : AppTheme.expenseRed)
                                           .withOpacity(isDark ? 0.2 : 0.12),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: Icon(
-                                      isIncome ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded,
-                                      size: 18,
-                                      color: isIncome ? AppTheme.incomeGreen : AppTheme.expenseRed,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        log.sender,
-                                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                                      ),
-                                      Text(
-                                        DateFormat('MMM d, yyyy • hh:mm a').format(log.createdAt),
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              Text(
-                                CurrencyFormatter.formatCents(log.amountCents),
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w800,
-                                  color: isIncome ? AppTheme.incomeGreen : AppTheme.expenseRed,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Icon(
+                                  isIncome
+                                      ? Icons.arrow_downward_rounded
+                                      : Icons.arrow_upward_rounded,
+                                  size: 18,
+                                  color: isIncome
+                                      ? AppTheme.incomeGreen
+                                      : AppTheme.expenseRed,
                                 ),
                               ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-
-                          // Reason for review
-                          if (log.reviewReason != null)
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: AppTheme.accentAmber.withOpacity(0.12),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Row(
+                              const SizedBox(width: 10),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Icon(Icons.info_outline_rounded, size: 14, color: AppTheme.accentAmber),
-                                  const SizedBox(width: 6),
-                                  Expanded(
-                                    child: Text(
-                                      log.reviewReason!,
-                                      style: const TextStyle(fontSize: 12, color: AppTheme.accentAmber),
+                                  Text(
+                                    log.sender,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                  Text(
+                                    DateFormat('MMM d, yyyy • hh:mm a')
+                                        .format(log.createdAt),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: isDark
+                                          ? AppTheme.textSecondaryDark
+                                          : AppTheme.textSecondaryLight,
                                     ),
                                   ),
                                 ],
                               ),
-                            ),
-                          const SizedBox(height: 8),
-
-                          // Raw message preview
-                          Text(
-                            log.rawPreview,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: isDark ? Colors.white70 : Colors.black87,
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
-                          const SizedBox(height: 14),
-
-                          // Action Buttons
-                          Row(
-                            children: [
-                              OutlinedButton(
-                                onPressed: () => _ignoreItem(log),
-                                style: OutlinedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                ),
-                                child: const Text('Ignore'),
-                              ),
-                              const SizedBox(width: 8),
-                              IconButton(
-                                icon: const Icon(Icons.delete_outline_rounded, size: 20),
-                                onPressed: () => _deleteItem(log),
-                                tooltip: 'Delete Log',
-                              ),
-                              const Spacer(),
-                              FilledButton.icon(
-                                onPressed: () => _confirmItem(log),
-                                icon: const Icon(Icons.check_rounded, size: 16),
-                                label: const Text('Confirm'),
-                                style: FilledButton.styleFrom(
-                                  backgroundColor: AppTheme.primaryGreen,
-                                  foregroundColor: AppTheme.deepNavy,
-                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                ),
-                              ),
                             ],
+                          ),
+                          Text(
+                            CurrencyFormatter.formatCents(log.amountCents),
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800,
+                              color: isIncome
+                                  ? AppTheme.incomeGreen
+                                  : AppTheme.expenseRed,
+                            ),
                           ),
                         ],
                       ),
-                    );
-                  },
-                ),
+                      const SizedBox(height: 12),
+
+                      // Reason for review
+                      if (log.reviewReason != null)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppTheme.accentAmber.withOpacity(0.12),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.info_outline_rounded,
+                                size: 14,
+                                color: AppTheme.accentAmber,
+                              ),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  log.reviewReason!,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: AppTheme.accentAmber,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      const SizedBox(height: 8),
+
+                      // Raw message preview
+                      Text(
+                        log.rawPreview,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isDark ? Colors.white70 : Colors.black87,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+
+                      // Action Buttons
+                      Row(
+                        children: [
+                          OutlinedButton(
+                            onPressed: () => _ignoreItem(log),
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            child: const Text('Ignore'),
+                          ),
+                          const SizedBox(width: 8),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.delete_outline_rounded,
+                              size: 20,
+                            ),
+                            onPressed: () => _deleteItem(log),
+                            tooltip: 'Delete Log',
+                          ),
+                          const Spacer(),
+                          FilledButton.icon(
+                            onPressed: () => _confirmItem(log),
+                            icon: const Icon(Icons.check_rounded, size: 16),
+                            label: const Text('Confirm'),
+                            style: FilledButton.styleFrom(
+                              backgroundColor: AppTheme.primaryGreen,
+                              foregroundColor: AppTheme.deepNavy,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 10,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
     );
   }
 }

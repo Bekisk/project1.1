@@ -31,28 +31,38 @@ void main() {
       expect(contrastNavy, greaterThan(7.0));
     });
 
-    test('ThemeData darkTheme defines matching high-contrast button themes', () {
-      final dark = AppTheme.darkTheme;
-      expect(dark.brightness, Brightness.dark);
-      expect(dark.scaffoldBackgroundColor, AppTheme.pureBlack);
+    test(
+      'ThemeData darkTheme defines matching high-contrast button themes',
+      () {
+        final dark = AppTheme.darkTheme;
+        expect(dark.brightness, Brightness.dark);
+        expect(dark.scaffoldBackgroundColor, AppTheme.pureBlack);
 
-      // Elevated button
-      final elevatedBg = dark.elevatedButtonTheme.style?.backgroundColor?.resolve({});
-      final elevatedFg = dark.elevatedButtonTheme.style?.foregroundColor?.resolve({});
-      expect(elevatedBg, AppTheme.primaryGreen);
-      expect(elevatedFg, Colors.white);
-      expect(elevatedBg != elevatedFg, isTrue);
+        // Elevated button
+        final elevatedBg = dark.elevatedButtonTheme.style?.backgroundColor
+            ?.resolve({});
+        final elevatedFg = dark.elevatedButtonTheme.style?.foregroundColor
+            ?.resolve({});
+        expect(elevatedBg, AppTheme.primaryGreen);
+        expect(elevatedFg, Colors.white);
+        expect(elevatedBg != elevatedFg, isTrue);
 
-      // Filled button
-      final filledBg = dark.filledButtonTheme.style?.backgroundColor?.resolve({});
-      final filledFg = dark.filledButtonTheme.style?.foregroundColor?.resolve({});
-      expect(filledBg, AppTheme.primaryGreen);
-      expect(filledFg, Colors.white);
-      expect(filledBg != filledFg, isTrue);
+        // Filled button
+        final filledBg = dark.filledButtonTheme.style?.backgroundColor?.resolve(
+          {},
+        );
+        final filledFg = dark.filledButtonTheme.style?.foregroundColor?.resolve(
+          {},
+        );
+        expect(filledBg, AppTheme.primaryGreen);
+        expect(filledFg, Colors.white);
+        expect(filledBg != filledFg, isTrue);
 
-      // Outlined button
-      final outlinedFg = dark.outlinedButtonTheme.style?.foregroundColor?.resolve({});
-      expect(outlinedFg, AppTheme.pureWhite);
-    });
+        // Outlined button
+        final outlinedFg = dark.outlinedButtonTheme.style?.foregroundColor
+            ?.resolve({});
+        expect(outlinedFg, AppTheme.pureWhite);
+      },
+    );
   });
 }

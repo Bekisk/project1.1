@@ -32,7 +32,8 @@ class AppSettingsProvider extends ChangeNotifier {
   AppCurrency _currency = AppCurrency.etb;
   AppDateFormat _dateFormat = AppDateFormat.standard;
   String _defaultTransactionType = 'expense'; // 'expense', 'income', 'transfer'
-  String _dashboardPeriod = 'this_month'; // 'this_month', 'last_month', 'this_year', 'all'
+  String _dashboardPeriod =
+      'this_month'; // 'this_month', 'last_month', 'this_year', 'all'
   bool _confirmDestructiveActions = true;
   bool _budgetAlertsEnabled = true;
   bool _savingsMilestoneAlertsEnabled = true;
@@ -58,13 +59,16 @@ class AppSettingsProvider extends ChangeNotifier {
   int get dailySummaryMinute => _dailySummaryMinute;
   bool get notificationPermissionGranted => _notificationPermissionGranted;
 
-  TimeOfDay get dailySummaryTime => TimeOfDay(hour: _dailySummaryHour, minute: _dailySummaryMinute);
+  TimeOfDay get dailySummaryTime =>
+      TimeOfDay(hour: _dailySummaryHour, minute: _dailySummaryMinute);
 
   Future<void> loadSettings() async {
     try {
       final db = await DatabaseHelper.instance.database;
       final rows = await db.query('app_settings');
-      final map = {for (final r in rows) r['key'] as String: r['value'] as String};
+      final map = {
+        for (final r in rows) r['key'] as String: r['value'] as String,
+      };
 
       if (map.containsKey('currency_code')) {
         _currency = AppCurrency.values.firstWhere(
@@ -97,7 +101,8 @@ class AppSettingsProvider extends ChangeNotifier {
       }
 
       if (map.containsKey('savings_milestone_alerts_enabled')) {
-        _savingsMilestoneAlertsEnabled = map['savings_milestone_alerts_enabled'] == '1';
+        _savingsMilestoneAlertsEnabled =
+            map['savings_milestone_alerts_enabled'] == '1';
       }
 
       if (map.containsKey('is_amharic_suffix')) {
@@ -117,7 +122,8 @@ class AppSettingsProvider extends ChangeNotifier {
       }
 
       // Check notification permission state
-      _notificationPermissionGranted = await NotificationService.instance.checkPermission();
+      _notificationPermissionGranted = await NotificationService.instance
+          .checkPermission();
 
       // If enabled and permission is granted, ensure schedule is active
       if (_dailySummaryEnabled && _notificationPermissionGranted) {
@@ -256,7 +262,8 @@ class AppSettingsProvider extends ChangeNotifier {
 
   /// Refreshes permission status
   Future<void> checkNotificationPermission() async {
-    _notificationPermissionGranted = await NotificationService.instance.checkPermission();
+    _notificationPermissionGranted = await NotificationService.instance
+        .checkPermission();
     notifyListeners();
   }
 
@@ -290,11 +297,10 @@ class AppSettingsProvider extends ChangeNotifier {
   Future<void> _saveSetting(String key, String value) async {
     try {
       final db = await DatabaseHelper.instance.database;
-      await db.insert(
-        'app_settings',
-        {'key': key, 'value': value},
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
+      await db.insert('app_settings', {
+        'key': key,
+        'value': value,
+      }, conflictAlgorithm: ConflictAlgorithm.replace);
     } catch (e) {
       debugPrint('Error saving setting $key: $e');
     }

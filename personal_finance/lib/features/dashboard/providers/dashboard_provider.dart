@@ -1,17 +1,12 @@
 import 'package:flutter/foundation.dart' hide Category;
 import 'package:personal_finance/core/database/database_helper.dart';
 import 'package:personal_finance/features/accounts/models/account.dart';
+import 'package:personal_finance/features/accounts/services/account_balance_service.dart';
 import 'package:personal_finance/features/categories/models/category.dart';
 import 'package:personal_finance/features/transactions/models/financial_transaction.dart';
 import 'package:personal_finance/features/savings_goals/models/savings_goal.dart';
 
-enum DashboardPeriod {
-  thisMonth,
-  lastMonth,
-  thisYear,
-  allTime,
-  custom,
-}
+enum DashboardPeriod { thisMonth, lastMonth, thisYear, allTime, custom }
 
 class CategorySpending {
   final Category category;
@@ -36,7 +31,10 @@ class DashboardSummary {
   final int goalsTotalSaved; // cents
   final List<FinancialTransaction> recentTransactions;
   final List<Account> accounts;
-  final Map<String, int> accountBalances; // balance in cents keyed by account.id
+  final Map<String, int>
+  accountBalances; // balance in cents keyed by account.id
+  final Map<String, AccountBalanceInfo>
+  accountBalanceInfos; // rich balance info keyed by account.id
   final List<SavingsGoal> activeGoals;
   final List<CategorySpending> topCategories;
   final List<int> weeklySpending; // last 7 days daily spending in cents
@@ -59,6 +57,7 @@ class DashboardSummary {
     required this.recentTransactions,
     required this.accounts,
     required this.accountBalances,
+    this.accountBalanceInfos = const {},
     required this.activeGoals,
     required this.topCategories,
     required this.weeklySpending,
@@ -83,6 +82,7 @@ class DashboardSummary {
       recentTransactions: [],
       accounts: [],
       accountBalances: {},
+      accountBalanceInfos: {},
       activeGoals: [],
       topCategories: [],
       weeklySpending: [0, 0, 0, 0, 0, 0, 0],
@@ -109,7 +109,11 @@ class DashboardProvider extends ChangeNotifier {
   DateTime? get customEndDate => _customEndDate;
   bool get isLoading => _isLoading;
 
-  void setPeriod(DashboardPeriod period, {DateTime? customStart, DateTime? customEnd}) {
+  void setPeriod(
+    DashboardPeriod period, {
+    DateTime? customStart,
+    DateTime? customEnd,
+  }) {
     _selectedPeriod = period;
     _customStartDate = customStart;
     _customEndDate = customEnd;
@@ -121,8 +125,16 @@ class DashboardProvider extends ChangeNotifier {
     switch (_selectedPeriod) {
       case DashboardPeriod.thisMonth:
         final start = DateTime(now.year, now.month, 1);
-        final nextMonth = DateTime(now.month == 12 ? now.year + 1 : now.year, now.month == 12 ? 1 : now.month + 1, 1);
-        return (start.toIso8601String(), nextMonth.toIso8601String(), 'This Month');
+        final nextMonth = DateTime(
+          now.month == 12 ? now.year + 1 : now.year,
+          now.month == 12 ? 1 : now.month + 1,
+          1,
+        );
+        return (
+          start.toIso8601String(),
+          nextMonth.toIso8601String(),
+          'This Month',
+        );
 
       case DashboardPeriod.lastMonth:
         final prevYear = now.month == 1 ? now.year - 1 : now.year;
@@ -141,9 +153,25 @@ class DashboardProvider extends ChangeNotifier {
 
       case DashboardPeriod.custom:
         if (_customStartDate != null && _customEndDate != null) {
-          final start = DateTime(_customStartDate!.year, _customStartDate!.month, _customStartDate!.day);
-          final end = DateTime(_customEndDate!.year, _customEndDate!.month, _customEndDate!.day, 23, 59, 59, 999);
-          return (start.toIso8601String(), end.toIso8601String(), 'Custom Range');
+          final start = DateTime(
+            _customStartDate!.year,
+            _customStartDate!.month,
+            _customStartDate!.day,
+          );
+          final end = DateTime(
+            _customEndDate!.year,
+            _customEndDate!.month,
+            _customEndDate!.day,
+            23,
+            59,
+            59,
+            999,
+          );
+          return (
+            start.toIso8601String(),
+            end.toIso8601String(),
+            'Custom Range',
+          );
         }
         return (null, null, 'Custom Range');
     }
@@ -165,43 +193,18 @@ class DashboardProvider extends ChangeNotifier {
       final allCategories = catMaps.map((e) => Category.fromMap(e)).toList();
       final categoryMap = {for (var c in allCategories) c.id: c};
 
-      // 3. Calculate balance for each account using opening balance + transactions
+      // 3. Calculate balance for each account using AccountBalanceService
       int calculatedTotalBalance = 0;
       final Map<String, int> calculatedBalances = {};
+      final Map<String, AccountBalanceInfo> calculatedInfos = {};
       for (final acc in accounts) {
-        int balance = acc.openingBalance;
-
-        // Inflow: Income transactions
-        final incomeRes = await db.rawQuery(
-          "SELECT SUM(amount) as total FROM transactions WHERE account_id = ? AND type = 'income'",
-          [acc.id],
+        final info = await AccountBalanceService.instance.getAccountBalanceInfo(
+          acc,
+          executor: db,
         );
-        final int income = (incomeRes.first['total'] as int?) ?? 0;
-
-        // Outflow: Expense transactions
-        final expenseRes = await db.rawQuery(
-          "SELECT SUM(amount) as total FROM transactions WHERE account_id = ? AND type = 'expense'",
-          [acc.id],
-        );
-        final int expense = (expenseRes.first['total'] as int?) ?? 0;
-
-        // Transfers Out
-        final transferOutRes = await db.rawQuery(
-          "SELECT SUM(amount) as total FROM transactions WHERE account_id = ? AND type = 'transfer'",
-          [acc.id],
-        );
-        final int transferOut = (transferOutRes.first['total'] as int?) ?? 0;
-
-        // Transfers In
-        final transferInRes = await db.rawQuery(
-          "SELECT SUM(amount) as total FROM transactions WHERE destination_account_id = ? AND type = 'transfer'",
-          [acc.id],
-        );
-        final int transferIn = (transferInRes.first['total'] as int?) ?? 0;
-
-        balance = balance + income - expense - transferOut + transferIn;
-        calculatedBalances[acc.id] = balance;
-        calculatedTotalBalance += balance;
+        calculatedBalances[acc.id] = info.calculatedBalance;
+        calculatedInfos[acc.id] = info;
+        calculatedTotalBalance += info.calculatedBalance;
       }
 
       // 4. Resolve selected period dates for period-specific income and expenses
@@ -244,7 +247,10 @@ class DashboardProvider extends ChangeNotifier {
       final int budgetTotalLimit = (budgetLimitRes.first['total'] as int?) ?? 0;
 
       // 6. Active Goals & Saved amounts
-      final goalMaps = await db.query('savings_goals', where: "status = 'active'");
+      final goalMaps = await db.query(
+        'savings_goals',
+        where: "status = 'active'",
+      );
       final activeGoals = goalMaps.map((e) => SavingsGoal.fromMap(e)).toList();
 
       int goalsTarget = 0;
@@ -266,18 +272,23 @@ class DashboardProvider extends ChangeNotifier {
         orderBy: 'transaction_date DESC, created_at DESC',
         limit: 8,
       );
-      final recentTransactions = recentTxMaps.map((e) => FinancialTransaction.fromMap(e)).toList();
+      final recentTransactions = recentTxMaps
+          .map((e) => FinancialTransaction.fromMap(e))
+          .toList();
 
       // 8. Spending breakdown by category for selected period
       List<Map<String, Object?>> catSpendingRes;
       if (periodStart != null && periodEnd != null) {
-        catSpendingRes = await db.rawQuery('''
+        catSpendingRes = await db.rawQuery(
+          '''
           SELECT category_id, SUM(amount) as total
           FROM transactions
           WHERE type = 'expense' AND transaction_date >= ? AND transaction_date < ? AND category_id IS NOT NULL
           GROUP BY category_id
           ORDER BY total DESC
-        ''', [periodStart, periodEnd]);
+        ''',
+          [periodStart, periodEnd],
+        );
       } else {
         catSpendingRes = await db.rawQuery('''
           SELECT category_id, SUM(amount) as total
@@ -294,53 +305,74 @@ class DashboardProvider extends ChangeNotifier {
         final total = (row['total'] as int?) ?? 0;
         final cat = categoryMap[catId];
         if (cat != null && periodExpense > 0) {
-          topCategories.add(CategorySpending(
-            category: cat,
-            totalCents: total,
-            percentage: (total / periodExpense).clamp(0.0, 1.0),
-          ));
+          topCategories.add(
+            CategorySpending(
+              category: cat,
+              totalCents: total,
+              percentage: (total / periodExpense).clamp(0.0, 1.0),
+            ),
+          );
         }
       }
 
       // 9. Last 7 days spending for dynamic trend chart
       final List<int> weeklySpending = [];
       for (int i = 6; i >= 0; i--) {
-        final day = DateTime(now.year, now.month, now.day).subtract(Duration(days: i));
+        final day = DateTime(
+          now.year,
+          now.month,
+          now.day,
+        ).subtract(Duration(days: i));
         final dayStart = day.toIso8601String();
         final dayEnd = day.add(const Duration(days: 1)).toIso8601String();
 
-        final dayRes = await db.rawQuery('''
+        final dayRes = await db.rawQuery(
+          '''
           SELECT SUM(amount) as total
           FROM transactions
           WHERE type = 'expense' AND transaction_date >= ? AND transaction_date < ?
-        ''', [dayStart, dayEnd]);
+        ''',
+          [dayStart, dayEnd],
+        );
 
         final dayTotal = (dayRes.first['total'] as int?) ?? 0;
         weeklySpending.add(dayTotal);
       }
 
       // 10. Calculate Spending Velocity & Burn Rate (7-day and 30-day)
-      final sevenDaysAgo = now.subtract(const Duration(days: 7)).toIso8601String();
-      final thirtyDaysAgo = now.subtract(const Duration(days: 30)).toIso8601String();
+      final sevenDaysAgo = now
+          .subtract(const Duration(days: 7))
+          .toIso8601String();
+      final thirtyDaysAgo = now
+          .subtract(const Duration(days: 30))
+          .toIso8601String();
       final nowIso = now.toIso8601String();
 
-      final res7 = await db.rawQuery('''
+      final res7 = await db.rawQuery(
+        '''
         SELECT SUM(amount) as total FROM transactions
         WHERE type = 'expense' AND transaction_date >= ? AND transaction_date <= ?
-      ''', [sevenDaysAgo, nowIso]);
+      ''',
+        [sevenDaysAgo, nowIso],
+      );
       final total7Days = (res7.first['total'] as int?) ?? 0;
       final int dailySpend7Days = (total7Days / 7.0).round();
 
-      final res30 = await db.rawQuery('''
+      final res30 = await db.rawQuery(
+        '''
         SELECT SUM(amount) as total FROM transactions
         WHERE type = 'expense' AND transaction_date >= ? AND transaction_date <= ?
-      ''', [thirtyDaysAgo, nowIso]);
+      ''',
+        [thirtyDaysAgo, nowIso],
+      );
       final total30Days = (res30.first['total'] as int?) ?? 0;
       final int dailySpend30Days = (total30Days / 30.0).round();
 
       // Effective daily burn rate for runway calculation:
       // use 30-day if positive, otherwise fall back to 7-day
-      final effectiveDailySpend = dailySpend30Days > 0 ? dailySpend30Days : dailySpend7Days;
+      final effectiveDailySpend = dailySpend30Days > 0
+          ? dailySpend30Days
+          : dailySpend7Days;
       int runwayDays = 999;
       if (effectiveDailySpend > 0) {
         if (calculatedTotalBalance <= 0) {
@@ -362,6 +394,7 @@ class DashboardProvider extends ChangeNotifier {
         recentTransactions: recentTransactions,
         accounts: accounts,
         accountBalances: calculatedBalances,
+        accountBalanceInfos: calculatedInfos,
         activeGoals: activeGoals,
         topCategories: topCategories,
         weeklySpending: weeklySpending,

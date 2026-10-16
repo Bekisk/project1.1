@@ -134,7 +134,11 @@ void main() {
       }
 
       final todayKey = DateTime(now.year, now.month, now.day);
-      final yesterdayKey = DateTime(yesterday.year, yesterday.month, yesterday.day);
+      final yesterdayKey = DateTime(
+        yesterday.year,
+        yesterday.month,
+        yesterday.day,
+      );
 
       expect(groups.length, 2);
       expect(groups[todayKey]!.length, 2);
@@ -178,13 +182,16 @@ void main() {
 
       // Account filter: "acc-wallet" matches both direct expense and transfer destination!
       final matchingWallet = txList.where((tx) {
-        return tx.accountId == 'acc-wallet' || tx.destinationAccountId == 'acc-wallet';
+        return tx.accountId == 'acc-wallet' ||
+            tx.destinationAccountId == 'acc-wallet';
       }).toList();
       expect(matchingWallet.length, 2);
 
       // Search filter: Case-insensitive query
       const query = 'shoa';
-      final matchingSearch = txList.where((tx) => tx.description.toLowerCase().contains(query)).toList();
+      final matchingSearch = txList
+          .where((tx) => tx.description.toLowerCase().contains(query))
+          .toList();
       expect(matchingSearch.length, 1);
       expect(matchingSearch.first.id, '1');
     });

@@ -45,10 +45,14 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> {
     _selectedCategoryId = current.categoryId;
 
     _minAmountController = TextEditingController(
-      text: current.minAmountCents != null ? (current.minAmountCents! / 100).toStringAsFixed(0) : '',
+      text: current.minAmountCents != null
+          ? (current.minAmountCents! / 100).toStringAsFixed(0)
+          : '',
     );
     _maxAmountController = TextEditingController(
-      text: current.maxAmountCents != null ? (current.maxAmountCents! / 100).toStringAsFixed(0) : '',
+      text: current.maxAmountCents != null
+          ? (current.maxAmountCents! / 100).toStringAsFixed(0)
+          : '',
     );
   }
 
@@ -85,12 +89,18 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> {
     final minVal = double.tryParse(_minAmountController.text.trim());
     final maxVal = double.tryParse(_maxAmountController.text.trim());
 
-    final minCents = minVal != null && minVal > 0 ? (minVal * 100).round() : null;
-    final maxCents = maxVal != null && maxVal > 0 ? (maxVal * 100).round() : null;
+    final minCents = minVal != null && minVal > 0
+        ? (minVal * 100).round()
+        : null;
+    final maxCents = maxVal != null && maxVal > 0
+        ? (maxVal * 100).round()
+        : null;
 
     if (minCents != null && maxCents != null && minCents > maxCents) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Minimum amount cannot exceed maximum amount.')),
+        const SnackBar(
+          content: Text('Minimum amount cannot exceed maximum amount.'),
+        ),
       );
       return;
     }
@@ -132,8 +142,10 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> {
     final matchingCategories = _selectedType == null
         ? provider.categories
         : provider.categories.where((c) {
-            if (_selectedType == TransactionType.income) return c.transactionType == 'income';
-            if (_selectedType == TransactionType.expense) return c.transactionType == 'expense';
+            if (_selectedType == TransactionType.income)
+              return c.transactionType == 'income';
+            if (_selectedType == TransactionType.expense)
+              return c.transactionType == 'expense';
             return false;
           }).toList();
 
@@ -172,7 +184,9 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> {
             children: [
               Text(
                 'Filter Transactions',
-                style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               TextButton(
                 onPressed: _resetFilters,
@@ -202,19 +216,25 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> {
                       _buildChoiceChip(
                         label: 'Expense',
                         isSelected: _selectedType == TransactionType.expense,
-                        onSelected: () => setState(() => _selectedType = TransactionType.expense),
+                        onSelected: () => setState(
+                          () => _selectedType = TransactionType.expense,
+                        ),
                         isDark: isDark,
                       ),
                       _buildChoiceChip(
                         label: 'Income',
                         isSelected: _selectedType == TransactionType.income,
-                        onSelected: () => setState(() => _selectedType = TransactionType.income),
+                        onSelected: () => setState(
+                          () => _selectedType = TransactionType.income,
+                        ),
                         isDark: isDark,
                       ),
                       _buildChoiceChip(
                         label: 'Transfer',
                         isSelected: _selectedType == TransactionType.transfer,
-                        onSelected: () => setState(() => _selectedType = TransactionType.transfer),
+                        onSelected: () => setState(
+                          () => _selectedType = TransactionType.transfer,
+                        ),
                         isDark: isDark,
                       ),
                     ],
@@ -230,47 +250,63 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> {
                       _buildChoiceChip(
                         label: 'This Month',
                         isSelected: _datePreset == DateRangePreset.thisMonth,
-                        onSelected: () => setState(() => _datePreset = DateRangePreset.thisMonth),
+                        onSelected: () => setState(
+                          () => _datePreset = DateRangePreset.thisMonth,
+                        ),
                         isDark: isDark,
                       ),
                       _buildChoiceChip(
                         label: 'Today',
                         isSelected: _datePreset == DateRangePreset.today,
-                        onSelected: () => setState(() => _datePreset = DateRangePreset.today),
+                        onSelected: () =>
+                            setState(() => _datePreset = DateRangePreset.today),
                         isDark: isDark,
                       ),
                       _buildChoiceChip(
                         label: 'Yesterday',
                         isSelected: _datePreset == DateRangePreset.yesterday,
-                        onSelected: () => setState(() => _datePreset = DateRangePreset.yesterday),
+                        onSelected: () => setState(
+                          () => _datePreset = DateRangePreset.yesterday,
+                        ),
                         isDark: isDark,
                       ),
                       _buildChoiceChip(
                         label: 'This Week',
                         isSelected: _datePreset == DateRangePreset.thisWeek,
-                        onSelected: () => setState(() => _datePreset = DateRangePreset.thisWeek),
+                        onSelected: () => setState(
+                          () => _datePreset = DateRangePreset.thisWeek,
+                        ),
                         isDark: isDark,
                       ),
                       _buildChoiceChip(
                         label: 'Last Month',
                         isSelected: _datePreset == DateRangePreset.lastMonth,
-                        onSelected: () => setState(() => _datePreset = DateRangePreset.lastMonth),
+                        onSelected: () => setState(
+                          () => _datePreset = DateRangePreset.lastMonth,
+                        ),
                         isDark: isDark,
                       ),
                       _buildChoiceChip(
                         label: 'Last 30 Days',
                         isSelected: _datePreset == DateRangePreset.last30Days,
-                        onSelected: () => setState(() => _datePreset = DateRangePreset.last30Days),
+                        onSelected: () => setState(
+                          () => _datePreset = DateRangePreset.last30Days,
+                        ),
                         isDark: isDark,
                       ),
                       _buildChoiceChip(
                         label: 'All Time',
                         isSelected: _datePreset == DateRangePreset.allTime,
-                        onSelected: () => setState(() => _datePreset = DateRangePreset.allTime),
+                        onSelected: () => setState(
+                          () => _datePreset = DateRangePreset.allTime,
+                        ),
                         isDark: isDark,
                       ),
                       _buildChoiceChip(
-                        label: _datePreset == DateRangePreset.custom && _customStart != null && _customEnd != null
+                        label:
+                            _datePreset == DateRangePreset.custom &&
+                                _customStart != null &&
+                                _customEnd != null
                             ? '${DateFormat('MM/dd').format(_customStart!)} - ${DateFormat('MM/dd').format(_customEnd!)}'
                             : 'Custom Range...',
                         isSelected: _datePreset == DateRangePreset.custom,
@@ -283,19 +319,33 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> {
                   const SizedBox(height: 18),
 
                   // 3. Account Filter
-                  _buildSectionTitle(context, 'Account (Source or Destination)', isDark),
+                  _buildSectionTitle(
+                    context,
+                    'Account (Source or Destination)',
+                    isDark,
+                  ),
                   DropdownButtonFormField<String?>(
                     initialValue: _selectedAccountId,
                     decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 12,
+                      ),
                     ),
                     items: [
-                      const DropdownMenuItem(value: null, child: Text('All Accounts')),
+                      const DropdownMenuItem(
+                        value: null,
+                        child: Text('All Accounts'),
+                      ),
                       ...provider.accounts.map(
-                        (acc) => DropdownMenuItem(value: acc.id, child: Text(acc.name)),
+                        (acc) => DropdownMenuItem(
+                          value: acc.id,
+                          child: Text(acc.name),
+                        ),
                       ),
                     ],
-                    onChanged: (val) => setState(() => _selectedAccountId = val),
+                    onChanged: (val) =>
+                        setState(() => _selectedAccountId = val),
                   ),
                   const SizedBox(height: 18),
 
@@ -305,15 +355,25 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> {
                     DropdownButtonFormField<String?>(
                       initialValue: _selectedCategoryId,
                       decoration: const InputDecoration(
-                        contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 12,
+                        ),
                       ),
                       items: [
-                        const DropdownMenuItem(value: null, child: Text('All Categories')),
+                        const DropdownMenuItem(
+                          value: null,
+                          child: Text('All Categories'),
+                        ),
                         ...matchingCategories.map(
-                          (cat) => DropdownMenuItem(value: cat.id, child: Text(cat.name)),
+                          (cat) => DropdownMenuItem(
+                            value: cat.id,
+                            child: Text(cat.name),
+                          ),
                         ),
                       ],
-                      onChanged: (val) => setState(() => _selectedCategoryId = val),
+                      onChanged: (val) =>
+                          setState(() => _selectedCategoryId = val),
                     ),
                     const SizedBox(height: 18),
                   ],
@@ -326,7 +386,10 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> {
                         child: TextFormField(
                           controller: _minAmountController,
                           keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(hintText: 'Min Amount', prefixText: 'ብር '),
+                          decoration: const InputDecoration(
+                            hintText: 'Min Amount',
+                            prefixText: 'ብር ',
+                          ),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -334,7 +397,10 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> {
                         child: TextFormField(
                           controller: _maxAmountController,
                           keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(hintText: 'Max Amount', prefixText: 'ብር '),
+                          decoration: const InputDecoration(
+                            hintText: 'Max Amount',
+                            prefixText: 'ብር ',
+                          ),
                         ),
                       ),
                     ],
@@ -352,11 +418,18 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> {
             child: FilledButton(
               onPressed: _applyFilters,
               style: FilledButton.styleFrom(
-                backgroundColor: isDark ? AppTheme.primaryGreen : AppTheme.primaryNavy,
+                backgroundColor: isDark
+                    ? AppTheme.primaryGreen
+                    : AppTheme.primaryNavy,
                 foregroundColor: isDark ? AppTheme.deepNavy : Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
               ),
-              child: const Text('Apply Filters', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              child: const Text(
+                'Apply Filters',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
             ),
           ),
         ],
@@ -372,7 +445,9 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> {
         style: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w700,
-          color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+          color: isDark
+              ? AppTheme.textSecondaryDark
+              : AppTheme.textSecondaryLight,
           letterSpacing: 0.5,
         ),
       ),
@@ -391,7 +466,11 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (icon != null) ...[
-            Icon(icon, size: 14, color: isSelected ? Colors.white : AppTheme.primaryGreen),
+            Icon(
+              icon,
+              size: 14,
+              color: isSelected ? Colors.white : AppTheme.primaryGreen,
+            ),
             const SizedBox(width: 4),
           ],
           Text(label),

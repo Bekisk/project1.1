@@ -44,6 +44,9 @@ dependencies:
   uuid: ^4.6.0
   image_picker: ^1.2.4
   path_provider: ^2.1.6
+  flutter_secure_storage: ^9.0.0
+  local_auth: ^2.3.0
+  crypt: ^4.3.1
 
 dev_dependencies:
   flutter_test:
@@ -55,6 +58,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  sqflite_common_ffi: ^2.4.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

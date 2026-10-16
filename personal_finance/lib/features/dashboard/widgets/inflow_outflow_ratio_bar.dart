@@ -20,8 +20,12 @@ class InflowOutflowRatioBar extends StatelessWidget {
     final theme = Theme.of(context);
     final totalFlow = totalIncomeCents + totalExpenseCents;
 
-    final double incomeRatio = totalFlow > 0 ? (totalIncomeCents / totalFlow).clamp(0.0, 1.0) : 0.5;
-    final double expenseRatio = totalFlow > 0 ? (totalExpenseCents / totalFlow).clamp(0.0, 1.0) : 0.5;
+    final double incomeRatio = totalFlow > 0
+        ? (totalIncomeCents / totalFlow).clamp(0.0, 1.0)
+        : 0.5;
+    final double expenseRatio = totalFlow > 0
+        ? (totalExpenseCents / totalFlow).clamp(0.0, 1.0)
+        : 0.5;
 
     final int netCents = totalIncomeCents - totalExpenseCents;
     final bool isNetPositive = netCents >= 0;
@@ -38,12 +42,20 @@ class InflowOutflowRatioBar extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(7),
                     decoration: BoxDecoration(
-                      color: (isNetPositive ? AppTheme.primaryGreen : AppTheme.expenseRed).withOpacity(0.15),
+                      color:
+                          (isNetPositive
+                                  ? AppTheme.primaryGreen
+                                  : AppTheme.expenseRed)
+                              .withOpacity(0.15),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
-                      isNetPositive ? Icons.trending_up_rounded : Icons.trending_down_rounded,
-                      color: isNetPositive ? AppTheme.primaryGreen : AppTheme.expenseRed,
+                      isNetPositive
+                          ? Icons.trending_up_rounded
+                          : Icons.trending_down_rounded,
+                      color: isNetPositive
+                          ? AppTheme.primaryGreen
+                          : AppTheme.expenseRed,
                       size: 18,
                     ),
                   ),
@@ -60,16 +72,22 @@ class InflowOutflowRatioBar extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: (isNetPositive ? AppTheme.primaryGreen : Colors.redAccent).withOpacity(0.15),
+                  color:
+                      (isNetPositive ? AppTheme.primaryGreen : Colors.redAccent)
+                          .withOpacity(0.15),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      isNetPositive ? Icons.check_circle_outline : Icons.warning_amber_rounded,
+                      isNetPositive
+                          ? Icons.check_circle_outline
+                          : Icons.warning_amber_rounded,
                       size: 12,
-                      color: isNetPositive ? AppTheme.primaryGreen : Colors.redAccent,
+                      color: isNetPositive
+                          ? AppTheme.primaryGreen
+                          : Colors.redAccent,
                     ),
                     const SizedBox(width: 4),
                     Text(
@@ -77,7 +95,9 @@ class InflowOutflowRatioBar extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
-                        color: isNetPositive ? AppTheme.primaryGreen : Colors.redAccent,
+                        color: isNetPositive
+                            ? AppTheme.primaryGreen
+                            : Colors.redAccent,
                       ),
                     ),
                   ],
@@ -93,23 +113,17 @@ class InflowOutflowRatioBar extends StatelessWidget {
             child: SizedBox(
               height: 12,
               child: totalFlow == 0
-                  ? Container(
-                      color: isDark ? Colors.white10 : Colors.black12,
-                    )
+                  ? Container(color: isDark ? Colors.white10 : Colors.black12)
                   : Row(
                       children: [
                         Flexible(
                           flex: (incomeRatio * 1000).toInt(),
-                          child: Container(
-                            color: AppTheme.primaryGreen,
-                          ),
+                          child: Container(color: AppTheme.primaryGreen),
                         ),
                         const SizedBox(width: 2),
                         Flexible(
                           flex: (expenseRatio * 1000).toInt(),
-                          child: Container(
-                            color: AppTheme.expenseRed,
-                          ),
+                          child: Container(color: AppTheme.expenseRed),
                         ),
                       ],
                     ),
@@ -140,7 +154,9 @@ class InflowOutflowRatioBar extends StatelessWidget {
                         'Total Inflow (${(incomeRatio * 100).toStringAsFixed(0)}%)',
                         style: TextStyle(
                           fontSize: 11,
-                          color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                          color: isDark
+                              ? AppTheme.textSecondaryDark
+                              : AppTheme.textSecondaryLight,
                         ),
                       ),
                       Text(
@@ -175,7 +191,9 @@ class InflowOutflowRatioBar extends StatelessWidget {
                         'Total Outflow (${(expenseRatio * 100).toStringAsFixed(0)}%)',
                         style: TextStyle(
                           fontSize: 11,
-                          color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                          color: isDark
+                              ? AppTheme.textSecondaryDark
+                              : AppTheme.textSecondaryLight,
                         ),
                       ),
                       Text(
@@ -208,7 +226,9 @@ class InflowOutflowRatioBar extends StatelessWidget {
                   'Net Surplus / Deficit:',
                   style: TextStyle(
                     fontSize: 11,
-                    color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                    color: isDark
+                        ? AppTheme.textSecondaryDark
+                        : AppTheme.textSecondaryLight,
                   ),
                 ),
                 Text(
@@ -216,7 +236,9 @@ class InflowOutflowRatioBar extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: isNetPositive ? AppTheme.primaryGreen : Colors.redAccent,
+                    color: isNetPositive
+                        ? AppTheme.primaryGreen
+                        : Colors.redAccent,
                   ),
                 ),
               ],

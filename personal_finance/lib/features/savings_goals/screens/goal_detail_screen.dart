@@ -19,9 +19,9 @@ class GoalDetailScreen extends StatelessWidget {
   const GoalDetailScreen({super.key, required this.goalId});
 
   static void navigate(BuildContext context, String goalId) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => GoalDetailScreen(goalId: goalId)),
-    );
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => GoalDetailScreen(goalId: goalId)));
   }
 
   void _confirmDelete(BuildContext context, SavingsGoal goal) {
@@ -58,7 +58,9 @@ class GoalDetailScreen extends StatelessWidget {
                 }
               }
             },
-            style: FilledButton.styleFrom(backgroundColor: AppTheme.accentCoral),
+            style: FilledButton.styleFrom(
+              backgroundColor: AppTheme.accentCoral,
+            ),
             child: const Text('Delete'),
           ),
         ],
@@ -93,11 +95,17 @@ class GoalDetailScreen extends StatelessWidget {
                 context.read<DashboardProvider>().loadDashboardData();
                 context.read<TransactionsProvider>().loadTransactions();
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Contribution deleted and balances reconciled.')),
+                  const SnackBar(
+                    content: Text(
+                      'Contribution deleted and balances reconciled.',
+                    ),
+                  ),
                 );
               }
             },
-            style: FilledButton.styleFrom(backgroundColor: AppTheme.accentCoral),
+            style: FilledButton.styleFrom(
+              backgroundColor: AppTheme.accentCoral,
+            ),
             child: const Text('Delete'),
           ),
         ],
@@ -151,14 +159,26 @@ class GoalDetailScreen extends StatelessWidget {
               if (goal.status == GoalStatus.active)
                 const PopupMenuItem(value: 'pause', child: Text('Pause Goal'))
               else if (goal.status == GoalStatus.paused)
-                const PopupMenuItem(value: 'resume', child: Text('Resume Goal')),
+                const PopupMenuItem(
+                  value: 'resume',
+                  child: Text('Resume Goal'),
+                ),
               if (goal.status != GoalStatus.completed)
-                const PopupMenuItem(value: 'complete', child: Text('Mark Complete')),
+                const PopupMenuItem(
+                  value: 'complete',
+                  child: Text('Mark Complete'),
+                ),
               if (goal.status != GoalStatus.archived)
-                const PopupMenuItem(value: 'archive', child: Text('Archive Goal')),
+                const PopupMenuItem(
+                  value: 'archive',
+                  child: Text('Archive Goal'),
+                ),
               const PopupMenuItem(
                 value: 'delete',
-                child: Text('Delete Goal', style: TextStyle(color: AppTheme.accentCoral)),
+                child: Text(
+                  'Delete Goal',
+                  style: TextStyle(color: AppTheme.accentCoral),
+                ),
               ),
             ],
           ),
@@ -168,7 +188,11 @@ class GoalDetailScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         decoration: BoxDecoration(
           color: isDark ? AppTheme.surfaceDark : AppTheme.surfaceLight,
-          border: Border(top: BorderSide(color: isDark ? AppTheme.borderDark : AppTheme.borderLight)),
+          border: Border(
+            top: BorderSide(
+              color: isDark ? AppTheme.borderDark : AppTheme.borderLight,
+            ),
+          ),
         ),
         child: SafeArea(
           child: SizedBox(
@@ -176,11 +200,18 @@ class GoalDetailScreen extends StatelessWidget {
             child: FilledButton.icon(
               onPressed: () => AddContributionSheet.show(context, goal: goal),
               icon: const Icon(Icons.add_circle_rounded),
-              label: const Text('Add Contribution', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              label: const Text(
+                'Add Contribution',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
               style: FilledButton.styleFrom(
-                backgroundColor: isDark ? AppTheme.primaryGreen : AppTheme.primaryNavy,
+                backgroundColor: isDark
+                    ? AppTheme.primaryGreen
+                    : AppTheme.primaryNavy,
                 foregroundColor: isDark ? AppTheme.deepNavy : Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
             ),
           ),
@@ -246,25 +277,38 @@ class GoalDetailScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: statusColor.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   goal.status.name.toUpperCase(),
-                  style: TextStyle(color: statusColor, fontWeight: FontWeight.bold, fontSize: 11),
+                  style: TextStyle(
+                    color: statusColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 11,
+                  ),
                 ),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.05),
+                  color: isDark
+                      ? Colors.white10
+                      : Colors.black.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   '${goal.priority.name.toUpperCase()} PRIORITY',
-                  style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Colors.grey),
+                  style: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey,
+                  ),
                 ),
               ),
             ],
@@ -279,7 +323,10 @@ class GoalDetailScreen extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Total Saved', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                  const Text(
+                    'Total Saved',
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
                   const SizedBox(height: 2),
                   Text(
                     CurrencyFormatter.formatCents(summary.totalSaved),
@@ -294,7 +341,10 @@ class GoalDetailScreen extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  const Text('Target', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                  const Text(
+                    'Target',
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
                   const SizedBox(height: 2),
                   Text(
                     CurrencyFormatter.formatCents(goal.targetAmount),
@@ -315,9 +365,13 @@ class GoalDetailScreen extends StatelessWidget {
             child: LinearProgressIndicator(
               value: clamped,
               minHeight: 12,
-              backgroundColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+              backgroundColor: isDark
+                  ? const Color(0xFF1E293B)
+                  : const Color(0xFFE2E8F0),
               valueColor: AlwaysStoppedAnimation<Color>(
-                summary.isCompleted ? AppTheme.accentTeal : AppTheme.primaryGreen,
+                summary.isCompleted
+                    ? AppTheme.accentTeal
+                    : AppTheme.primaryGreen,
               ),
             ),
           ),
@@ -329,17 +383,29 @@ class GoalDetailScreen extends StatelessWidget {
             children: [
               Text(
                 '${percent.toStringAsFixed(1)}% achieved',
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppTheme.primaryGreen),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                  color: AppTheme.primaryGreen,
+                ),
               ),
               if (summary.excessAmount > 0)
                 Text(
                   '+${CurrencyFormatter.formatCents(summary.excessAmount)} surplus',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12, color: AppTheme.accentTeal),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                    color: AppTheme.accentTeal,
+                  ),
                 )
               else
                 Text(
                   '${CurrencyFormatter.formatCents(summary.remainingAmount)} remaining',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12, color: AppTheme.accentCoral),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                    color: AppTheme.accentCoral,
+                  ),
                 ),
             ],
           ),
@@ -348,7 +414,9 @@ class GoalDetailScreen extends StatelessWidget {
             const Divider(height: 24),
             Text(
               goal.description!,
-              style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: Colors.grey[600],
+              ),
             ),
           ],
         ],
@@ -373,11 +441,17 @@ class GoalDetailScreen extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.insights_rounded, color: AppTheme.accentBlue, size: 20),
+              const Icon(
+                Icons.insights_rounded,
+                color: AppTheme.accentBlue,
+                size: 20,
+              ),
               const SizedBox(width: 8),
               Text(
                 'Plan & Timeline Projections',
-                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ],
           ),
@@ -387,12 +461,18 @@ class GoalDetailScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Target Date', style: TextStyle(color: Colors.grey, fontSize: 13)),
+              const Text(
+                'Target Date',
+                style: TextStyle(color: Colors.grey, fontSize: 13),
+              ),
               Text(
                 goal.targetDate != null
                     ? DateFormat('MMM dd, yyyy').format(goal.targetDate!)
                     : 'No target date set',
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
               ),
             ],
           ),
@@ -409,7 +489,11 @@ class GoalDetailScreen extends StatelessWidget {
                 ),
                 Text(
                   CurrencyFormatter.formatCents(plan.requiredPeriodicAmount),
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppTheme.primaryGreen),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                    color: AppTheme.primaryGreen,
+                  ),
                 ),
               ],
             ),
@@ -419,7 +503,9 @@ class GoalDetailScreen extends StatelessWidget {
               style: TextStyle(
                 fontSize: 11,
                 color: plan.isOverdue ? AppTheme.accentCoral : Colors.grey,
-                fontWeight: plan.isOverdue ? FontWeight.bold : FontWeight.normal,
+                fontWeight: plan.isOverdue
+                    ? FontWeight.bold
+                    : FontWeight.normal,
               ),
             ),
             const Divider(height: 20),
@@ -430,15 +516,22 @@ class GoalDetailScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Projected Completion', style: TextStyle(color: Colors.grey, fontSize: 13)),
+              const Text(
+                'Projected Completion',
+                style: TextStyle(color: Colors.grey, fontSize: 13),
+              ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
                     projection.projectedDate != null
-                        ? DateFormat('MMM dd, yyyy').format(projection.projectedDate!)
+                        ? DateFormat('MMM dd, yyyy')
+                              .format(projection.projectedDate!)
                         : 'Not enough data',
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                    ),
                   ),
                   Text(
                     projection.description,
@@ -468,11 +561,17 @@ class GoalDetailScreen extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.military_tech_rounded, color: AppTheme.accentAmber, size: 20),
+              const Icon(
+                Icons.military_tech_rounded,
+                color: AppTheme.accentAmber,
+                size: 20,
+              ),
               const SizedBox(width: 8),
               Text(
                 'Milestones Tracking',
-                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ],
           ),
@@ -494,12 +593,16 @@ class GoalDetailScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: isReached
                           ? AppTheme.primaryGreen.withValues(alpha: 0.15)
-                          : (isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.05)),
+                          : (isDark
+                                ? Colors.white10
+                                : Colors.black.withValues(alpha: 0.05)),
                       shape: BoxShape.circle,
                     ),
                     child: Center(
                       child: Icon(
-                        isReached ? Icons.check_circle_rounded : Icons.radio_button_unchecked_rounded,
+                        isReached
+                            ? Icons.check_circle_rounded
+                            : Icons.radio_button_unchecked_rounded,
                         color: isReached ? AppTheme.primaryGreen : Colors.grey,
                         size: 18,
                       ),
@@ -515,13 +618,18 @@ class GoalDetailScreen extends StatelessWidget {
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 13,
-                            color: isReached ? (isDark ? Colors.white : AppTheme.deepNavy) : Colors.grey,
+                            color: isReached
+                                ? (isDark ? Colors.white : AppTheme.deepNavy)
+                                : Colors.grey,
                           ),
                         ),
                         if (isReached && reachedDate != null)
                           Text(
                             'Achieved on ${DateFormat("MMM dd, yyyy").format(reachedDate)}',
-                            style: const TextStyle(fontSize: 11, color: AppTheme.primaryGreen),
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: AppTheme.primaryGreen,
+                            ),
                           )
                         else
                           const Text(
@@ -558,11 +666,17 @@ class GoalDetailScreen extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.history_rounded, color: AppTheme.accentTeal, size: 20),
+                  const Icon(
+                    Icons.history_rounded,
+                    color: AppTheme.accentTeal,
+                    size: 20,
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     'Contribution History',
-                    style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
@@ -580,9 +694,16 @@ class GoalDetailScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 24),
                 child: Column(
                   children: [
-                    const Icon(Icons.savings_outlined, size: 40, color: Colors.grey),
+                    const Icon(
+                      Icons.savings_outlined,
+                      size: 40,
+                      color: Colors.grey,
+                    ),
                     const SizedBox(height: 8),
-                    const Text('No contributions yet', style: TextStyle(fontWeight: FontWeight.bold)),
+                    const Text(
+                      'No contributions yet',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                     const SizedBox(height: 4),
                     const Text(
                       'Tap "Add Contribution" below to start saving toward this goal.',
@@ -601,7 +722,8 @@ class GoalDetailScreen extends StatelessWidget {
               separatorBuilder: (context, index) => const Divider(height: 16),
               itemBuilder: (context, i) {
                 final contrib = contributions[i];
-                final isTransfer = contrib.mode == ContributionMode.accountTransfer;
+                final isTransfer =
+                    contrib.mode == ContributionMode.accountTransfer;
 
                 return Row(
                   children: [
@@ -614,8 +736,12 @@ class GoalDetailScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Icon(
-                        isTransfer ? Icons.swap_horiz_rounded : Icons.arrow_downward_rounded,
-                        color: isTransfer ? AppTheme.accentBlue : AppTheme.primaryGreen,
+                        isTransfer
+                            ? Icons.swap_horiz_rounded
+                            : Icons.arrow_downward_rounded,
+                        color: isTransfer
+                            ? AppTheme.accentBlue
+                            : AppTheme.primaryGreen,
                         size: 18,
                       ),
                     ),
@@ -628,13 +754,21 @@ class GoalDetailScreen extends StatelessWidget {
                             children: [
                               Text(
                                 CurrencyFormatter.formatCents(contrib.amount),
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
                               ),
                               const SizedBox(width: 8),
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 2,
+                                ),
                                 decoration: BoxDecoration(
-                                  color: isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.05),
+                                  color: isDark
+                                      ? Colors.white10
+                                      : Colors.black.withValues(alpha: 0.05),
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
@@ -642,7 +776,9 @@ class GoalDetailScreen extends StatelessWidget {
                                   style: TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.w600,
-                                    color: isDark ? AppTheme.primaryText : AppTheme.textDark,
+                                    color: isDark
+                                        ? AppTheme.primaryText
+                                        : AppTheme.textDark,
                                   ),
                                 ),
                               ),
@@ -650,9 +786,15 @@ class GoalDetailScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            DateFormat('MMM dd, yyyy').format(contrib.contributionDate) +
-                                (contrib.notes != null ? ' • ${contrib.notes}' : ''),
-                            style: const TextStyle(fontSize: 11, color: Colors.grey),
+                            DateFormat('MMM dd, yyyy')
+                                    .format(contrib.contributionDate) +
+                                (contrib.notes != null
+                                    ? ' • ${contrib.notes}'
+                                    : ''),
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: Colors.grey,
+                            ),
                           ),
                         ],
                       ),
@@ -667,9 +809,17 @@ class GoalDetailScreen extends StatelessWidget {
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.delete_outline_rounded, size: 18, color: AppTheme.accentCoral),
+                      icon: const Icon(
+                        Icons.delete_outline_rounded,
+                        size: 18,
+                        color: AppTheme.accentCoral,
+                      ),
                       tooltip: 'Delete',
-                      onPressed: () => _confirmDeleteContribution(context, contrib, goal.name),
+                      onPressed: () => _confirmDeleteContribution(
+                        context,
+                        contrib,
+                        goal.name,
+                      ),
                     ),
                   ],
                 );

@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:personal_finance/app/theme/app_theme.dart';
 
@@ -21,7 +22,10 @@ class ProfileAvatar extends StatelessWidget {
   String _getInitials(String name) {
     final trimmed = name.trim();
     if (trimmed.isEmpty) return '';
-    final parts = trimmed.split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
+    final parts = trimmed
+        .split(RegExp(r'\s+'))
+        .where((p) => p.isNotEmpty)
+        .toList();
     if (parts.length >= 2) {
       final first = parts[0].characters.first;
       final second = parts[1].characters.first;
@@ -38,32 +42,42 @@ class ProfileAvatar extends StatelessWidget {
     final initials = _getInitials(displayName);
 
     Widget avatarContent;
-    final file = imagePath != null && imagePath!.isNotEmpty ? File(imagePath!) : null;
+    final file = imagePath != null && imagePath!.isNotEmpty
+        ? File(imagePath!)
+        : null;
 
     if (file != null && file.existsSync()) {
       avatarContent = CircleAvatar(
         radius: radius,
-        backgroundColor: isDark ? const Color(0xFF0F5747) : const Color(0xFFD1EBE3),
+        backgroundColor: isDark
+            ? const Color(0xFF0F5747)
+            : const Color(0xFFD1EBE3),
         backgroundImage: FileImage(file),
       );
     } else {
       avatarContent = CircleAvatar(
         radius: radius,
-        backgroundColor: isDark ? const Color(0xFF0F5747) : const Color(0xFFD1EBE3),
+        backgroundColor: isDark
+            ? const Color(0xFF0F5747)
+            : const Color(0xFFD1EBE3),
         child: initials.isNotEmpty
             ? Text(
                 initials,
                 style: TextStyle(
                   fontSize: radius * 0.78,
                   fontWeight: FontWeight.w700,
-                  color: isDark ? AppTheme.primaryAccent : const Color(0xFF0B4639),
+                  color: isDark
+                      ? AppTheme.primaryAccent
+                      : const Color(0xFF0B4639),
                   letterSpacing: -0.5,
                 ),
               )
             : Icon(
                 Icons.person_rounded,
                 size: radius * 1.1,
-                color: isDark ? AppTheme.primaryAccent : const Color(0xFF0B4639),
+                color: isDark
+                    ? AppTheme.primaryAccent
+                    : const Color(0xFF0B4639),
               ),
       );
     }

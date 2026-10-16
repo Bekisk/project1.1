@@ -9,11 +9,7 @@ class SubscriptionSummaryCard extends StatelessWidget {
   final bool isDark;
   final VoidCallback? onTap;
 
-  const SubscriptionSummaryCard({
-    super.key,
-    required this.isDark,
-    this.onTap,
-  });
+  const SubscriptionSummaryCard({super.key, required this.isDark, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +37,11 @@ class SubscriptionSummaryCard extends StatelessWidget {
                           color: AppTheme.accentPurple.withOpacity(0.15),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Icon(Icons.autorenew_rounded, color: AppTheme.accentPurple, size: 18),
+                        child: const Icon(
+                          Icons.autorenew_rounded,
+                          color: AppTheme.accentPurple,
+                          size: 18,
+                        ),
                       ),
                       const SizedBox(width: 10),
                       Expanded(
@@ -60,7 +60,10 @@ class SubscriptionSummaryCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: AppTheme.accentPurple.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(6),
@@ -83,37 +86,41 @@ class SubscriptionSummaryCard extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+                color: isDark
+                    ? const Color(0xFF1E293B)
+                    : const Color(0xFFF1F5F9),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Monthly Fixed Costs',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
-                          fontWeight: FontWeight.w500,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Monthly Fixed Costs',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: isDark
+                                ? AppTheme.textSecondaryDark
+                                : AppTheme.textSecondaryLight,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        '${CurrencyFormatter.formatCents(monthlyFixedCostCents)} / Month',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: isDark ? Colors.white : Colors.black87,
+                        const SizedBox(height: 2),
+                        Text(
+                          '${CurrencyFormatter.formatCents(monthlyFixedCostCents)} / Month',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: isDark ? Colors.white : Colors.black87,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
                   Icon(
                     Icons.chevron_right_rounded,
                     color: isDark ? Colors.white38 : Colors.black38,

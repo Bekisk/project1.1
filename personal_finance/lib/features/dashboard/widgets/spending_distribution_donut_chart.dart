@@ -18,10 +18,12 @@ class SpendingDistributionDonutChart extends StatefulWidget {
   });
 
   @override
-  State<SpendingDistributionDonutChart> createState() => _SpendingDistributionDonutChartState();
+  State<SpendingDistributionDonutChart> createState() =>
+      _SpendingDistributionDonutChartState();
 }
 
-class _SpendingDistributionDonutChartState extends State<SpendingDistributionDonutChart> {
+class _SpendingDistributionDonutChartState
+    extends State<SpendingDistributionDonutChart> {
   int _touchedIndex = -1;
 
   static const List<Color> _palette = [
@@ -38,7 +40,8 @@ class _SpendingDistributionDonutChartState extends State<SpendingDistributionDon
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final hasData = widget.topCategories.isNotEmpty && widget.totalExpenseCents > 0;
+    final hasData =
+        widget.topCategories.isNotEmpty && widget.totalExpenseCents > 0;
 
     return FintechCard(
       child: Column(
@@ -55,7 +58,11 @@ class _SpendingDistributionDonutChartState extends State<SpendingDistributionDon
                       color: AppTheme.primaryNavy.withOpacity(0.12),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Icon(Icons.pie_chart_rounded, color: AppTheme.primaryGreen, size: 18),
+                    child: const Icon(
+                      Icons.pie_chart_rounded,
+                      color: AppTheme.primaryGreen,
+                      size: 18,
+                    ),
                   ),
                   const SizedBox(width: 10),
                   Text(
@@ -72,7 +79,9 @@ class _SpendingDistributionDonutChartState extends State<SpendingDistributionDon
                   '${widget.topCategories.length} Categories',
                   style: TextStyle(
                     fontSize: 11,
-                    color: widget.isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                    color: widget.isDark
+                        ? AppTheme.textSecondaryDark
+                        : AppTheme.textSecondaryLight,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -89,13 +98,17 @@ class _SpendingDistributionDonutChartState extends State<SpendingDistributionDon
                     Icon(
                       Icons.donut_large_rounded,
                       size: 40,
-                      color: widget.isDark ? Colors.white24 : Colors.grey.shade300,
+                      color: widget.isDark
+                          ? Colors.white24
+                          : Colors.grey.shade300,
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'No expense distribution data available for this period',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: widget.isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                        color: widget.isDark
+                            ? AppTheme.textSecondaryDark
+                            : AppTheme.textSecondaryLight,
                       ),
                     ),
                   ],
@@ -120,7 +133,9 @@ class _SpendingDistributionDonutChartState extends State<SpendingDistributionDon
                               _touchedIndex = -1;
                               return;
                             }
-                            _touchedIndex = pieTouchResponse.touchedSection!.touchedSectionIndex;
+                            _touchedIndex = pieTouchResponse
+                                .touchedSection!
+                                .touchedSectionIndex;
                           });
                         },
                       ),
@@ -135,7 +150,8 @@ class _SpendingDistributionDonutChartState extends State<SpendingDistributionDon
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        _touchedIndex >= 0 && _touchedIndex < widget.topCategories.length
+                        _touchedIndex >= 0 &&
+                                _touchedIndex < widget.topCategories.length
                             ? widget.topCategories[_touchedIndex].category.name
                             : 'Total Outflow',
                         textAlign: TextAlign.center,
@@ -144,14 +160,19 @@ class _SpendingDistributionDonutChartState extends State<SpendingDistributionDon
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
-                          color: widget.isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                          color: widget.isDark
+                              ? AppTheme.textSecondaryDark
+                              : AppTheme.textSecondaryLight,
                         ),
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        _touchedIndex >= 0 && _touchedIndex < widget.topCategories.length
+                        _touchedIndex >= 0 &&
+                                _touchedIndex < widget.topCategories.length
                             ? '${(widget.topCategories[_touchedIndex].percentage * 100).toStringAsFixed(1)}%'
-                            : CurrencyFormatter.formatCents(widget.totalExpenseCents),
+                            : CurrencyFormatter.formatCents(
+                                widget.totalExpenseCents,
+                              ),
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
@@ -183,9 +204,14 @@ class _SpendingDistributionDonutChartState extends State<SpendingDistributionDon
                   },
                   borderRadius: BorderRadius.circular(6),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
-                      color: isSelected ? color.withOpacity(0.18) : Colors.transparent,
+                      color: isSelected
+                          ? color.withOpacity(0.18)
+                          : Colors.transparent,
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Row(
@@ -204,8 +230,12 @@ class _SpendingDistributionDonutChartState extends State<SpendingDistributionDon
                           item.category.name,
                           style: TextStyle(
                             fontSize: 11,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                            color: widget.isDark ? Colors.white70 : Colors.black87,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.w500,
+                            color: widget.isDark
+                                ? Colors.white70
+                                : Colors.black87,
                           ),
                         ),
                         const SizedBox(width: 4),

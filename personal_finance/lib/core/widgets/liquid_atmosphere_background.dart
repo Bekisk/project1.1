@@ -6,20 +6,14 @@ import 'package:personal_finance/app/theme/app_theme.dart';
 class LiquidAtmosphereBackground extends StatelessWidget {
   final Widget child;
 
-  const LiquidAtmosphereBackground({
-    super.key,
-    required this.child,
-  });
+  const LiquidAtmosphereBackground({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     if (!isDark) {
-      return Container(
-        color: AppTheme.bgLight,
-        child: child,
-      );
+      return Container(color: AppTheme.bgLight, child: child);
     }
 
     return Stack(
@@ -40,11 +34,7 @@ class LiquidAtmosphereBackground extends StatelessWidget {
         ),
 
         // 2. Subtle decorative geometric grid lines in monochrome
-        Positioned.fill(
-          child: CustomPaint(
-            painter: _SubtleGridPainter(),
-          ),
-        ),
+        Positioned.fill(child: CustomPaint(painter: _SubtleGridPainter())),
 
         // Content
         child,

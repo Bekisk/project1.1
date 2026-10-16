@@ -25,7 +25,10 @@ class RecurringProvider extends ChangeNotifier {
 
     try {
       final db = await DatabaseHelper.instance.database;
-      final maps = await db.query('recurring_schedules', orderBy: 'created_at DESC');
+      final maps = await db.query(
+        'recurring_schedules',
+        orderBy: 'created_at DESC',
+      );
       _schedules = maps.map((m) => RecurringSchedule.fromMap(m)).toList();
     } catch (e) {
       debugPrint('Error loading recurring schedules: $e');
@@ -71,7 +74,8 @@ class RecurringProvider extends ChangeNotifier {
             amount: schedule.amount,
             categoryId: schedule.categoryId,
             description: schedule.name,
-            notes: 'Auto-executed recurring subscription. ${schedule.frequencyLabel}',
+            notes:
+                'Auto-executed recurring subscription. ${schedule.frequencyLabel}',
             transactionDate: schedule.nextOccurrence,
             recurringScheduleId: schedule.id,
             createdAt: now,
@@ -80,7 +84,10 @@ class RecurringProvider extends ChangeNotifier {
           await db.insert('transactions', tx.toMap());
 
           // Advance next occurrence
-          final nextDate = _calculateNextOccurrence(schedule.nextOccurrence, schedule.frequency);
+          final nextDate = _calculateNextOccurrence(
+            schedule.nextOccurrence,
+            schedule.frequency,
+          );
           await db.update(
             'recurring_schedules',
             {
@@ -113,10 +120,18 @@ class RecurringProvider extends ChangeNotifier {
         final nextMonth = current.month == 12 ? 1 : current.month + 1;
         final nextYear = current.month == 12 ? current.year + 1 : current.year;
         final daysInNextMonth = DateTime(nextYear, nextMonth + 1, 0).day;
-        final day = current.day > daysInNextMonth ? daysInNextMonth : current.day;
+        final day = current.day > daysInNextMonth
+            ? daysInNextMonth
+            : current.day;
         return DateTime(nextYear, nextMonth, day, current.hour, current.minute);
       case RecurringFrequency.yearly:
-        return DateTime(current.year + 1, current.month, current.day, current.hour, current.minute);
+        return DateTime(
+          current.year + 1,
+          current.month,
+          current.day,
+          current.hour,
+          current.minute,
+        );
     }
   }
 
@@ -135,7 +150,12 @@ class RecurringProvider extends ChangeNotifier {
   Future<bool> updateSchedule(RecurringSchedule schedule) async {
     try {
       final db = await DatabaseHelper.instance.database;
-      await db.update('recurring_schedules', schedule.toMap(), where: 'id = ?', whereArgs: [schedule.id]);
+      await db.update(
+        'recurring_schedules',
+        schedule.toMap(),
+        where: 'id = ?',
+        whereArgs: [schedule.id],
+      );
       await loadSchedules();
       return true;
     } catch (e) {

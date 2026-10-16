@@ -12,7 +12,10 @@ void main() {
     });
 
     test('formatCents formats with Amharic suffix correctly', () {
-      expect(CurrencyFormatter.formatCents(125000, amharicSuffix: true), '1,250.00 ብር');
+      expect(
+        CurrencyFormatter.formatCents(125000, amharicSuffix: true),
+        '1,250.00 ብር',
+      );
     });
 
     test('parseToCents parses string decimals into integer cents', () {

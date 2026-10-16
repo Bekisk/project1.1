@@ -27,10 +27,7 @@ class AnimatedBalanceText extends StatelessWidget {
           value.round(),
           amharicSuffix: showAmharicSuffix,
         );
-        return Text(
-          formatted,
-          style: style,
-        );
+        return Text(formatted, style: style);
       },
     );
   }

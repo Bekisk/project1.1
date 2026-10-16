@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:personal_finance/app/theme/app_theme.dart';
 import 'package:personal_finance/core/formatting/currency_formatter.dart';
+
 import '../models/parsed_sms_transaction.dart';
 import '../services/sms_parser_service.dart';
 import 'sms_quick_confirm_sheet.dart';
@@ -88,7 +89,11 @@ class _SmsScannerDialogState extends State<SmsScannerDialog> {
                     color: AppTheme.primaryGreen.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(Icons.mark_email_read_rounded, color: AppTheme.primaryGreen, size: 22),
+                  child: const Icon(
+                    Icons.mark_email_read_rounded,
+                    color: AppTheme.primaryGreen,
+                    size: 22,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -97,12 +102,16 @@ class _SmsScannerDialogState extends State<SmsScannerDialog> {
                     children: [
                       Text(
                         'SMS & Notification Parser',
-                        style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       Text(
                         'CBE, Awash & Telebirr Auto-Detector',
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                          color: isDark
+                              ? AppTheme.textSecondaryDark
+                              : AppTheme.textSecondaryLight,
                         ),
                       ),
                     ],
@@ -121,7 +130,9 @@ class _SmsScannerDialogState extends State<SmsScannerDialog> {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                color: isDark
+                    ? AppTheme.textSecondaryDark
+                    : AppTheme.textSecondaryLight,
               ),
             ),
             const SizedBox(height: 8),
@@ -130,12 +141,22 @@ class _SmsScannerDialogState extends State<SmsScannerDialog> {
               runSpacing: 6,
               children: _templates.map((tpl) {
                 return ActionChip(
-                  label: Text(tpl['label']!, style: TextStyle(fontSize: 11, color: isDark ? AppTheme.pureWhite : AppTheme.textDark)),
-                  backgroundColor: isDark ? AppTheme.elevatedCharcoal : const Color(0xFFF1F5F9),
+                  label: Text(
+                    tpl['label']!,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: isDark ? AppTheme.pureWhite : AppTheme.textDark,
+                    ),
+                  ),
+                  backgroundColor: isDark
+                      ? AppTheme.elevatedCharcoal
+                      : const Color(0xFFF1F5F9),
                   side: BorderSide(
                     color: isDark ? AppTheme.borderPrimary : Colors.transparent,
                   ),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                   onPressed: () {
                     _textController.text = tpl['text']!;
                     _parseCurrentText();
@@ -156,17 +177,23 @@ class _SmsScannerDialogState extends State<SmsScannerDialog> {
                   fontSize: 12,
                 ),
                 filled: true,
-                fillColor: isDark ? AppTheme.inputCharcoal : const Color(0xFFF8FAFC),
+                fillColor: isDark
+                    ? AppTheme.inputCharcoal
+                    : const Color(0xFFF8FAFC),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                   borderSide: BorderSide(
-                    color: isDark ? AppTheme.borderPrimary : Colors.black.withOpacity(0.06),
+                    color: isDark
+                        ? AppTheme.borderPrimary
+                        : Colors.black.withOpacity(0.06),
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                   borderSide: BorderSide(
-                    color: isDark ? AppTheme.borderPrimary : Colors.black.withOpacity(0.06),
+                    color: isDark
+                        ? AppTheme.borderPrimary
+                        : Colors.black.withOpacity(0.06),
                   ),
                 ),
                 contentPadding: const EdgeInsets.all(12),
@@ -182,14 +209,20 @@ class _SmsScannerDialogState extends State<SmsScannerDialog> {
                 decoration: BoxDecoration(
                   color: AppTheme.primaryGreen.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppTheme.primaryGreen.withOpacity(0.3)),
+                  border: Border.all(
+                    color: AppTheme.primaryGreen.withOpacity(0.3),
+                  ),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.check_circle_rounded, color: AppTheme.primaryGreen, size: 18),
+                        const Icon(
+                          Icons.check_circle_rounded,
+                          color: AppTheme.primaryGreen,
+                          size: 18,
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           '${_parsedResult!.providerDisplayName} Detected',
@@ -208,12 +241,18 @@ class _SmsScannerDialogState extends State<SmsScannerDialog> {
                     ),
                     Text(
                       'Amount: ${CurrencyFormatter.formatCents(_parsedResult!.amountCents)}',
-                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     if (_parsedResult!.feeCents > 0)
                       Text(
                         'Separate Fee: ${CurrencyFormatter.formatCents(_parsedResult!.feeCents)}',
-                        style: const TextStyle(fontSize: 12, color: AppTheme.accentAmber),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: AppTheme.accentAmber,
+                        ),
                       ),
                     if (_parsedResult!.partyOrMerchant != null)
                       Text(
@@ -223,7 +262,10 @@ class _SmsScannerDialogState extends State<SmsScannerDialog> {
                     if (_parsedResult!.reportedBalanceCents != null)
                       Text(
                         'Bank Reported Balance: ${CurrencyFormatter.formatCents(_parsedResult!.reportedBalanceCents!)}',
-                        style: const TextStyle(fontSize: 11, color: Colors.grey),
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: Colors.grey,
+                        ),
                       ),
                   ],
                 ),
@@ -235,11 +277,16 @@ class _SmsScannerDialogState extends State<SmsScannerDialog> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primaryGreen,
                     foregroundColor: Colors.black,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
                   icon: const Icon(Icons.flash_on_rounded, size: 18),
-                  label: const Text('Confirm & Auto-Log', style: TextStyle(fontWeight: FontWeight.bold)),
+                  label: const Text(
+                    'Confirm & Auto-Log',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   onPressed: () {
                     Navigator.pop(context);
                     SmsQuickConfirmSheet.show(
@@ -249,7 +296,8 @@ class _SmsScannerDialogState extends State<SmsScannerDialog> {
                   },
                 ),
               ),
-            ] else if (_hasAttemptedParse && _textController.text.trim().isNotEmpty) ...[
+            ] else if (_hasAttemptedParse &&
+                _textController.text.trim().isNotEmpty) ...[
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(

@@ -70,14 +70,18 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             ? TextField(
                 controller: _searchController,
                 autofocus: true,
-                style: TextStyle(color: isDark ? Colors.white : AppTheme.textDark),
+                style: TextStyle(
+                  color: isDark ? Colors.white : AppTheme.textDark,
+                ),
                 decoration: InputDecoration(
                   hintText: 'Search title, account, category...',
                   border: InputBorder.none,
                   enabledBorder: InputBorder.none,
                   focusedBorder: InputBorder.none,
                   hintStyle: TextStyle(
-                    color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                    color: isDark
+                        ? AppTheme.textSecondaryDark
+                        : AppTheme.textSecondaryLight,
                   ),
                 ),
                 onChanged: (val) => provider.setSearchQuery(val),
@@ -139,12 +143,17 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                 color: AppTheme.primaryGreen,
                 onRefresh: () => provider.loadTransactions(),
                 child: CustomScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                  physics: const AlwaysScrollableScrollPhysics(
+                    parent: BouncingScrollPhysics(),
+                  ),
                   slivers: [
                     // 1. Period Cashflow Summary Header
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
                         child: _buildSummaryCard(context, provider, isDark),
                       ),
                     ),
@@ -152,7 +161,10 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                     // 2. Segmented Transaction Type Tabs
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
                         child: _buildTypeTabs(context, provider, isDark),
                       ),
                     ),
@@ -161,8 +173,15 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                     if (filter.hasActiveFilters)
                       SliverToBoxAdapter(
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                          child: _buildActiveFilterBar(context, provider, isDark),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 4,
+                          ),
+                          child: _buildActiveFilterBar(
+                            context,
+                            provider,
+                            isDark,
+                          ),
                         ),
                       ),
 
@@ -174,22 +193,27 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                       )
                     else
                       SliverPadding(
-                        padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 110),
+                        padding: const EdgeInsets.only(
+                          left: 16,
+                          right: 16,
+                          top: 8,
+                          bottom: 110,
+                        ),
                         sliver: SliverList(
-                          delegate: SliverChildBuilderDelegate(
-                            (context, index) {
-                              final date = sortedDates[index];
-                              final transactionsOnDate = grouped[date]!;
-                              return _buildDateGroupSection(
-                                context,
-                                date,
-                                transactionsOnDate,
-                                provider,
-                                isDark,
-                              );
-                            },
-                            childCount: sortedDates.length,
-                          ),
+                          delegate: SliverChildBuilderDelegate((
+                            context,
+                            index,
+                          ) {
+                            final date = sortedDates[index];
+                            final transactionsOnDate = grouped[date]!;
+                            return _buildDateGroupSection(
+                              context,
+                              date,
+                              transactionsOnDate,
+                              provider,
+                              isDark,
+                            );
+                          }, childCount: sortedDates.length),
                         ),
                       ),
                   ],
@@ -199,7 +223,11 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
     );
   }
 
-  Widget _buildSummaryCard(BuildContext context, TransactionsProvider provider, bool isDark) {
+  Widget _buildSummaryCard(
+    BuildContext context,
+    TransactionsProvider provider,
+    bool isDark,
+  ) {
     final income = provider.filteredTotalIncome;
     final expense = provider.filteredTotalExpense;
     final net = provider.filteredNetCashFlow;
@@ -220,7 +248,9 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 0.5,
-                    color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                    color: isDark
+                        ? AppTheme.textSecondaryDark
+                        : AppTheme.textSecondaryLight,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -228,10 +258,16 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
               const SizedBox(width: 8),
               Flexible(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
-                    color: (netPositive ? AppTheme.primaryGreen : AppTheme.expenseRed)
-                        .withValues(alpha: isDark ? 0.2 : 0.1),
+                    color:
+                        (netPositive
+                                ? AppTheme.primaryGreen
+                                : AppTheme.expenseRed)
+                            .withValues(alpha: isDark ? 0.2 : 0.1),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: FittedBox(
@@ -241,7 +277,9 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
-                        color: netPositive ? AppTheme.primaryGreen : AppTheme.expenseRed,
+                        color: netPositive
+                            ? AppTheme.primaryGreen
+                            : AppTheme.expenseRed,
                       ),
                     ),
                   ),
@@ -261,14 +299,21 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                         color: AppTheme.incomeGreen.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Icon(Icons.arrow_downward_rounded, size: 14, color: AppTheme.incomeGreen),
+                      child: const Icon(
+                        Icons.arrow_downward_rounded,
+                        size: 14,
+                        color: AppTheme.incomeGreen,
+                      ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Income', style: TextStyle(fontSize: 11, color: Colors.grey)),
+                          const Text(
+                            'Income',
+                            style: TextStyle(fontSize: 11, color: Colors.grey),
+                          ),
                           AnimatedBalanceText(
                             cents: income,
                             style: const TextStyle(
@@ -283,7 +328,11 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                   ],
                 ),
               ),
-              Container(width: 1, height: 28, color: isDark ? AppTheme.borderDark : AppTheme.borderLight),
+              Container(
+                width: 1,
+                height: 28,
+                color: isDark ? AppTheme.borderDark : AppTheme.borderLight,
+              ),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(left: 12),
@@ -295,14 +344,24 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                           color: AppTheme.expenseRed.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Icon(Icons.arrow_upward_rounded, size: 14, color: AppTheme.expenseRed),
+                        child: const Icon(
+                          Icons.arrow_upward_rounded,
+                          size: 14,
+                          color: AppTheme.expenseRed,
+                        ),
                       ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text('Expense', style: TextStyle(fontSize: 11, color: Colors.grey)),
+                            const Text(
+                              'Expense',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Colors.grey,
+                              ),
+                            ),
                             AnimatedBalanceText(
                               cents: expense,
                               style: const TextStyle(
@@ -325,7 +384,11 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
     );
   }
 
-  Widget _buildTypeTabs(BuildContext context, TransactionsProvider provider, bool isDark) {
+  Widget _buildTypeTabs(
+    BuildContext context,
+    TransactionsProvider provider,
+    bool isDark,
+  ) {
     final currentType = provider.filter.type;
 
     return Container(
@@ -388,13 +451,13 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                 ? (isDark ? AppTheme.pureWhite : Colors.white)
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(14),
-            border: isSelected && isDark
-                ? null
-                : null,
+            border: isSelected && isDark ? null : null,
             boxShadow: isSelected
                 ? [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.08),
+                      color: Colors.black.withValues(
+                        alpha: isDark ? 0.35 : 0.08,
+                      ),
                       blurRadius: 10,
                       offset: const Offset(0, 3),
                     ),
@@ -409,7 +472,9 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                 color: isSelected
                     ? (isDark ? AppTheme.pureBlack : const Color(0xFF0F5747))
-                    : (isDark ? AppTheme.secondaryGray : AppTheme.textSecondaryLight),
+                    : (isDark
+                          ? AppTheme.secondaryGray
+                          : AppTheme.textSecondaryLight),
               ),
             ),
           ),
@@ -418,7 +483,11 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
     );
   }
 
-  Widget _buildActiveFilterBar(BuildContext context, TransactionsProvider provider, bool isDark) {
+  Widget _buildActiveFilterBar(
+    BuildContext context,
+    TransactionsProvider provider,
+    bool isDark,
+  ) {
     return Row(
       children: [
         Container(
@@ -430,11 +499,19 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.filter_list_rounded, size: 14, color: AppTheme.primaryGreen),
+              const Icon(
+                Icons.filter_list_rounded,
+                size: 14,
+                color: AppTheme.primaryGreen,
+              ),
               const SizedBox(width: 4),
               Text(
                 '${provider.filter.activeFilterCount} Active Filters',
-                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppTheme.primaryGreen),
+                style: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.primaryGreen,
+                ),
               ),
             ],
           ),
@@ -444,7 +521,11 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
           onTap: () => provider.resetFilters(),
           child: const Text(
             'Clear',
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.primaryGreen),
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: AppTheme.primaryGreen,
+            ),
           ),
         ),
       ],
@@ -472,14 +553,18 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
                   letterSpacing: -0.2,
-                  color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                  color: isDark
+                      ? AppTheme.textSecondaryDark
+                      : AppTheme.textSecondaryLight,
                 ),
               ),
               Text(
                 '${transactions.length} items',
                 style: TextStyle(
                   fontSize: 11,
-                  color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                  color: isDark
+                      ? AppTheme.textSecondaryDark
+                      : AppTheme.textSecondaryLight,
                 ),
               ),
             ],
@@ -505,8 +590,8 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
     final color = isExpense
         ? AppTheme.expenseRed
         : isIncome
-            ? AppTheme.incomeGreen
-            : AppTheme.transferBlue;
+        ? AppTheme.incomeGreen
+        : AppTheme.transferBlue;
 
     final prefix = isExpense ? '-' : (isIncome ? '+' : '');
 
@@ -515,7 +600,9 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
         ? (provider.accountMap[tx.destinationAccountId]?.name ?? 'Account')
         : null;
 
-    final category = tx.categoryId != null ? provider.categoryMap[tx.categoryId] : null;
+    final category = tx.categoryId != null
+        ? provider.categoryMap[tx.categoryId]
+        : null;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
@@ -546,8 +633,8 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                     isExpense
                         ? Icons.arrow_upward_rounded
                         : isIncome
-                            ? Icons.arrow_downward_rounded
-                            : Icons.swap_horiz_rounded,
+                        ? Icons.arrow_downward_rounded
+                        : Icons.swap_horiz_rounded,
                     color: color,
                     size: 20,
                   ),
@@ -564,7 +651,10 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                     tx.description,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
                   ),
                   const SizedBox(height: 3),
                   if (isTransfer)
@@ -577,13 +667,19 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               fontSize: 12,
-                              color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                              color: isDark
+                                  ? AppTheme.textSecondaryDark
+                                  : AppTheme.textSecondaryLight,
                             ),
                           ),
                         ),
                         const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 4),
-                          child: Icon(Icons.arrow_forward_rounded, size: 11, color: AppTheme.transferBlue),
+                          child: Icon(
+                            Icons.arrow_forward_rounded,
+                            size: 11,
+                            color: AppTheme.transferBlue,
+                          ),
                         ),
                         Flexible(
                           child: Text(
@@ -592,7 +688,9 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               fontSize: 12,
-                              color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                              color: isDark
+                                  ? AppTheme.textSecondaryDark
+                                  : AppTheme.textSecondaryLight,
                             ),
                           ),
                         ),
@@ -606,20 +704,27 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                             sourceAccount,
                             style: TextStyle(
                               fontSize: 12,
-                              color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                              color: isDark
+                                  ? AppTheme.textSecondaryDark
+                                  : AppTheme.textSecondaryLight,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         if (category != null) ...[
-                          const Text(' • ', style: TextStyle(color: Colors.grey, fontSize: 11)),
+                          const Text(
+                            ' • ',
+                            style: TextStyle(color: Colors.grey, fontSize: 11),
+                          ),
                           Flexible(
                             child: Text(
                               category.name,
                               style: TextStyle(
                                 fontSize: 12,
-                                color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                                color: isDark
+                                    ? AppTheme.textSecondaryDark
+                                    : AppTheme.textSecondaryLight,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -651,7 +756,9 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                   DateFormat('hh:mm a').format(tx.transactionDate.toLocal()),
                   style: TextStyle(
                     fontSize: 11,
-                    color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                    color: isDark
+                        ? AppTheme.textSecondaryDark
+                        : AppTheme.textSecondaryLight,
                   ),
                 ),
               ],
@@ -662,7 +769,11 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
     );
   }
 
-  Widget _buildEmptyState(BuildContext context, TransactionsProvider provider, bool isDark) {
+  Widget _buildEmptyState(
+    BuildContext context,
+    TransactionsProvider provider,
+    bool isDark,
+  ) {
     final hasFilter = provider.filter.hasActiveFilters;
 
     return Center(
@@ -674,18 +785,26 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: isDark ? AppTheme.elevatedCharcoal : const Color(0xFFF1F5F9),
+                color: isDark
+                    ? AppTheme.elevatedCharcoal
+                    : const Color(0xFFF1F5F9),
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                hasFilter ? Icons.filter_alt_off_rounded : Icons.receipt_long_rounded,
+                hasFilter
+                    ? Icons.filter_alt_off_rounded
+                    : Icons.receipt_long_rounded,
                 size: 44,
-                color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                color: isDark
+                    ? AppTheme.textSecondaryDark
+                    : AppTheme.textSecondaryLight,
               ),
             ),
             const SizedBox(height: 16),
             Text(
-              hasFilter ? 'No Matching Transactions' : 'No Transactions Recorded',
+              hasFilter
+                  ? 'No Matching Transactions'
+                  : 'No Transactions Recorded',
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 6),
@@ -696,7 +815,9 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 13,
-                color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                color: isDark
+                    ? AppTheme.textSecondaryDark
+                    : AppTheme.textSecondaryLight,
                 height: 1.4,
               ),
             ),
@@ -705,13 +826,25 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
               onPressed: hasFilter
                   ? () => provider.resetFilters()
                   : () => AddTransactionSheet.show(context),
-              icon: Icon(hasFilter ? Icons.restart_alt_rounded : Icons.add_rounded, size: 18),
-              label: Text(hasFilter ? 'Reset Filters' : 'Add First Transaction'),
+              icon: Icon(
+                hasFilter ? Icons.restart_alt_rounded : Icons.add_rounded,
+                size: 18,
+              ),
+              label: Text(
+                hasFilter ? 'Reset Filters' : 'Add First Transaction',
+              ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: isDark ? AppTheme.primaryGreen : AppTheme.primaryNavy,
+                backgroundColor: isDark
+                    ? AppTheme.primaryGreen
+                    : AppTheme.primaryNavy,
                 foregroundColor: isDark ? AppTheme.deepNavy : Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
                 elevation: 0,
               ),
             ),

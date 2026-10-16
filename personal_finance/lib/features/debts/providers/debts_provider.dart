@@ -11,8 +11,10 @@ class DebtsProvider extends ChangeNotifier {
   List<Debt> get debts => _debts;
   bool get isLoading => _isLoading;
 
-  List<Debt> get debtsIOwe => _debts.where((d) => d.type == DebtType.iOwe).toList();
-  List<Debt> get debtsOwedToMe => _debts.where((d) => d.type == DebtType.owesMe).toList();
+  List<Debt> get debtsIOwe =>
+      _debts.where((d) => d.type == DebtType.iOwe).toList();
+  List<Debt> get debtsOwedToMe =>
+      _debts.where((d) => d.type == DebtType.owesMe).toList();
 
   int get totalIOweCents => debtsIOwe
       .where((d) => d.status != DebtStatus.settled)
@@ -55,7 +57,12 @@ class DebtsProvider extends ChangeNotifier {
   Future<bool> updateDebt(Debt debt) async {
     try {
       final db = await DatabaseHelper.instance.database;
-      await db.update('debts', debt.toMap(), where: 'id = ?', whereArgs: [debt.id]);
+      await db.update(
+        'debts',
+        debt.toMap(),
+        where: 'id = ?',
+        whereArgs: [debt.id],
+      );
       await loadDebts();
       return true;
     } catch (e) {
@@ -97,7 +104,9 @@ class DebtsProvider extends ChangeNotifier {
       final date = settlementDate ?? now;
       final newSettledTotal = debt.settledAmount + settleAmountCents;
       final isFullySettled = newSettledTotal >= debt.totalAmount;
-      final newStatus = isFullySettled ? DebtStatus.settled : DebtStatus.partial;
+      final newStatus = isFullySettled
+          ? DebtStatus.settled
+          : DebtStatus.partial;
 
       // 1. Update Debt record
       await db.update(

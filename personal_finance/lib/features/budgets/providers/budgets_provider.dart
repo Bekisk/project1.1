@@ -6,13 +6,7 @@ import 'package:personal_finance/features/budgets/services/budget_calculation_se
 import 'package:personal_finance/features/categories/models/category.dart';
 import 'package:personal_finance/features/transactions/models/financial_transaction.dart';
 
-enum BudgetPeriodFilter {
-  thisWeek,
-  thisMonth,
-  lastMonth,
-  thisYear,
-  custom,
-}
+enum BudgetPeriodFilter { thisWeek, thisMonth, lastMonth, thisYear, custom }
 
 class BudgetsProvider extends ChangeNotifier {
   List<Budget> _budgets = [];
@@ -56,8 +50,13 @@ class BudgetsProvider extends ChangeNotifier {
       _accountMap = {for (final a in _accounts) a.id: a};
 
       // 3. Load transactions
-      final txMaps = await db.query('transactions', orderBy: 'transaction_date DESC');
-      _transactions = txMaps.map((e) => FinancialTransaction.fromMap(e)).toList();
+      final txMaps = await db.query(
+        'transactions',
+        orderBy: 'transaction_date DESC',
+      );
+      _transactions = txMaps
+          .map((e) => FinancialTransaction.fromMap(e))
+          .toList();
 
       // 4. Load budgets
       final budgetMaps = await db.query('budgets', where: 'is_archived = 0');
@@ -70,7 +69,11 @@ class BudgetsProvider extends ChangeNotifier {
     }
   }
 
-  void setPeriodFilter(BudgetPeriodFilter filter, {DateTime? customStart, DateTime? customEnd}) {
+  void setPeriodFilter(
+    BudgetPeriodFilter filter, {
+    DateTime? customStart,
+    DateTime? customEnd,
+  }) {
     _selectedPeriod = filter;
     _customPeriodStart = customStart;
     _customPeriodEnd = customEnd;
@@ -83,12 +86,26 @@ class BudgetsProvider extends ChangeNotifier {
     switch (_selectedPeriod) {
       case BudgetPeriodFilter.thisWeek:
         final weekday = now.weekday; // 1 = Monday
-        final weekStart = DateTime(now.year, now.month, now.day - (weekday - 1));
-        final weekEnd = DateTime(weekStart.year, weekStart.month, weekStart.day + 6, 23, 59, 59, 999);
+        final weekStart = DateTime(
+          now.year,
+          now.month,
+          now.day - (weekday - 1),
+        );
+        final weekEnd = DateTime(
+          weekStart.year,
+          weekStart.month,
+          weekStart.day + 6,
+          23,
+          59,
+          59,
+          999,
+        );
         return (weekStart, weekEnd);
       case BudgetPeriodFilter.thisMonth:
         final mStart = DateTime(now.year, now.month, 1);
-        final nextM = now.month == 12 ? DateTime(now.year + 1, 1, 1) : DateTime(now.year, now.month + 1, 1);
+        final nextM = now.month == 12
+            ? DateTime(now.year + 1, 1, 1)
+            : DateTime(now.year, now.month + 1, 1);
         final mEnd = nextM.subtract(const Duration(milliseconds: 1));
         return (mStart, mEnd);
       case BudgetPeriodFilter.lastMonth:
@@ -105,13 +122,27 @@ class BudgetsProvider extends ChangeNotifier {
       case BudgetPeriodFilter.custom:
         if (_customPeriodStart != null && _customPeriodEnd != null) {
           return (
-            DateTime(_customPeriodStart!.year, _customPeriodStart!.month, _customPeriodStart!.day),
-            DateTime(_customPeriodEnd!.year, _customPeriodEnd!.month, _customPeriodEnd!.day, 23, 59, 59, 999),
+            DateTime(
+              _customPeriodStart!.year,
+              _customPeriodStart!.month,
+              _customPeriodStart!.day,
+            ),
+            DateTime(
+              _customPeriodEnd!.year,
+              _customPeriodEnd!.month,
+              _customPeriodEnd!.day,
+              23,
+              59,
+              59,
+              999,
+            ),
           );
         }
         // Fallback to this month
         final mStart = DateTime(now.year, now.month, 1);
-        final nextM = now.month == 12 ? DateTime(now.year + 1, 1, 1) : DateTime(now.year, now.month + 1, 1);
+        final nextM = now.month == 12
+            ? DateTime(now.year + 1, 1, 1)
+            : DateTime(now.year, now.month + 1, 1);
         return (mStart, nextM.subtract(const Duration(milliseconds: 1)));
     }
   }
@@ -127,7 +158,8 @@ class BudgetsProvider extends ChangeNotifier {
       final bStart = b.periodStart.toLocal();
       final bEnd = b.periodEnd.toLocal();
 
-      final overlaps = !(bEnd.isBefore(periodStart) || bStart.isAfter(periodEnd));
+      final overlaps =
+          !(bEnd.isBefore(periodStart) || bStart.isAfter(periodEnd));
       return overlaps;
     }).toList();
   }
@@ -143,7 +175,9 @@ class BudgetsProvider extends ChangeNotifier {
 
   /// Calculates single budget progress with contributing transactions
   BudgetCalculationResult calculateSingleBudget(Budget budget) {
-    final cat = budget.categoryId != null ? _categoryMap[budget.categoryId] : null;
+    final cat = budget.categoryId != null
+        ? _categoryMap[budget.categoryId]
+        : null;
     return BudgetCalculationService.calculateBudgetProgress(
       budget: budget,
       transactions: _transactions,
@@ -176,7 +210,11 @@ class BudgetsProvider extends ChangeNotifier {
   Future<bool> deleteBudget(String budgetId) async {
     try {
       final db = await DatabaseHelper.instance.database;
-      final count = await db.delete('budgets', where: 'id = ?', whereArgs: [budgetId]);
+      final count = await db.delete(
+        'budgets',
+        where: 'id = ?',
+        whereArgs: [budgetId],
+      );
       if (count > 0) {
         await loadBudgetData();
         return true;

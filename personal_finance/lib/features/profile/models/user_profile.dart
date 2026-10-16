@@ -78,10 +78,15 @@ class UserProfile {
       preferredLanguage: map['preferred_language'] as String? ?? 'English',
       preferredCurrency: map['preferred_currency'] as String? ?? 'ETB',
       mainAccountId: map['main_account_id'] as String?,
-      designatedSavingsAccountId: map['designated_savings_account_id'] as String?,
+      designatedSavingsAccountId:
+          map['designated_savings_account_id'] as String?,
       onboardingCompleted: (map['onboarding_completed'] as int? ?? 0) == 1,
-      createdAt: DateTime.tryParse(map['created_at'] as String? ?? '') ?? DateTime.now(),
-      updatedAt: DateTime.tryParse(map['updated_at'] as String? ?? '') ?? DateTime.now(),
+      createdAt:
+          DateTime.tryParse(map['created_at'] as String? ?? '') ??
+          DateTime.now(),
+      updatedAt:
+          DateTime.tryParse(map['updated_at'] as String? ?? '') ??
+          DateTime.now(),
     );
   }
 
@@ -114,14 +119,17 @@ class UserProfile {
       occupation: occupation ?? this.occupation,
       countryOrRegion: countryOrRegion ?? this.countryOrRegion,
       ageRange: ageRange ?? this.ageRange,
-      profileImagePath: clearProfileImage ? null : (profileImagePath ?? this.profileImagePath),
+      profileImagePath: clearProfileImage
+          ? null
+          : (profileImagePath ?? this.profileImagePath),
       discoverySource: discoverySource ?? this.discoverySource,
       discoverySourceOther: discoverySourceOther ?? this.discoverySourceOther,
       personalGoal: personalGoal ?? this.personalGoal,
       preferredLanguage: preferredLanguage ?? this.preferredLanguage,
       preferredCurrency: preferredCurrency ?? this.preferredCurrency,
       mainAccountId: mainAccountId ?? this.mainAccountId,
-      designatedSavingsAccountId: designatedSavingsAccountId ?? this.designatedSavingsAccountId,
+      designatedSavingsAccountId:
+          designatedSavingsAccountId ?? this.designatedSavingsAccountId,
       onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,

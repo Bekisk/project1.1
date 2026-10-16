@@ -63,7 +63,8 @@ class _AddContributionSheetState extends State<AddContributionSheet> {
     _selectedDate = edit?.contributionDate ?? DateTime.now();
     _selectedMode = edit?.mode ?? ContributionMode.manual;
     _selectedSourceAccountId = edit?.sourceAccountId;
-    _selectedDestinationAccountId = edit?.destinationAccountId ?? widget.goal.linkedAccountId;
+    _selectedDestinationAccountId =
+        edit?.destinationAccountId ?? widget.goal.linkedAccountId;
   }
 
   @override
@@ -93,7 +94,9 @@ class _AddContributionSheetState extends State<AddContributionSheet> {
     final amountCents = (parsed * 100).round();
     if (amountCents <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Contribution amount must be greater than zero')),
+        const SnackBar(
+          content: Text('Contribution amount must be greater than zero'),
+        ),
       );
       return;
     }
@@ -107,13 +110,17 @@ class _AddContributionSheetState extends State<AddContributionSheet> {
       }
       if (_selectedDestinationAccountId == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please select a destination savings account')),
+          const SnackBar(
+            content: Text('Please select a destination savings account'),
+          ),
         );
         return;
       }
       if (_selectedSourceAccountId == _selectedDestinationAccountId) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Source and destination accounts must be different')),
+          const SnackBar(
+            content: Text('Source and destination accounts must be different'),
+          ),
         );
         return;
       }
@@ -129,7 +136,9 @@ class _AddContributionSheetState extends State<AddContributionSheet> {
           contribution: widget.contributionToEdit!,
           newAmount: amountCents,
           newDate: _selectedDate,
-          newNotes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+          newNotes: _notesController.text.trim().isEmpty
+              ? null
+              : _notesController.text.trim(),
         );
 
         if (mounted) {
@@ -152,10 +161,16 @@ class _AddContributionSheetState extends State<AddContributionSheet> {
         }
       } else {
         // New contribution
-        final existingContribs = goalsProvider.getContributionsForGoal(widget.goal.id);
-        final priorSaved = SavingsCalculationService.calculateTotalSaved(existingContribs);
+        final existingContribs = goalsProvider.getContributionsForGoal(
+          widget.goal.id,
+        );
+        final priorSaved = SavingsCalculationService.calculateTotalSaved(
+          existingContribs,
+        );
         final newTotal = priorSaved + amountCents;
-        final willComplete = newTotal >= widget.goal.targetAmount && priorSaved < widget.goal.targetAmount;
+        final willComplete =
+            newTotal >= widget.goal.targetAmount &&
+            priorSaved < widget.goal.targetAmount;
 
         final res = await goalsProvider.addContribution(
           goalId: widget.goal.id,
@@ -164,7 +179,9 @@ class _AddContributionSheetState extends State<AddContributionSheet> {
           mode: _selectedMode,
           sourceAccountId: _selectedSourceAccountId,
           destinationAccountId: _selectedDestinationAccountId,
-          notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+          notes: _notesController.text.trim().isEmpty
+              ? null
+              : _notesController.text.trim(),
         );
 
         if (mounted) {
@@ -196,9 +213,8 @@ class _AddContributionSheetState extends State<AddContributionSheet> {
     } catch (e) {
       if (mounted) {
         setState(() => _isSaving = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     }
   }
@@ -212,7 +228,11 @@ class _AddContributionSheetState extends State<AddContributionSheet> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Row(
           children: [
-            Icon(Icons.celebration_rounded, color: AppTheme.accentAmber, size: 28),
+            Icon(
+              Icons.celebration_rounded,
+              color: AppTheme.accentAmber,
+              size: 28,
+            ),
             SizedBox(width: 8),
             Text('Goal Reached! 🎉'),
           ],
@@ -233,14 +253,19 @@ class _AddContributionSheetState extends State<AddContributionSheet> {
             if (excess > 0)
               Text(
                 'Over-target surplus: ${CurrencyFormatter.formatCents(excess)}',
-                style: const TextStyle(color: AppTheme.primaryGreen, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  color: AppTheme.primaryGreen,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
           ],
         ),
         actions: [
           FilledButton(
             onPressed: () => Navigator.pop(ctx),
-            style: FilledButton.styleFrom(backgroundColor: AppTheme.primaryGreen),
+            style: FilledButton.styleFrom(
+              backgroundColor: AppTheme.primaryGreen,
+            ),
             child: const Text('Awesome!'),
           ),
         ],
@@ -326,7 +351,9 @@ class _AddContributionSheetState extends State<AddContributionSheet> {
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF8FAFC),
+                  color: isDark
+                      ? const Color(0xFF1E293B)
+                      : const Color(0xFFF8FAFC),
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(
                     color: isDark ? AppTheme.borderDark : AppTheme.borderLight,
@@ -338,29 +365,46 @@ class _AddContributionSheetState extends State<AddContributionSheet> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Current Saved', style: TextStyle(fontSize: 11, color: Colors.grey)),
+                        const Text(
+                          'Current Saved',
+                          style: TextStyle(fontSize: 11, color: Colors.grey),
+                        ),
                         Text(
                           CurrencyFormatter.formatCents(summary.totalSaved),
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
                         ),
                       ],
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const Text('Target', style: TextStyle(fontSize: 11, color: Colors.grey)),
+                        const Text(
+                          'Target',
+                          style: TextStyle(fontSize: 11, color: Colors.grey),
+                        ),
                         Text(
                           CurrencyFormatter.formatCents(summary.targetAmount),
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
                         ),
                       ],
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        const Text('Remaining', style: TextStyle(fontSize: 11, color: Colors.grey)),
+                        const Text(
+                          'Remaining',
+                          style: TextStyle(fontSize: 11, color: Colors.grey),
+                        ),
                         Text(
-                          CurrencyFormatter.formatCents(summary.remainingAmount),
+                          CurrencyFormatter.formatCents(
+                            summary.remainingAmount,
+                          ),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
@@ -377,13 +421,17 @@ class _AddContributionSheetState extends State<AddContributionSheet> {
               // Amount input
               TextFormField(
                 controller: _amountController,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 autofocus: true,
                 decoration: InputDecoration(
                   labelText: 'Contribution Amount (ETB) *',
                   hintText: '500.00',
                   prefixIcon: const Icon(Icons.attach_money_rounded),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) {
@@ -400,7 +448,10 @@ class _AddContributionSheetState extends State<AddContributionSheet> {
 
               // Mode selector (Only for new contribution)
               if (!isEdit) ...[
-                Text('Contribution Accounting Method', style: theme.textTheme.labelLarge),
+                Text(
+                  'Contribution Accounting Method',
+                  style: theme.textTheme.labelLarge,
+                ),
                 const SizedBox(height: 6),
                 SegmentedButton<ContributionMode>(
                   segments: const [
@@ -416,14 +467,17 @@ class _AddContributionSheetState extends State<AddContributionSheet> {
                     ),
                   ],
                   selected: {_selectedMode},
-                  onSelectionChanged: (set) => setState(() => _selectedMode = set.first),
+                  onSelectionChanged: (set) =>
+                      setState(() => _selectedMode = set.first),
                 ),
                 const SizedBox(height: 6),
                 Text(
                   _selectedMode == ContributionMode.manual
                       ? '• Merely records savings progress without debiting any account balances.'
                       : '• Moves real money between accounts via an internal transfer. Does NOT create an expense.',
-                  style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: Colors.grey,
+                  ),
                 ),
                 const SizedBox(height: 14),
 
@@ -435,15 +489,21 @@ class _AddContributionSheetState extends State<AddContributionSheet> {
                     decoration: InputDecoration(
                       labelText: 'Source Account (Debited)',
                       prefixIcon: const Icon(Icons.account_balance_rounded),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                     items: accounts.map((acc) {
                       return DropdownMenuItem(
                         value: acc.id,
-                        child: Text('${acc.name} (${acc.currencyCode})', overflow: TextOverflow.ellipsis),
+                        child: Text(
+                          '${acc.name} (${acc.currencyCode})',
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       );
                     }).toList(),
-                    onChanged: (val) => setState(() => _selectedSourceAccountId = val),
+                    onChanged: (val) =>
+                        setState(() => _selectedSourceAccountId = val),
                   ),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
@@ -452,15 +512,21 @@ class _AddContributionSheetState extends State<AddContributionSheet> {
                     decoration: InputDecoration(
                       labelText: 'Destination Account (Credited)',
                       prefixIcon: const Icon(Icons.savings_rounded),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                     items: accounts.map((acc) {
                       return DropdownMenuItem(
                         value: acc.id,
-                        child: Text('${acc.name} (${acc.currencyCode})', overflow: TextOverflow.ellipsis),
+                        child: Text(
+                          '${acc.name} (${acc.currencyCode})',
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       );
                     }).toList(),
-                    onChanged: (val) => setState(() => _selectedDestinationAccountId = val),
+                    onChanged: (val) =>
+                        setState(() => _selectedDestinationAccountId = val),
                   ),
                   const SizedBox(height: 14),
                 ],
@@ -470,7 +536,9 @@ class _AddContributionSheetState extends State<AddContributionSheet> {
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.calendar_today_rounded),
-                title: Text('Date: ${DateFormat('MMM dd, yyyy').format(_selectedDate)}'),
+                title: Text(
+                  'Date: ${DateFormat('MMM dd, yyyy').format(_selectedDate)}',
+                ),
                 trailing: TextButton(
                   onPressed: _pickDate,
                   child: const Text('Change'),
@@ -486,7 +554,9 @@ class _AddContributionSheetState extends State<AddContributionSheet> {
                 decoration: InputDecoration(
                   labelText: 'Note (Optional)',
                   hintText: 'e.g. Monthly salary savings allocation',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -498,19 +568,29 @@ class _AddContributionSheetState extends State<AddContributionSheet> {
                 child: FilledButton(
                   onPressed: _isSaving ? null : _submitContribution,
                   style: FilledButton.styleFrom(
-                    backgroundColor: isDark ? AppTheme.primaryGreen : AppTheme.primaryNavy,
+                    backgroundColor: isDark
+                        ? AppTheme.primaryGreen
+                        : AppTheme.primaryNavy,
                     foregroundColor: isDark ? AppTheme.deepNavy : Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                   ),
                   child: _isSaving
                       ? const SizedBox(
                           width: 24,
                           height: 24,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
                         )
                       : Text(
                           isEdit ? 'Update Contribution' : 'Add Contribution',
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
                         ),
                 ),
               ),

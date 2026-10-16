@@ -8,11 +8,7 @@ class BurnRateCard extends StatelessWidget {
   final DashboardSummary summary;
   final bool isDark;
 
-  const BurnRateCard({
-    super.key,
-    required this.summary,
-    required this.isDark,
-  });
+  const BurnRateCard({super.key, required this.summary, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
@@ -119,7 +115,9 @@ class BurnRateCard extends StatelessWidget {
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 0.8,
-                    color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                    color: isDark
+                        ? AppTheme.textSecondaryDark
+                        : AppTheme.textSecondaryLight,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -145,7 +143,9 @@ class BurnRateCard extends StatelessWidget {
                         color: isDark ? Colors.white : Colors.black87,
                       ),
                       children: [
-                        const TextSpan(text: 'At your current spending rate, your balance will last '),
+                        const TextSpan(
+                          text: 'At your current spending rate, your balance will last ',
+                        ),
                         TextSpan(
                           text: '$runwayDays days',
                           style: TextStyle(
@@ -206,7 +206,9 @@ class BurnRateCard extends StatelessWidget {
         color: isDark ? const Color(0xFF111827) : const Color(0xFFF8FAFC),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.04),
+          color: isDark
+              ? Colors.white.withOpacity(0.05)
+              : Colors.black.withOpacity(0.04),
         ),
       ),
       child: Column(
@@ -217,7 +219,9 @@ class BurnRateCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w600,
-              color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+              color: isDark
+                  ? AppTheme.textSecondaryDark
+                  : AppTheme.textSecondaryLight,
             ),
           ),
           const SizedBox(height: 4),

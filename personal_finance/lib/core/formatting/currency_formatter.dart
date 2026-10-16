@@ -14,7 +14,11 @@ class CurrencyFormatter {
   }
 
   /// Converts cents (integer) to formatted currency string (e.g. "ETB 1,250.00")
-  static String formatCents(int cents, {bool amharicSuffix = false, String? customSymbol}) {
+  static String formatCents(
+    int cents, {
+    bool amharicSuffix = false,
+    String? customSymbol,
+  }) {
     final double amount = cents / 100.0;
     if (amharicSuffix) {
       final NumberFormat numFormat = NumberFormat('#,##0.00');
@@ -28,7 +32,10 @@ class CurrencyFormatter {
   /// Compact format for dashboard badges or charts (e.g. "ETB 1.2K")
   static String formatCentsCompact(int cents, {String? customSymbol}) {
     final sym = customSymbol ?? _activeCurrencySymbol;
-    final formatter = NumberFormat.compactCurrency(symbol: sym, decimalDigits: 1);
+    final formatter = NumberFormat.compactCurrency(
+      symbol: sym,
+      decimalDigits: 1,
+    );
     return formatter.format(cents / 100.0);
   }
 

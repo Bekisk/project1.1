@@ -27,7 +27,8 @@ class SavingsGoalsProvider extends ChangeNotifier {
   bool _isLoading = true;
 
   List<SavingsGoal> get allGoals => _allGoals;
-  Map<String, List<GoalContribution>> get contributionsByGoal => _contributionsByGoal;
+  Map<String, List<GoalContribution>> get contributionsByGoal =>
+      _contributionsByGoal;
   List<Account> get accounts => _accounts;
   Map<String, Account> get accountMap => _accountMap;
   GoalStatus? get filterStatus => _filterStatus;
@@ -49,7 +50,10 @@ class SavingsGoalsProvider extends ChangeNotifier {
       _accountMap = {for (final a in _accounts) a.id: a};
 
       // 2. Load all savings goals
-      final goalMaps = await db.query('savings_goals', orderBy: 'created_at DESC');
+      final goalMaps = await db.query(
+        'savings_goals',
+        orderBy: 'created_at DESC',
+      );
       _allGoals = goalMaps.map((e) => SavingsGoal.fromMap(e)).toList();
 
       // 3. Load all contributions
@@ -57,7 +61,9 @@ class SavingsGoalsProvider extends ChangeNotifier {
         'goal_contributions',
         orderBy: 'contribution_date DESC, created_at DESC',
       );
-      final allContribs = contribMaps.map((e) => GoalContribution.fromMap(e)).toList();
+      final allContribs = contribMaps
+          .map((e) => GoalContribution.fromMap(e))
+          .toList();
 
       _contributionsByGoal = {};
       for (final g in _allGoals) {
@@ -196,7 +202,9 @@ class SavingsGoalsProvider extends ChangeNotifier {
         name: name.trim(),
         targetAmount: targetAmount,
         targetDate: targetDate,
-        description: description?.trim().isEmpty == true ? null : description?.trim(),
+        description: description?.trim().isEmpty == true
+            ? null
+            : description?.trim(),
         category: category,
         iconKey: iconKey,
         status: GoalStatus.active,
@@ -241,7 +249,9 @@ class SavingsGoalsProvider extends ChangeNotifier {
 
       // Check if target was reduced below saved amount to automatically update completion state
       final contribs = getContributionsForGoal(goal.id);
-      final totalSaved = SavingsCalculationService.calculateTotalSaved(contribs);
+      final totalSaved = SavingsCalculationService.calculateTotalSaved(
+        contribs,
+      );
 
       GoalStatus status = goal.status;
       DateTime? completedAt = goal.completedAt;
@@ -250,7 +260,8 @@ class SavingsGoalsProvider extends ChangeNotifier {
           status = GoalStatus.completed;
           completedAt = completedAt ?? now;
         }
-      } else if (status == GoalStatus.completed && totalSaved < goal.targetAmount) {
+      } else if (status == GoalStatus.completed &&
+          totalSaved < goal.targetAmount) {
         // If target was increased above saved amount, reopen to active
         status = GoalStatus.active;
         completedAt = null;
@@ -289,7 +300,9 @@ class SavingsGoalsProvider extends ChangeNotifier {
       final current = _allGoals.firstWhere((g) => g.id == goalId);
       final updated = current.copyWith(
         status: newStatus,
-        completedAt: newStatus == GoalStatus.completed ? (current.completedAt ?? now) : (newStatus == GoalStatus.active ? null : current.completedAt),
+        completedAt: newStatus == GoalStatus.completed
+            ? (current.completedAt ?? now)
+            : (newStatus == GoalStatus.active ? null : current.completedAt),
         clearCompletedAt: newStatus == GoalStatus.active,
         updatedAt: now,
       );
@@ -370,7 +383,8 @@ class SavingsGoalsProvider extends ChangeNotifier {
           destinationAccountId: destinationAccountId,
           type: TransactionType.transfer,
           amount: amount,
-          categoryId: null, // transfers don't count toward income/expense categories
+          categoryId:
+              null, // transfers don't count toward income/expense categories
           description: 'Savings Goal Transfer',
           notes: notes,
           transactionDate: contributionDate,
@@ -400,9 +414,12 @@ class SavingsGoalsProvider extends ChangeNotifier {
       // Check if goal reached completion with this contribution
       final currentGoal = _allGoals.firstWhere((g) => g.id == goalId);
       final existingContribs = getContributionsForGoal(goalId);
-      final newTotalSaved = SavingsCalculationService.calculateTotalSaved(existingContribs) + amount;
+      final newTotalSaved =
+          SavingsCalculationService.calculateTotalSaved(existingContribs) +
+          amount;
 
-      if (newTotalSaved >= currentGoal.targetAmount && currentGoal.targetAmount > 0) {
+      if (newTotalSaved >= currentGoal.targetAmount &&
+          currentGoal.targetAmount > 0) {
         if (currentGoal.status == GoalStatus.active) {
           await db.update(
             'savings_goals',
@@ -499,13 +516,18 @@ class SavingsGoalsProvider extends ChangeNotifier {
 
       if (count > 0) {
         // Re-evaluate goal completion status
-        final currentGoal = _allGoals.firstWhere((g) => g.id == contribution.goalId);
+        final currentGoal = _allGoals.firstWhere(
+          (g) => g.id == contribution.goalId,
+        );
         final remainingContribs = getContributionsForGoal(contribution.goalId)
             .where((c) => c.id != contribution.id)
             .toList();
-        final newTotal = SavingsCalculationService.calculateTotalSaved(remainingContribs);
+        final newTotal = SavingsCalculationService.calculateTotalSaved(
+          remainingContribs,
+        );
 
-        if (currentGoal.status == GoalStatus.completed && newTotal < currentGoal.targetAmount) {
+        if (currentGoal.status == GoalStatus.completed &&
+            newTotal < currentGoal.targetAmount) {
           await db.update(
             'savings_goals',
             {

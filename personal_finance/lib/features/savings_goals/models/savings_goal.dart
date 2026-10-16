@@ -1,21 +1,8 @@
-enum GoalStatus {
-  active,
-  completed,
-  paused,
-  archived,
-}
+enum GoalStatus { active, completed, paused, archived }
 
-enum GoalPriority {
-  low,
-  medium,
-  high,
-}
+enum GoalPriority { low, medium, high }
 
-enum ContributionPlanFrequency {
-  weekly,
-  monthly,
-  custom,
-}
+enum ContributionPlanFrequency { weekly, monthly, custom }
 
 class SavingsGoal {
   final String id;
@@ -143,18 +130,17 @@ class SavingsGoal {
       iconKey: iconKey ?? this.iconKey,
       status: status ?? this.status,
       priority: priority ?? this.priority,
-      linkedAccountId:
-          clearLinkedAccount ? null : (linkedAccountId ?? this.linkedAccountId),
-      planFrequency:
-          clearPlan ? null : (planFrequency ?? this.planFrequency),
+      linkedAccountId: clearLinkedAccount
+          ? null
+          : (linkedAccountId ?? this.linkedAccountId),
+      planFrequency: clearPlan ? null : (planFrequency ?? this.planFrequency),
       plannedPeriodicAmount: clearPlan
           ? null
           : (plannedPeriodicAmount ?? this.plannedPeriodicAmount),
       notes: notes ?? this.notes,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
-      completedAt:
-          clearCompletedAt ? null : (completedAt ?? this.completedAt),
+      completedAt: clearCompletedAt ? null : (completedAt ?? this.completedAt),
     );
   }
 }

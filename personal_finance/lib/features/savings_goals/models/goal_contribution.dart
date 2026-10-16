@@ -1,14 +1,12 @@
-enum ContributionMode {
-  manual,
-  accountTransfer,
-}
+enum ContributionMode { manual, accountTransfer }
 
 class GoalContribution {
   final String id;
   final String goalId;
   final int amount; // in cents
   final DateTime contributionDate;
-  final ContributionMode mode; // manual (earmark only) or accountTransfer (real transfer)
+  final ContributionMode
+  mode; // manual (earmark only) or accountTransfer (real transfer)
   final String? sourceAccountId;
   final String? destinationAccountId;
   final String? transferTransactionId;
@@ -36,7 +34,9 @@ class GoalContribution {
       'goal_id': goalId,
       'amount': amount,
       'contribution_date': contributionDate.toIso8601String(),
-      'mode': mode == ContributionMode.accountTransfer ? 'account_transfer' : 'manual',
+      'mode': mode == ContributionMode.accountTransfer
+          ? 'account_transfer'
+          : 'manual',
       'source_account_id': sourceAccountId,
       'destination_account_id': destinationAccountId,
       'transfer_transaction_id': transferTransactionId,
@@ -86,7 +86,8 @@ class GoalContribution {
       mode: mode ?? this.mode,
       sourceAccountId: sourceAccountId ?? this.sourceAccountId,
       destinationAccountId: destinationAccountId ?? this.destinationAccountId,
-      transferTransactionId: transferTransactionId ?? this.transferTransactionId,
+      transferTransactionId:
+          transferTransactionId ?? this.transferTransactionId,
       notes: notes ?? this.notes,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,

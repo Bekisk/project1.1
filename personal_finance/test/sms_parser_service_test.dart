@@ -8,7 +8,8 @@ void main() {
 
     // 1. Completed Incoming Transfer
     test('Scenario 1: Completed incoming transfer parses amount, currency, and sender', () {
-      const sms = 'Dear Abebe, your account 1000123456 has been credited with ETB 25,000.00 on 10/10/2026 by Tech Salary. Balance is ETB 45,000.00.';
+      const sms =
+          'Dear Abebe, your account 1000123456 has been credited with ETB 25,000.00 on 10/10/2026 by Tech Salary. Balance is ETB 45,000.00.';
       final parsed = parser.parseSms(sms);
 
       expect(parsed, isNotNull);
@@ -24,7 +25,8 @@ void main() {
 
     // 2. Completed Outgoing Transfer
     test('Scenario 2: Completed outgoing transfer parses amount, direction, and merchant', () {
-      const sms = 'Dear Abebe, your account 1000123456 has been debited with ETB 653.00 on 12/10/2026 for Groceries. Balance is ETB 4,500.00.';
+      const sms =
+          'Dear Abebe, your account 1000123456 has been debited with ETB 653.00 on 12/10/2026 for Groceries. Balance is ETB 4,500.00.';
       final parsed = parser.parseSms(sms);
 
       expect(parsed, isNotNull);
@@ -39,7 +41,8 @@ void main() {
 
     // 3. ATM Withdrawal
     test('Scenario 3: ATM withdrawal identifies withdrawal type without double charging', () {
-      const sms = 'Dear Customer, your account 1000987654 was debited ETB 4,000.00 withdrawn from ATM on 11/10/2026. Ref: ATM7812.';
+      const sms =
+          'Dear Customer, your account 1000987654 was debited ETB 4,000.00 withdrawn from ATM on 11/10/2026. Ref: ATM7812.';
       final parsed = parser.parseSms(sms);
 
       expect(parsed, isNotNull);
@@ -52,7 +55,8 @@ void main() {
 
     // 4. Merchant Payment
     test('Scenario 4: Merchant payment parses vendor and ref', () {
-      const sms = 'You have paid ETB 450.50 to Cafe on 12/10/2026 14:32:00. Your transaction number is CI892345. Current balance is ETB 1,200.00.';
+      const sms =
+          'You have paid ETB 450.50 to Cafe on 12/10/2026 14:32:00. Your transaction number is CI892345. Current balance is ETB 1,200.00.';
       final parsed = parser.parseSms(sms);
 
       expect(parsed, isNotNull);
@@ -68,7 +72,8 @@ void main() {
 
     // 5. Bank Service Fee
     test('Scenario 5: Bank service fee modeled as fee expense', () {
-      const sms = 'Dear customer, service charge of ETB 25.00 has been debited from your account 1000123456 on 10/10/2026.';
+      const sms =
+          'Dear customer, service charge of ETB 25.00 has been debited from your account 1000123456 on 10/10/2026.';
       final parsed = parser.parseSms(sms);
 
       expect(parsed, isNotNull);
@@ -80,7 +85,8 @@ void main() {
 
     // 6. Transfer with Separate Fee
     test('Scenario 6: Transfer with separate fee models both without subtracting fee twice', () {
-      const sms = 'You have transferred ETB 1,000.00 to Abebe on 12/10/2026. Fee is ETB 15.00. Txn: TB99281. Current balance is ETB 5,000.00.';
+      const sms =
+          'You have transferred ETB 1,000.00 to Abebe on 12/10/2026. Fee is ETB 15.00. Txn: TB99281. Current balance is ETB 5,000.00.';
       final parsed = parser.parseSms(sms);
 
       expect(parsed, isNotNull);
@@ -92,7 +98,8 @@ void main() {
 
     // 7. Refund / Reversal
     test('Scenario 7 & 8: Refund or reversal recognized as reversalOrRefund', () {
-      const sms = 'Dear Customer, your reversal of ETB 500.00 has been credited to account 1000123456 on 12/10/2026.';
+      const sms =
+          'Dear Customer, your reversal of ETB 500.00 has been credited to account 1000123456 on 12/10/2026.';
       final parsed = parser.parseSms(sms);
 
       expect(parsed, isNotNull);
@@ -103,7 +110,8 @@ void main() {
 
     // 9. Failed Transaction Guard
     test('Scenario 9: Failed or declined transaction rejected from booking', () {
-      const sms = 'Transaction failed. Your payment of ETB 2,500.00 to Supermarket was declined due to insufficient balance.';
+      const sms =
+          'Transaction failed. Your payment of ETB 2,500.00 to Supermarket was declined due to insufficient balance.';
       final parsed = parser.parseSms(sms);
 
       expect(parsed, isNotNull);
@@ -113,7 +121,8 @@ void main() {
 
     // 10. Balance Inquiry Guard
     test('Scenario 14: Balance inquiry alone does NOT create cash flow', () {
-      const sms = 'Dear Customer, your current balance is ETB 12,450.00 for account 1000123456.';
+      const sms =
+          'Dear Customer, your current balance is ETB 12,450.00 for account 1000123456.';
       final parsed = parser.parseSms(sms);
 
       expect(parsed, isNotNull);
@@ -124,7 +133,8 @@ void main() {
 
     // 11. OTP / Security Message Guard
     test('Scenario 16: OTP and login codes strictly rejected from financial recording', () {
-      const sms = 'Your one time password (OTP) is 849201 for CBE Mobile Banking. Do not share with anyone.';
+      const sms =
+          'Your one time password (OTP) is 849201 for CBE Mobile Banking. Do not share with anyone.';
       final parsed = parser.parseSms(sms);
 
       expect(parsed, isNotNull);
@@ -134,14 +144,16 @@ void main() {
 
     // 12. Promotional / Marketing SMS
     test('Scenario 15: Promotional text returns non-transactional or null', () {
-      const sms = 'Welcome to Ethiopian Airlines! Book your domestic flights today and save up to 20%.';
+      const sms =
+          'Welcome to Ethiopian Airlines! Book your domestic flights today and save up to 20%.';
       final parsed = parser.parseSms(sms);
       expect(parsed == null || !parsed.isCompletedFinancialTransaction, isTrue);
     });
 
     // 13. Bank of Abyssinia (BoA) Support
     test('BoA Parser extracts debited amount and account suffix', () {
-      const sms = 'Bank of Abyssinia: Your account 20001234 has been debited by ETB 3,500.00 on 12/10/2026. Ref: BOA9912.';
+      const sms =
+          'Bank of Abyssinia: Your account 20001234 has been debited by ETB 3,500.00 on 12/10/2026. Ref: BOA9912.';
       final parsed = parser.parseSms(sms);
 
       expect(parsed, isNotNull);
@@ -153,7 +165,8 @@ void main() {
 
     // 14. Awash Bank Support
     test('Awash Bank Parser extracts reason and account', () {
-      const sms = 'Awash Bank: Your account 01320098765400 has been debited by ETB 1,500.00 on 12/10/2026. Reason: Supermarket.';
+      const sms =
+          'Awash Bank: Your account 01320098765400 has been debited by ETB 1,500.00 on 12/10/2026. Reason: Supermarket.';
       final parsed = parser.parseSms(sms);
 
       expect(parsed, isNotNull);
@@ -164,14 +177,22 @@ void main() {
 
     // 15. Deduplication Fingerprint Stability
     test('Scenario 18 & 19: Deduplication fingerprint is identical for duplicate SMS', () {
-      const sms1 = 'You have paid ETB 450.50 to Cafe on 12/10/2026 14:32:00. Your transaction number is CI892345.';
-      const sms2 = 'You have paid ETB 450.50 to Cafe on 12/10/2026 14:32:00. Your transaction number is CI892345.';
+      const sms1 =
+          'You have paid ETB 450.50 to Cafe on 12/10/2026 14:32:00. Your transaction number is CI892345.';
+      const sms2 =
+          'You have paid ETB 450.50 to Cafe on 12/10/2026 14:32:00. Your transaction number is CI892345.';
 
       final parsed1 = parser.parseSms(sms1)!;
       final parsed2 = parser.parseSms(sms2)!;
 
-      expect(parsed1.generateDeduplicationFingerprint(), parsed2.generateDeduplicationFingerprint());
-      expect(parsed1.generateDeduplicationFingerprint(), 'telebirr_ref_ci892345');
+      expect(
+        parsed1.generateDeduplicationFingerprint(),
+        parsed2.generateDeduplicationFingerprint(),
+      );
+      expect(
+        parsed1.generateDeduplicationFingerprint(),
+        'telebirr_ref_ci892345',
+      );
     });
 
     // 16. Two legitimate transactions with same amount have different fingerprints if different dates/refs
@@ -182,14 +203,93 @@ void main() {
       final p1 = parser.parseSms(tx1)!;
       final p2 = parser.parseSms(tx2)!;
 
-      expect(p1.generateDeduplicationFingerprint(), isNot(equals(p2.generateDeduplicationFingerprint())));
+      expect(
+        p1.generateDeduplicationFingerprint(),
+        isNot(equals(p2.generateDeduplicationFingerprint())),
+      );
     });
 
     // 17. Factual description synthesis
     test('Scenario 22: Synthesizes clean factual descriptions without fabricating user reasons', () {
-      const smsNoParty = 'Dear Customer, your account has been debited with ETB 300.00 on 12/10/2026.';
+      const smsNoParty =
+          'Dear Customer, your account has been debited with ETB 300.00 on 12/10/2026.';
       final parsed = parser.parseSms(smsNoParty)!;
       expect(parsed.buildFactualDescription(), 'Money deducted');
+    });
+
+    // 18. Verified Real CBE Incoming Transfer SMS
+    test('Real CBE Message A: Incoming transfer parsed accurately as income', () {
+      const sms =
+          'Dear Bereket Anteneh Kassa You have received ETB 20,000.00 from account 1**6658 (Alemtshay Mekurya W/aregay) to your account 1**2313. Your current balance is ETB20,822.40. Thanks for Banking with CBE. https://mbreciept.cbe.com.et/v2-hfHCxHzZw3nl5PujC2Gx  for feedback: https://forms.gle/kGNGQpG3mQCCk3iD6';
+      final parsed = parser.parseSms(sms);
+
+      expect(parsed, isNotNull);
+      expect(parsed!.provider, EthiopianBankProvider.cbe);
+      expect(parsed.isMoneyIn, isTrue);
+      expect(parsed.transactionType, SmsTransactionType.incomingTransfer);
+      expect(parsed.amountCents, 2000000); // 20,000.00 ETB
+      expect(parsed.amountInEtb, 20000.0);
+      expect(parsed.reportedBalanceCents, 2082240); // 20,822.40 ETB
+      expect(parsed.reportedBalanceInEtb, 20822.40);
+      expect(parsed.accountSuffix, '...2313');
+      expect(parsed.partyOrMerchant, 'Alemtshay Mekurya W/aregay');
+      expect(parsed.referenceNumber, 'v2-hfHCxHzZw3nl5PujC2Gx');
+      expect(parsed.isCompletedFinancialTransaction, isTrue);
+      expect(
+        parsed.buildFactualDescription(),
+        'Received from Alemtshay Mekurya W/aregay',
+      );
+    });
+
+    // 19. Verified Real CBE Outgoing Transfer SMS
+    test('Real CBE Message B: Outgoing transfer parsed accurately as expense/outgoing transfer with separate fees', () {
+      const sms =
+          'Dear  Bereket Anteneh Kassa You have successfully transferred ETB200.00 from account 1**2313 to account 1**9525 (Ethi.full Gos.ch. Haya Hulet M). Service charge of ETB 0.50 and VAT(15%) of ETB0.08 and Disaster Recovery(5%) of 0.03 with total of ETB200.61 .Your current balance is ETB20,621.79. Thanks for Banking with CBE. https://mbreciept.cbe.com.et/v2-hfHCxHAlpPQoNHnmKA7C  for feedback: https://forms.gle/kGNGQpG3mQCCk3iD6';
+      final parsed = parser.parseSms(sms);
+
+      expect(parsed, isNotNull);
+      expect(parsed!.provider, EthiopianBankProvider.cbe);
+      expect(parsed.isMoneyIn, isFalse);
+      expect(parsed.transactionType, SmsTransactionType.outgoingTransfer);
+      expect(parsed.amountCents, 20000); // 200.00 ETB principal
+      expect(parsed.amountInEtb, 200.0);
+      expect(parsed.feeCents, 61); // 0.61 ETB total fee
+      expect(parsed.feeInEtb, 0.61);
+      expect(parsed.reportedBalanceCents, 2062179); // 20,621.79 ETB
+      expect(parsed.reportedBalanceInEtb, 20621.79);
+      expect(parsed.accountSuffix, '...2313');
+      expect(parsed.partyOrMerchant, 'Ethi.full Gos.ch. Haya Hulet M');
+      expect(parsed.referenceNumber, 'v2-hfHCxHAlpPQoNHnmKA7C');
+      expect(parsed.isCompletedFinancialTransaction, isTrue);
+      expect(
+        parsed.buildFactualDescription(),
+        'Transfer to Ethi.full Gos.ch. Haya Hulet M',
+      );
+    });
+
+    // 20. Verified Real CBE Debit with Fees (Example C)
+    test('Real CBE Message C: Generic debit with fees parsed accurately without double-charging or fabricated recipient', () {
+      const sms =
+          'Dear Mr Bereket your Account 1****2313 has been debited with ETB 200.85 including Service charge ETB0.70ETB0.04 and VAT(15%) ETB0.11. Your Current Balance is ETB 10434.47. Thank you for Banking with CBE!. For feedback https://shorturl.at/auUX0';
+      final parsed = parser.parseSms(sms);
+
+      expect(parsed, isNotNull);
+      expect(parsed!.provider, EthiopianBankProvider.cbe);
+      expect(parsed.isMoneyIn, isFalse);
+      expect(parsed.transactionType, SmsTransactionType.other); // Generic debit
+      expect(parsed.amountCents, 20085); // 200.85 ETB total debit
+      expect(parsed.amountInEtb, 200.85);
+      expect(parsed.feeCents, 0); // Not adding included fees a second time
+      expect(parsed.reportedBalanceCents, 1043447); // 10,434.47 ETB
+      expect(parsed.reportedBalanceInEtb, 10434.47);
+      expect(parsed.accountSuffix, '...2313');
+      expect(parsed.referenceNumber, 'short_auUX0');
+      expect(
+        parsed.partyOrMerchant,
+        isNull,
+      ); // Must not invent a recipient from "banking" or "feedback"
+      expect(parsed.buildFactualDescription(), 'Money deducted');
+      expect(parsed.isCompletedFinancialTransaction, isTrue);
     });
   });
 }

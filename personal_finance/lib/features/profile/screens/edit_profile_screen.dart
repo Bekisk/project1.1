@@ -16,9 +16,8 @@ class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
 
   static Future<void> navigate(BuildContext context) {
-    return Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const EditProfileScreen()),
-    );
+    return Navigator.of(context)
+        .push(MaterialPageRoute(builder: (_) => const EditProfileScreen()));
   }
 
   @override
@@ -89,11 +88,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     super.initState();
     final profile = context.read<UserProfileProvider>().profile;
 
-    _displayNameController = TextEditingController(text: profile?.displayName ?? '');
+    _displayNameController = TextEditingController(
+      text: profile?.displayName ?? '',
+    );
     _fullNameController = TextEditingController(text: profile?.fullName ?? '');
     _nicknameController = TextEditingController(text: profile?.nickname ?? '');
     _goalController = TextEditingController(text: profile?.personalGoal ?? '');
-    _otherDiscoveryController = TextEditingController(text: profile?.discoverySourceOther ?? '');
+    _otherDiscoveryController = TextEditingController(
+      text: profile?.discoverySourceOther ?? '',
+    );
 
     _occupation = profile?.occupation;
     _ageRange = profile?.ageRange;
@@ -159,33 +162,42 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final now = DateTime.now();
 
     try {
-      final updatedProfile = (currentProfile ??
-              UserProfile(
-                id: 'default',
+      final updatedProfile =
+          (currentProfile ??
+                  UserProfile(
+                    id: 'default',
+                    displayName: _displayNameController.text.trim(),
+                    createdAt: now,
+                    updatedAt: now,
+                  ))
+              .copyWith(
                 displayName: _displayNameController.text.trim(),
-                createdAt: now,
+                fullName: _fullNameController.text.trim().isNotEmpty
+                    ? _fullNameController.text.trim()
+                    : null,
+                nickname: _nicknameController.text.trim().isNotEmpty
+                    ? _nicknameController.text.trim()
+                    : null,
+                occupation: _occupation,
+                ageRange: _ageRange,
+                countryOrRegion: _countryOrRegion,
+                discoverySource: _discoverySource,
+                discoverySourceOther:
+                    _discoverySource == 'Other' &&
+                        _otherDiscoveryController.text.trim().isNotEmpty
+                    ? _otherDiscoveryController.text.trim()
+                    : null,
+                personalGoal: _goalController.text.trim().isNotEmpty
+                    ? _goalController.text.trim()
+                    : null,
+                profileImagePath: _profileImagePath,
+                clearProfileImage: _photoRemoved,
+                mainAccountId: _mainAccountId,
+                designatedSavingsAccountId: _designatedSavingsAccountId,
+                preferredCurrency: _preferredCurrency,
+                preferredLanguage: _preferredLanguage,
                 updatedAt: now,
-              ))
-          .copyWith(
-        displayName: _displayNameController.text.trim(),
-        fullName: _fullNameController.text.trim().isNotEmpty ? _fullNameController.text.trim() : null,
-        nickname: _nicknameController.text.trim().isNotEmpty ? _nicknameController.text.trim() : null,
-        occupation: _occupation,
-        ageRange: _ageRange,
-        countryOrRegion: _countryOrRegion,
-        discoverySource: _discoverySource,
-        discoverySourceOther: _discoverySource == 'Other' && _otherDiscoveryController.text.trim().isNotEmpty
-            ? _otherDiscoveryController.text.trim()
-            : null,
-        personalGoal: _goalController.text.trim().isNotEmpty ? _goalController.text.trim() : null,
-        profileImagePath: _profileImagePath,
-        clearProfileImage: _photoRemoved,
-        mainAccountId: _mainAccountId,
-        designatedSavingsAccountId: _designatedSavingsAccountId,
-        preferredCurrency: _preferredCurrency,
-        preferredLanguage: _preferredLanguage,
-        updatedAt: now,
-      );
+              );
 
       final appSettings = context.read<AppSettingsProvider>();
       final dashboard = context.read<DashboardProvider>();
@@ -210,9 +222,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isSaving = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save profile: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to save profile: $e')));
       }
     }
   }
@@ -267,17 +279,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         OutlinedButton.icon(
                           onPressed: _pickPhoto,
                           icon: const Icon(Icons.camera_alt_outlined, size: 16),
-                          label: Text(_profileImagePath == null ? 'Add Photo' : 'Change Photo'),
+                          label: Text(
+                            _profileImagePath == null
+                                ? 'Add Photo'
+                                : 'Change Photo',
+                          ),
                           style: OutlinedButton.styleFrom(
                             visualDensity: VisualDensity.compact,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                           ),
                         ),
                         if (_profileImagePath != null) ...[
                           const SizedBox(width: 8),
                           TextButton(
                             onPressed: _removePhoto,
-                            child: const Text('Remove', style: TextStyle(color: AppTheme.accentCoral)),
+                            child: const Text(
+                              'Remove',
+                              style: TextStyle(color: AppTheme.accentCoral),
+                            ),
                           ),
                         ],
                       ],
@@ -297,10 +318,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       controller: _displayNameController,
                       decoration: InputDecoration(
                         labelText: 'Display Name *',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                       validator: (val) {
-                        if (val == null || val.trim().isEmpty) return 'Display name is required';
+                        if (val == null || val.trim().isEmpty)
+                          return 'Display name is required';
                         return null;
                       },
                       onChanged: (_) => setState(() {}),
@@ -310,7 +334,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       controller: _fullNameController,
                       decoration: InputDecoration(
                         labelText: 'Full Name (Optional)',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 14),
@@ -318,7 +344,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       controller: _nicknameController,
                       decoration: InputDecoration(
                         labelText: 'Preferred Nickname (Optional)',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                     ),
                   ],
@@ -336,7 +364,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       value: _occupation,
                       decoration: InputDecoration(
                         labelText: 'Occupation (Optional)',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                       items: _occupations.map((occ) {
                         return DropdownMenuItem(value: occ, child: Text(occ));
@@ -348,7 +378,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       value: _ageRange,
                       decoration: InputDecoration(
                         labelText: 'Age Range (Optional)',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                       items: _ageRanges.map((age) {
                         return DropdownMenuItem(value: age, child: Text(age));
@@ -360,13 +392,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       value: _countryOrRegion,
                       decoration: InputDecoration(
                         labelText: 'Country / Region',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                       items: const [
-                        DropdownMenuItem(value: 'Ethiopia', child: Text('Ethiopia')),
+                        DropdownMenuItem(
+                          value: 'Ethiopia',
+                          child: Text('Ethiopia'),
+                        ),
                         DropdownMenuItem(value: 'Kenya', child: Text('Kenya')),
-                        DropdownMenuItem(value: 'United States', child: Text('United States')),
-                        DropdownMenuItem(value: 'United Kingdom', child: Text('United Kingdom')),
+                        DropdownMenuItem(
+                          value: 'United States',
+                          child: Text('United States'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'United Kingdom',
+                          child: Text('United Kingdom'),
+                        ),
                         DropdownMenuItem(value: 'Other', child: Text('Other')),
                       ],
                       onChanged: (val) {
@@ -388,7 +431,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       value: _mainAccountId,
                       decoration: InputDecoration(
                         labelText: 'Default / Main Account',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                       items: [
                         const DropdownMenuItem<String?>(
@@ -409,7 +454,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       value: _designatedSavingsAccountId,
                       decoration: InputDecoration(
                         labelText: 'Designated Savings Account',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                       items: [
                         const DropdownMenuItem<String?>(
@@ -423,14 +470,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           );
                         }),
                       ],
-                      onChanged: (val) => setState(() => _designatedSavingsAccountId = val),
+                      onChanged: (val) =>
+                          setState(() => _designatedSavingsAccountId = val),
                     ),
                     const SizedBox(height: 14),
                     DropdownButtonFormField<String>(
                       value: _preferredCurrency,
                       decoration: InputDecoration(
                         labelText: 'Preferred Currency',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                       items: const [
                         DropdownMenuItem(value: 'ETB', child: Text('ETB (ብር)')),
@@ -439,7 +489,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         DropdownMenuItem(value: 'GBP', child: Text('GBP (£)')),
                       ],
                       onChanged: (val) {
-                        if (val != null) setState(() => _preferredCurrency = val);
+                        if (val != null)
+                          setState(() => _preferredCurrency = val);
                       },
                     ),
                   ],
@@ -457,7 +508,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       value: _discoverySource,
                       decoration: InputDecoration(
                         labelText: 'Where did you hear about us? (Optional)',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                       items: [
                         const DropdownMenuItem<String?>(
@@ -465,10 +518,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           child: Text('Prefer not to say / Unspecified'),
                         ),
                         ..._discoveryOptions.map((opt) {
-                          return DropdownMenuItem<String?>(value: opt, child: Text(opt));
+                          return DropdownMenuItem<String?>(
+                            value: opt,
+                            child: Text(opt),
+                          );
                         }),
                       ],
-                      onChanged: (val) => setState(() => _discoverySource = val),
+                      onChanged: (val) =>
+                          setState(() => _discoverySource = val),
                     ),
                     if (_discoverySource == 'Other') ...[
                       const SizedBox(height: 14),
@@ -476,7 +533,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         controller: _otherDiscoveryController,
                         decoration: InputDecoration(
                           labelText: 'Other discovery details',
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                       ),
                     ],
@@ -495,7 +554,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   decoration: InputDecoration(
                     labelText: 'Personal Financial Goal (Optional)',
                     hintText: 'e.g. Save for a house, emergency fund',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 ),
               ),
@@ -515,7 +576,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         style: TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w700,
-          color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+          color: isDark
+              ? AppTheme.textSecondaryDark
+              : AppTheme.textSecondaryLight,
           letterSpacing: 0.8,
         ),
       ),

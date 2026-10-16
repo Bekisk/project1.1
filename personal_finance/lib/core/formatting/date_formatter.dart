@@ -21,7 +21,8 @@ class DateFormatter {
     if (differenceInDays == 0) return 'Today';
     if (differenceInDays == 1) return 'Yesterday';
     if (differenceInDays == -1) return 'Tomorrow';
-    if (differenceInDays > 1 && differenceInDays < 7) return '$differenceInDays days ago';
+    if (differenceInDays > 1 && differenceInDays < 7)
+      return '$differenceInDays days ago';
 
     return formatDate(date);
   }

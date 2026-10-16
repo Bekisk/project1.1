@@ -8,15 +8,17 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
 import android.provider.Telephony
+import android.view.WindowManager
 import androidx.annotation.NonNull
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
-class MainActivity : FlutterActivity() {
+class MainActivity : FlutterFragmentActivity() {
     private val CHANNEL = "com.beki.personal_finance/sms_tracker"
+    private val CHANNEL_SECURE = "com.beki.personal_finance/secure"
     private val SMS_PERMISSION_REQUEST_CODE = 4401
 
     private var methodChannel: MethodChannel? = null
@@ -45,7 +47,7 @@ class MainActivity : FlutterActivity() {
                     )
 
                     // Dispatch to Flutter parser service
-                    activity.runOnUiThread {
+                    runOnUiThread {
                         methodChannel?.invokeMethod("onSmsReceived", smsData)
                     }
                 }
@@ -102,6 +104,18 @@ class MainActivity : FlutterActivity() {
                         unregisterReceiver(smsReceiver)
                     } catch (_: Exception) {}
                     result.success(true)
+                }
+                "setSecureScreen" -> {
+                    val secure = call.argument<Boolean>("secure") ?: false
+                    if (secure) {
+                        window.setFlags(
+                            WindowManager.LayoutParams.FLAG_SECURE,
+                            WindowManager.LayoutParams.FLAG_SECURE
+                        )
+                    } else {
+                        window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+                    }
+                    result.success(null)
                 }
                 else -> {
                     result.notImplemented()

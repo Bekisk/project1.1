@@ -107,70 +107,73 @@ void main() {
     });
 
     // Test B — Overall budget
-    test('Test B: Overall budget aggregates eligible multi-category expenses', () {
-      final monthStart = DateTime(2026, 10, 1);
-      final monthEnd = DateTime(2026, 10, 31, 23, 59, 59, 999);
+    test(
+      'Test B: Overall budget aggregates eligible multi-category expenses',
+      () {
+        final monthStart = DateTime(2026, 10, 1);
+        final monthEnd = DateTime(2026, 10, 31, 23, 59, 59, 999);
 
-      final overallBudget = Budget(
-        id: 'budget-overall',
-        name: 'Total Monthly Budget',
-        budgetType: BudgetType.overall,
-        amount: 500000, // 5,000 ETB
-        periodStart: monthStart,
-        periodEnd: monthEnd,
-        createdAt: monthStart,
-        updatedAt: monthStart,
-      );
+        final overallBudget = Budget(
+          id: 'budget-overall',
+          name: 'Total Monthly Budget',
+          budgetType: BudgetType.overall,
+          amount: 500000, // 5,000 ETB
+          periodStart: monthStart,
+          periodEnd: monthEnd,
+          createdAt: monthStart,
+          updatedAt: monthStart,
+        );
 
-      final transactions = [
-        FinancialTransaction(
-          id: 'tx-1',
-          accountId: 'acc-1',
-          type: TransactionType.expense,
-          amount: 100000, // 1,000 ETB
-          categoryId: 'cat-food',
-          description: 'Groceries',
-          transactionDate: DateTime(2026, 10, 5),
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-        ),
-        FinancialTransaction(
-          id: 'tx-2',
-          accountId: 'acc-1',
-          type: TransactionType.expense,
-          amount: 50000, // 500 ETB
-          categoryId: 'cat-transport',
-          description: 'Fuel',
-          transactionDate: DateTime(2026, 10, 8),
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-        ),
-        FinancialTransaction(
-          id: 'tx-3',
-          accountId: 'acc-1',
-          type: TransactionType.expense,
-          amount: 75000, // 750 ETB
-          categoryId: 'cat-shopping',
-          description: 'Clothes',
-          transactionDate: DateTime(2026, 10, 12),
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-        ),
-      ];
+        final transactions = [
+          FinancialTransaction(
+            id: 'tx-1',
+            accountId: 'acc-1',
+            type: TransactionType.expense,
+            amount: 100000, // 1,000 ETB
+            categoryId: 'cat-food',
+            description: 'Groceries',
+            transactionDate: DateTime(2026, 10, 5),
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+          ),
+          FinancialTransaction(
+            id: 'tx-2',
+            accountId: 'acc-1',
+            type: TransactionType.expense,
+            amount: 50000, // 500 ETB
+            categoryId: 'cat-transport',
+            description: 'Fuel',
+            transactionDate: DateTime(2026, 10, 8),
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+          ),
+          FinancialTransaction(
+            id: 'tx-3',
+            accountId: 'acc-1',
+            type: TransactionType.expense,
+            amount: 75000, // 750 ETB
+            categoryId: 'cat-shopping',
+            description: 'Clothes',
+            transactionDate: DateTime(2026, 10, 12),
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+          ),
+        ];
 
-      final result = BudgetCalculationService.calculateBudgetProgress(
-        budget: overallBudget,
-        transactions: transactions,
-      );
+        final result = BudgetCalculationService.calculateBudgetProgress(
+          budget: overallBudget,
+          transactions: transactions,
+        );
 
-      expect(result.budget.amount, 500000); // 5,000 ETB
-      expect(result.spentCents, 225000); // 2,250 ETB
-      expect(result.remainingCents, 275000); // 2,750 ETB
-      expect(result.availableCents, 275000);
-      expect(result.percentageConsumed, 45.0); // 45%
-      expect(result.visualProgress, 0.45);
-      expect(result.healthStatus, BudgetHealthStatus.onTrack);
-    });
+        expect(result.budget.amount, 500000); // 5,000 ETB
+        expect(result.spentCents, 225000); // 2,250 ETB
+        expect(result.remainingCents, 275000); // 2,750 ETB
+        expect(result.availableCents, 275000);
+        expect(result.percentageConsumed, 45.0); // 45%
+        expect(result.visualProgress, 0.45);
+        expect(result.healthStatus, BudgetHealthStatus.onTrack);
+      },
+    );
 
     // Test C — Over-budget behavior
     test('Test C: Over-budget behavior preserves actual spending, computes exceeded amount, clamps visual bar, and sets Exceeded status', () {
@@ -285,7 +288,10 @@ void main() {
         transactions: transactions,
       );
 
-      expect(result.spentCents, 50000); // Only tx-start (20,000) + tx-end (30,000)
+      expect(
+        result.spentCents,
+        50000,
+      ); // Only tx-start (20,000) + tx-end (30,000)
       expect(result.contributingTransactions.length, 2);
     });
 
@@ -309,7 +315,10 @@ void main() {
       final txList = <FinancialTransaction>[];
 
       // Initial: 0 spent
-      var res = BudgetCalculationService.calculateBudgetProgress(budget: foodBudget, transactions: txList);
+      var res = BudgetCalculationService.calculateBudgetProgress(
+        budget: foodBudget,
+        transactions: txList,
+      );
       expect(res.spentCents, 0);
 
       // Add expense
@@ -326,7 +335,10 @@ void main() {
       );
       txList.add(tx1);
 
-      res = BudgetCalculationService.calculateBudgetProgress(budget: foodBudget, transactions: txList);
+      res = BudgetCalculationService.calculateBudgetProgress(
+        budget: foodBudget,
+        transactions: txList,
+      );
       expect(res.spentCents, 40000);
 
       // Update amount of tx1 from 400 ETB to 600 ETB
@@ -343,7 +355,10 @@ void main() {
       );
       txList[0] = tx1Updated;
 
-      res = BudgetCalculationService.calculateBudgetProgress(budget: foodBudget, transactions: txList);
+      res = BudgetCalculationService.calculateBudgetProgress(
+        budget: foodBudget,
+        transactions: txList,
+      );
       expect(res.spentCents, 60000);
 
       // Change category of tx1 to transport: food budget spending drops to 0!
@@ -360,12 +375,18 @@ void main() {
       );
       txList[0] = tx1Transport;
 
-      res = BudgetCalculationService.calculateBudgetProgress(budget: foodBudget, transactions: txList);
+      res = BudgetCalculationService.calculateBudgetProgress(
+        budget: foodBudget,
+        transactions: txList,
+      );
       expect(res.spentCents, 0);
 
       // Delete tx1
       txList.clear();
-      res = BudgetCalculationService.calculateBudgetProgress(budget: foodBudget, transactions: txList);
+      res = BudgetCalculationService.calculateBudgetProgress(
+        budget: foodBudget,
+        transactions: txList,
+      );
       expect(res.spentCents, 0);
     });
 

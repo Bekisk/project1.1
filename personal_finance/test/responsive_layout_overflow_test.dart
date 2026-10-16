@@ -4,7 +4,10 @@ import 'package:personal_finance/core/widgets/fintech_card.dart';
 import 'package:personal_finance/features/settings/providers/app_settings_provider.dart';
 import 'package:provider/provider.dart';
 
-Widget _buildAboutCardUnderTest(BuildContext context, AppSettingsProvider settingsProvider) {
+Widget _buildAboutCardUnderTest(
+  BuildContext context,
+  AppSettingsProvider settingsProvider,
+) {
   return FintechCard(
     padding: const EdgeInsets.all(16),
     child: Column(
@@ -60,7 +63,10 @@ Widget _buildAboutCardUnderTest(BuildContext context, AppSettingsProvider settin
               onPressed: () {
                 settingsProvider.resetPreferencesToDefaults();
               },
-              child: const Text('Reset Preferences', style: TextStyle(color: Colors.grey)),
+              child: const Text(
+                'Reset Preferences',
+                style: TextStyle(color: Colors.grey),
+              ),
             ),
           ],
         ),
@@ -71,101 +77,113 @@ Widget _buildAboutCardUnderTest(BuildContext context, AppSettingsProvider settin
 
 void main() {
   group('Responsive Layout & Overflow Regression Tests', () {
-    testWidgets('About My Finance card renders without overflow on narrow width (320px)', (tester) async {
-      final settingsProvider = AppSettingsProvider();
+    testWidgets(
+      'About My Finance card renders without overflow on narrow width (320px)',
+      (tester) async {
+        final settingsProvider = AppSettingsProvider();
 
-      // Configure a very narrow screen (e.g., small phones / 320px logical width)
-      tester.view.physicalSize = const Size(320, 800);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(() => tester.view.resetPhysicalSize());
+        // Configure a very narrow screen (e.g., small phones / 320px logical width)
+        tester.view.physicalSize = const Size(320, 800);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() => tester.view.resetPhysicalSize());
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: Center(
-              child: SizedBox(
-                width: 320,
-                child: ChangeNotifierProvider<AppSettingsProvider>.value(
-                  value: settingsProvider,
-                  child: Builder(
-                    builder: (context) => _buildAboutCardUnderTest(context, settingsProvider),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-
-      // Verify that both action buttons are rendered and visible
-      expect(find.text('Open Source Licenses'), findsOneWidget);
-      expect(find.text('Reset Preferences'), findsOneWidget);
-
-      // Verify no exception / overflow was logged
-      expect(tester.takeException(), isNull);
-    });
-
-    testWidgets('About My Finance card renders on standard phone width (390px)', (tester) async {
-      final settingsProvider = AppSettingsProvider();
-
-      tester.view.physicalSize = const Size(390, 844);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(() => tester.view.resetPhysicalSize());
-
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: Center(
-              child: SizedBox(
-                width: 390,
-                child: ChangeNotifierProvider<AppSettingsProvider>.value(
-                  value: settingsProvider,
-                  child: Builder(
-                    builder: (context) => _buildAboutCardUnderTest(context, settingsProvider),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-
-      expect(find.text('Open Source Licenses'), findsOneWidget);
-      expect(find.text('Reset Preferences'), findsOneWidget);
-      expect(tester.takeException(), isNull);
-    });
-
-    testWidgets('About My Finance card adapts to 1.5x accessibility text scaling without overflow', (tester) async {
-      final settingsProvider = AppSettingsProvider();
-
-      tester.view.physicalSize = const Size(360, 800);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(() => tester.view.resetPhysicalSize());
-
-      await tester.pumpWidget(
-        MaterialApp(
-          home: MediaQuery(
-            data: const MediaQueryData(textScaler: TextScaler.linear(1.5)),
-            child: Scaffold(
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
               body: Center(
                 child: SizedBox(
-                  width: 360,
+                  width: 320,
                   child: ChangeNotifierProvider<AppSettingsProvider>.value(
                     value: settingsProvider,
                     child: Builder(
-                      builder: (context) => _buildAboutCardUnderTest(context, settingsProvider),
+                      builder: (context) =>
+                          _buildAboutCardUnderTest(context, settingsProvider),
                     ),
                   ),
                 ),
               ),
             ),
           ),
-        ),
-      );
+        );
 
-      expect(find.text('Open Source Licenses'), findsOneWidget);
-      expect(find.text('Reset Preferences'), findsOneWidget);
-      expect(tester.takeException(), isNull);
-    });
+        // Verify that both action buttons are rendered and visible
+        expect(find.text('Open Source Licenses'), findsOneWidget);
+        expect(find.text('Reset Preferences'), findsOneWidget);
+
+        // Verify no exception / overflow was logged
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets(
+      'About My Finance card renders on standard phone width (390px)',
+      (tester) async {
+        final settingsProvider = AppSettingsProvider();
+
+        tester.view.physicalSize = const Size(390, 844);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() => tester.view.resetPhysicalSize());
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: Center(
+                child: SizedBox(
+                  width: 390,
+                  child: ChangeNotifierProvider<AppSettingsProvider>.value(
+                    value: settingsProvider,
+                    child: Builder(
+                      builder: (context) =>
+                          _buildAboutCardUnderTest(context, settingsProvider),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        expect(find.text('Open Source Licenses'), findsOneWidget);
+        expect(find.text('Reset Preferences'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets(
+      'About My Finance card adapts to 1.5x accessibility text scaling without overflow',
+      (tester) async {
+        final settingsProvider = AppSettingsProvider();
+
+        tester.view.physicalSize = const Size(360, 800);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() => tester.view.resetPhysicalSize());
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: MediaQuery(
+              data: const MediaQueryData(textScaler: TextScaler.linear(1.5)),
+              child: Scaffold(
+                body: Center(
+                  child: SizedBox(
+                    width: 360,
+                    child: ChangeNotifierProvider<AppSettingsProvider>.value(
+                      value: settingsProvider,
+                      child: Builder(
+                        builder: (context) =>
+                            _buildAboutCardUnderTest(context, settingsProvider),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        expect(find.text('Open Source Licenses'), findsOneWidget);
+        expect(find.text('Reset Preferences'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
   });
 }

@@ -2,11 +2,7 @@ import 'package:personal_finance/features/budgets/models/budget.dart';
 import 'package:personal_finance/features/categories/models/category.dart';
 import 'package:personal_finance/features/transactions/models/financial_transaction.dart';
 
-enum BudgetHealthStatus {
-  onTrack,
-  approachingLimit,
-  exceeded,
-}
+enum BudgetHealthStatus { onTrack, approachingLimit, exceeded }
 
 class BudgetCalculationResult {
   final Budget budget;
@@ -119,7 +115,10 @@ class BudgetCalculationService {
     }).toList();
 
     // 2. Sum spent cents
-    final int spentCents = eligibleTransactions.fold(0, (sum, tx) => sum + tx.amount);
+    final int spentCents = eligibleTransactions.fold(
+      0,
+      (sum, tx) => sum + tx.amount,
+    );
 
     // 3. Compute remaining, available, and exceeded amounts
     final int limit = budget.amount;
@@ -129,7 +128,9 @@ class BudgetCalculationService {
 
     // 4. Percentage consumed & visual progress clamp
     final double percentage = limit > 0 ? (spentCents / limit) * 100.0 : 0.0;
-    final double visualProgress = limit > 0 ? (spentCents / limit).clamp(0.0, 1.0) : 0.0;
+    final double visualProgress = limit > 0
+        ? (spentCents / limit).clamp(0.0, 1.0)
+        : 0.0;
 
     // 5. Health status
     final BudgetHealthStatus status;
@@ -214,9 +215,15 @@ class BudgetCalculationService {
 
     final int remaining = totalAllocated - totalSpent;
     final int available = remaining > 0 ? remaining : 0;
-    final int exceeded = totalSpent > totalAllocated ? (totalSpent - totalAllocated) : 0;
-    final double percentage = totalAllocated > 0 ? (totalSpent / totalAllocated) * 100.0 : 0.0;
-    final double visualProgress = totalAllocated > 0 ? (totalSpent / totalAllocated).clamp(0.0, 1.0) : 0.0;
+    final int exceeded = totalSpent > totalAllocated
+        ? (totalSpent - totalAllocated)
+        : 0;
+    final double percentage = totalAllocated > 0
+        ? (totalSpent / totalAllocated) * 100.0
+        : 0.0;
+    final double visualProgress = totalAllocated > 0
+        ? (totalSpent / totalAllocated).clamp(0.0, 1.0)
+        : 0.0;
 
     return OverallBudgetSummary(
       totalAllocatedCents: totalAllocated,

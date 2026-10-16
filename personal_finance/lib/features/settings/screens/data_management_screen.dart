@@ -13,9 +13,8 @@ class DataManagementScreen extends StatefulWidget {
   const DataManagementScreen({super.key});
 
   static void navigate(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const DataManagementScreen()),
-    );
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (_) => const DataManagementScreen()));
   }
 
   @override
@@ -46,7 +45,9 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Your financial backup has been compiled with all accounts, categories, transactions, budgets, and savings goals.'),
+              const Text(
+                'Your financial backup has been compiled with all accounts, categories, transactions, budgets, and savings goals.',
+              ),
               const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(10),
@@ -74,7 +75,9 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
             ),
             FilledButton(
               onPressed: () => Navigator.pop(ctx),
-              style: FilledButton.styleFrom(backgroundColor: AppTheme.primaryGreen),
+              style: FilledButton.styleFrom(
+                backgroundColor: AppTheme.primaryGreen,
+              ),
               child: const Text('Done'),
             ),
           ],
@@ -82,7 +85,8 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Export error: $e')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Export error: $e')));
       }
     } finally {
       if (mounted) setState(() => _isExporting = false);
@@ -109,7 +113,9 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Your transactions history is ready in universal spreadsheet CSV format.'),
+              const Text(
+                'Your transactions history is ready in universal spreadsheet CSV format.',
+              ),
               const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(10),
@@ -137,7 +143,9 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
             ),
             FilledButton(
               onPressed: () => Navigator.pop(ctx),
-              style: FilledButton.styleFrom(backgroundColor: AppTheme.primaryGreen),
+              style: FilledButton.styleFrom(
+                backgroundColor: AppTheme.primaryGreen,
+              ),
               child: const Text('Done'),
             ),
           ],
@@ -145,7 +153,8 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('CSV Export error: $e')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('CSV Export error: $e')));
       }
     } finally {
       if (mounted) setState(() => _isExporting = false);
@@ -173,13 +182,18 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
               maxLines: 5,
               decoration: InputDecoration(
                 hintText: '{\n  "app": "My Finance",\n  "data": { ... }\n}',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
           FilledButton(
             onPressed: () async {
               final payload = textCtrl.text.trim();
@@ -188,7 +202,8 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
               Navigator.pop(ctx);
               setState(() => _isImporting = true);
 
-              final result = await DataBackupService.importFinancialDataFromJson(payload);
+              final result =
+                  await DataBackupService.importFinancialDataFromJson(payload);
               if (mounted) {
                 setState(() => _isImporting = false);
                 if (result.success) {
@@ -214,7 +229,9 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
                 }
               }
             },
-            style: FilledButton.styleFrom(backgroundColor: AppTheme.primaryGreen),
+            style: FilledButton.styleFrom(
+              backgroundColor: AppTheme.primaryGreen,
+            ),
             child: const Text('Validate & Restore'),
           ),
         ],
@@ -228,7 +245,11 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
       builder: (ctx) => AlertDialog(
         title: const Row(
           children: [
-            Icon(Icons.warning_amber_rounded, color: AppTheme.expenseRed, size: 28),
+            Icon(
+              Icons.warning_amber_rounded,
+              color: AppTheme.expenseRed,
+              size: 28,
+            ),
             SizedBox(width: 8),
             Text('Wipe All Financial Data?'),
           ],
@@ -239,7 +260,10 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
           'Are you sure you want to proceed?',
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
           FilledButton(
             onPressed: () async {
               Navigator.pop(ctx);
@@ -263,7 +287,10 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
           'Type CONFIRM to erase all stored financial records permanently.',
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
           FilledButton(
             onPressed: () async {
               Navigator.pop(ctx);
@@ -297,9 +324,7 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Data Management & Backup'),
-      ),
+      appBar: AppBar(title: const Text('Data Management & Backup')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -310,11 +335,18 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
               children: [
                 const Row(
                   children: [
-                    Icon(Icons.cloud_off_rounded, color: AppTheme.primaryGreen, size: 22),
+                    Icon(
+                      Icons.cloud_off_rounded,
+                      color: AppTheme.primaryGreen,
+                      size: 22,
+                    ),
                     SizedBox(width: 8),
                     Text(
                       '100% Offline & Private',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
                     ),
                   ],
                 ),
@@ -323,7 +355,9 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
                   'Your financial data is stored purely on your device in local SQLite databases. No cloud tracking, analytics, or external telemetry.',
                   style: TextStyle(
                     fontSize: 13,
-                    color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                    color: isDark
+                        ? AppTheme.textSecondaryDark
+                        : AppTheme.textSecondaryLight,
                   ),
                 ),
               ],
@@ -339,26 +373,62 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
               child: Column(
                 children: [
                   ListTile(
-                    leading: const Icon(Icons.file_download_rounded, color: AppTheme.primaryGreen),
-                    title: const Text('Export JSON Full Backup', style: TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: const Text('Complete backup of all accounts, transactions, budgets, goals'),
-                    trailing: _isExporting ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.chevron_right_rounded),
+                    leading: const Icon(
+                      Icons.file_download_rounded,
+                      color: AppTheme.primaryGreen,
+                    ),
+                    title: const Text(
+                      'Export JSON Full Backup',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: const Text(
+                      'Complete backup of all accounts, transactions, budgets, goals',
+                    ),
+                    trailing: _isExporting
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.chevron_right_rounded),
                     onTap: _isExporting ? null : _exportJson,
                   ),
                   const Divider(height: 1),
                   ListTile(
-                    leading: const Icon(Icons.table_chart_rounded, color: AppTheme.transferBlue),
-                    title: const Text('Export Transactions (CSV)', style: TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: const Text('Universal spreadsheet format for Excel, Google Sheets, or LibreOffice'),
+                    leading: const Icon(
+                      Icons.table_chart_rounded,
+                      color: AppTheme.transferBlue,
+                    ),
+                    title: const Text(
+                      'Export Transactions (CSV)',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: const Text(
+                      'Universal spreadsheet format for Excel, Google Sheets, or LibreOffice',
+                    ),
                     trailing: const Icon(Icons.chevron_right_rounded),
                     onTap: _exportCsv,
                   ),
                   const Divider(height: 1),
                   ListTile(
-                    leading: const Icon(Icons.settings_backup_restore_rounded, color: AppTheme.accentAmber),
-                    title: const Text('Restore from JSON Backup', style: TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: const Text('Import verified records back into your local database'),
-                    trailing: _isImporting ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.chevron_right_rounded),
+                    leading: const Icon(
+                      Icons.settings_backup_restore_rounded,
+                      color: AppTheme.accentAmber,
+                    ),
+                    title: const Text(
+                      'Restore from JSON Backup',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: const Text(
+                      'Import verified records back into your local database',
+                    ),
+                    trailing: _isImporting
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.chevron_right_rounded),
                     onTap: _isImporting ? null : _showImportDialog,
                   ),
                 ],
@@ -385,12 +455,20 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
             child: Material(
               color: Colors.transparent,
               child: ListTile(
-                leading: const Icon(Icons.delete_forever_rounded, color: AppTheme.expenseRed),
+                leading: const Icon(
+                  Icons.delete_forever_rounded,
+                  color: AppTheme.expenseRed,
+                ),
                 title: const Text(
                   'Delete All Financial Data',
-                  style: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.expenseRed),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.expenseRed,
+                  ),
                 ),
-                subtitle: const Text('Permanently wipes transactions, budgets, goals, and accounts'),
+                subtitle: const Text(
+                  'Permanently wipes transactions, budgets, goals, and accounts',
+                ),
                 onTap: _confirmWipeData,
               ),
             ),

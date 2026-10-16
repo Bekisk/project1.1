@@ -1,8 +1,4 @@
-enum RecurringFrequency {
-  weekly,
-  monthly,
-  yearly,
-}
+enum RecurringFrequency { weekly, monthly, yearly }
 
 class RecurringSchedule {
   final String id;
@@ -75,8 +71,8 @@ class RecurringSchedule {
       'interval_type': frequency == RecurringFrequency.weekly
           ? 'week'
           : frequency == RecurringFrequency.yearly
-              ? 'year'
-              : 'month',
+          ? 'year'
+          : 'month',
       'interval_value': 1,
       'start_date': startDate.toIso8601String(),
       'end_date': endDate?.toIso8601String(),
@@ -91,7 +87,9 @@ class RecurringSchedule {
   }
 
   factory RecurringSchedule.fromMap(Map<String, dynamic> map) {
-    final rawFreq = (map['frequency'] ?? map['interval_type'] ?? 'monthly').toString().toLowerCase();
+    final rawFreq = (map['frequency'] ?? map['interval_type'] ?? 'monthly')
+        .toString()
+        .toLowerCase();
     RecurringFrequency freq;
     if (rawFreq.contains('week')) {
       freq = RecurringFrequency.weekly;
@@ -102,7 +100,9 @@ class RecurringSchedule {
     }
 
     final activeVal = map['is_active'] ?? map['is_enabled'] ?? 1;
-    final isActive = (activeVal is int && activeVal == 1) || (activeVal is bool && activeVal);
+    final isActive =
+        (activeVal is int && activeVal == 1) ||
+        (activeVal is bool && activeVal);
 
     return RecurringSchedule(
       id: map['id'] as String,
@@ -115,9 +115,12 @@ class RecurringSchedule {
       startDate: map['start_date'] != null
           ? DateTime.tryParse(map['start_date'] as String) ?? DateTime.now()
           : DateTime.now(),
-      endDate: map['end_date'] != null ? DateTime.tryParse(map['end_date'] as String) : null,
+      endDate: map['end_date'] != null
+          ? DateTime.tryParse(map['end_date'] as String)
+          : null,
       nextOccurrence: map['next_occurrence'] != null
-          ? DateTime.tryParse(map['next_occurrence'] as String) ?? DateTime.now()
+          ? DateTime.tryParse(map['next_occurrence'] as String) ??
+                DateTime.now()
           : DateTime.now(),
       lastProcessedDate: map['last_processed_date'] != null
           ? DateTime.tryParse(map['last_processed_date'] as String)

@@ -16,30 +16,21 @@ enum SmsTransactionType {
   other,
 }
 
-enum EthiopianBankProvider {
-  cbe,
-  telebirr,
-  awash,
-  abyssinia,
-  dashen,
-  unknown,
-}
+enum EthiopianBankProvider { cbe, telebirr, awash, abyssinia, dashen, unknown }
 
-enum ParsingConfidence {
-  high,
-  medium,
-  low,
-}
+enum ParsingConfidence { high, medium, low }
 
 class ParsedSmsTransaction {
   final EthiopianBankProvider provider;
   final SmsTransactionType transactionType;
   final bool isMoneyIn; // true = incoming (credit), false = outgoing (debit)
-  final int amountCents; // Primary transaction amount in cents (e.g. 500.00 ETB = 50000)
+  final int
+  amountCents; // Primary transaction amount in cents (e.g. 500.00 ETB = 50000)
   final int feeCents; // Separately stated fee in cents (e.g. 15.00 ETB = 1500)
   final int? reportedBalanceCents; // Bank-reported balance after transaction
   final String currencyCode; // e.g. 'ETB'
-  final String? accountSuffix; // Masked or short account number (e.g. '...1234')
+  final String?
+  accountSuffix; // Masked or short account number (e.g. '...1234')
   final String? partyOrMerchant; // Recipient, sender, merchant or service
   final DateTime? transactionDate;
   final String? referenceNumber; // Bank reference or transaction ID

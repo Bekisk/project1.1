@@ -15,9 +15,8 @@ class SubscriptionsScreen extends StatelessWidget {
   const SubscriptionsScreen({super.key});
 
   static void navigate(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const SubscriptionsScreen()),
-    );
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (_) => const SubscriptionsScreen()));
   }
 
   @override
@@ -35,7 +34,11 @@ class SubscriptionsScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.add_rounded),
             tooltip: 'Add Schedule',
-            onPressed: () => _showAddEditDialog(context, accounts: accounts, categories: categories),
+            onPressed: () => _showAddEditDialog(
+              context,
+              accounts: accounts,
+              categories: categories,
+            ),
           ),
         ],
       ),
@@ -67,11 +70,16 @@ class SubscriptionsScreen extends StatelessWidget {
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
                               letterSpacing: 0.8,
-                              color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                              color: isDark
+                                  ? AppTheme.textSecondaryDark
+                                  : AppTheme.textSecondaryLight,
                             ),
                           ),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 3,
+                            ),
                             decoration: BoxDecoration(
                               color: AppTheme.accentPurple.withOpacity(0.15),
                               borderRadius: BorderRadius.circular(6),
@@ -99,7 +107,9 @@ class SubscriptionsScreen extends StatelessWidget {
                       Text(
                         'Normalized monthly expenditure for all active fixed expenses and scheduled bills.',
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                          color: isDark
+                              ? AppTheme.textSecondaryDark
+                              : AppTheme.textSecondaryLight,
                         ),
                       ),
                     ],
@@ -110,7 +120,9 @@ class SubscriptionsScreen extends StatelessWidget {
                 // Schedules List Header
                 Text(
                   'Scheduled Subscriptions & Bills',
-                  style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 10),
 
@@ -123,19 +135,25 @@ class SubscriptionsScreen extends StatelessWidget {
                           Icon(
                             Icons.autorenew_rounded,
                             size: 48,
-                            color: isDark ? Colors.white24 : Colors.grey.shade400,
+                            color: isDark
+                                ? Colors.white24
+                                : Colors.grey.shade400,
                           ),
                           const SizedBox(height: 12),
                           Text(
                             'No recurring schedules created',
-                            style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             'Add rent, internet, gym, or software subscriptions to track fixed commitments.',
                             textAlign: TextAlign.center,
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                              color: isDark
+                                  ? AppTheme.textSecondaryDark
+                                  : AppTheme.textSecondaryLight,
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -143,11 +161,17 @@ class SubscriptionsScreen extends StatelessWidget {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppTheme.primaryGreen,
                               foregroundColor: Colors.black,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
                             ),
                             icon: const Icon(Icons.add, size: 18),
                             label: const Text('Add First Subscription'),
-                            onPressed: () => _showAddEditDialog(context, accounts: accounts, categories: categories),
+                            onPressed: () => _showAddEditDialog(
+                              context,
+                              accounts: accounts,
+                              categories: categories,
+                            ),
                           ),
                         ],
                       ),
@@ -171,7 +195,9 @@ class SubscriptionsScreen extends StatelessWidget {
                               child: Icon(
                                 Icons.repeat_rounded,
                                 size: 18,
-                                color: schedule.isActive ? AppTheme.accentPurple : Colors.grey,
+                                color: schedule.isActive
+                                    ? AppTheme.accentPurple
+                                    : Colors.grey,
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -187,20 +213,32 @@ class SubscriptionsScreen extends StatelessWidget {
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 14,
-                                            decoration: schedule.isActive ? null : TextDecoration.lineThrough,
+                                            decoration: schedule.isActive
+                                                ? null
+                                                : TextDecoration.lineThrough,
                                           ),
                                         ),
                                       ),
                                       const SizedBox(width: 6),
                                       Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 6,
+                                          vertical: 2,
+                                        ),
                                         decoration: BoxDecoration(
-                                          color: isDark ? Colors.white10 : Colors.black.withOpacity(0.06),
-                                          borderRadius: BorderRadius.circular(4),
+                                          color: isDark
+                                              ? Colors.white10
+                                              : Colors.black.withOpacity(0.06),
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
                                         ),
                                         child: Text(
                                           schedule.frequencyLabel,
-                                          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                                          style: const TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -210,7 +248,9 @@ class SubscriptionsScreen extends StatelessWidget {
                                     '${acc?.name ?? "Account"} • Next: ${DateFormat("MMM dd").format(schedule.nextOccurrence)}',
                                     style: TextStyle(
                                       fontSize: 11,
-                                      color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                                      color: isDark
+                                          ? AppTheme.textSecondaryDark
+                                          : AppTheme.textSecondaryLight,
                                     ),
                                   ),
                                 ],
@@ -220,23 +260,34 @@ class SubscriptionsScreen extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 Text(
-                                  CurrencyFormatter.formatCents(schedule.amount),
+                                  CurrencyFormatter.formatCents(
+                                    schedule.amount,
+                                  ),
                                   style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
-                                    color: schedule.isActive ? (isDark ? Colors.white : Colors.black87) : Colors.grey,
+                                    color: schedule.isActive
+                                        ? (isDark
+                                              ? Colors.white
+                                              : Colors.black87)
+                                        : Colors.grey,
                                   ),
                                 ),
                                 Switch.adaptive(
                                   value: schedule.isActive,
                                   activeColor: AppTheme.primaryGreen,
-                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                  onChanged: (_) => provider.toggleActive(schedule),
+                                  materialTapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                  onChanged: (_) =>
+                                      provider.toggleActive(schedule),
                                 ),
                               ],
                             ),
                             PopupMenuButton<String>(
-                              icon: const Icon(Icons.more_vert_rounded, size: 18),
+                              icon: const Icon(
+                                Icons.more_vert_rounded,
+                                size: 18,
+                              ),
                               onSelected: (val) {
                                 if (val == 'edit') {
                                   _showAddEditDialog(
@@ -250,10 +301,16 @@ class SubscriptionsScreen extends StatelessWidget {
                                 }
                               },
                               itemBuilder: (ctx) => [
-                                const PopupMenuItem(value: 'edit', child: Text('Edit')),
+                                const PopupMenuItem(
+                                  value: 'edit',
+                                  child: Text('Edit'),
+                                ),
                                 const PopupMenuItem(
                                   value: 'delete',
-                                  child: Text('Delete', style: TextStyle(color: Colors.redAccent)),
+                                  child: Text(
+                                    'Delete',
+                                    style: TextStyle(color: Colors.redAccent),
+                                  ),
                                 ),
                               ],
                             ),
@@ -278,12 +335,21 @@ class SubscriptionsScreen extends StatelessWidget {
   }) {
     final nameCtrl = TextEditingController(text: scheduleToEdit?.name ?? '');
     final amountCtrl = TextEditingController(
-      text: scheduleToEdit != null ? (scheduleToEdit.amount / 100.0).toStringAsFixed(2) : '',
+      text: scheduleToEdit != null
+          ? (scheduleToEdit.amount / 100.0).toStringAsFixed(2)
+          : '',
     );
-    RecurringFrequency selectedFreq = scheduleToEdit?.frequency ?? RecurringFrequency.monthly;
-    String? selectedAccId = scheduleToEdit?.accountId ?? (accounts.isNotEmpty ? accounts.first.id : null);
-    String? selectedCatId = scheduleToEdit?.categoryId ?? (categories.isNotEmpty ? categories.first.id : null);
-    DateTime nextOccur = scheduleToEdit?.nextOccurrence ?? DateTime.now().add(const Duration(days: 30));
+    RecurringFrequency selectedFreq =
+        scheduleToEdit?.frequency ?? RecurringFrequency.monthly;
+    String? selectedAccId =
+        scheduleToEdit?.accountId ??
+        (accounts.isNotEmpty ? accounts.first.id : null);
+    String? selectedCatId =
+        scheduleToEdit?.categoryId ??
+        (categories.isNotEmpty ? categories.first.id : null);
+    DateTime nextOccur =
+        scheduleToEdit?.nextOccurrence ??
+        DateTime.now().add(const Duration(days: 30));
 
     showDialog(
       context: context,
@@ -293,7 +359,9 @@ class SubscriptionsScreen extends StatelessWidget {
 
           return Dialog(
             backgroundColor: isDark ? const Color(0xFF131B2E) : Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(22),
               child: Column(
@@ -304,47 +372,82 @@ class SubscriptionsScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        scheduleToEdit == null ? 'New Subscription' : 'Edit Subscription',
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        scheduleToEdit == null
+                            ? 'New Subscription'
+                            : 'Edit Subscription',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
-                      IconButton(icon: const Icon(Icons.close, size: 20), onPressed: () => Navigator.pop(ctx)),
+                      IconButton(
+                        icon: const Icon(Icons.close, size: 20),
+                        onPressed: () => Navigator.pop(ctx),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 14),
 
                   // Name
-                  const Text('Name / Service', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                  const Text(
+                    'Name / Service',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                  ),
                   const SizedBox(height: 6),
                   TextField(
                     controller: nameCtrl,
                     decoration: InputDecoration(
                       hintText: 'e.g. Netflix, Gym, Rent, Internet',
                       filled: true,
-                      fillColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                      fillColor: isDark
+                          ? const Color(0xFF1E293B)
+                          : const Color(0xFFF1F5F9),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 12,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 14),
 
                   // Amount
-                  const Text('Amount (ETB)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                  const Text(
+                    'Amount (ETB)',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                  ),
                   const SizedBox(height: 6),
                   TextField(
                     controller: amountCtrl,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     decoration: InputDecoration(
                       hintText: '0.00',
                       filled: true,
-                      fillColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                      fillColor: isDark
+                          ? const Color(0xFF1E293B)
+                          : const Color(0xFFF1F5F9),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 12,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 14),
 
                   // Frequency
-                  const Text('Frequency', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                  const Text(
+                    'Frequency',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                  ),
                   const SizedBox(height: 6),
                   Row(
                     children: RecurringFrequency.values.map((f) {
@@ -357,12 +460,14 @@ class SubscriptionsScreen extends StatelessWidget {
                               f == RecurringFrequency.weekly
                                   ? 'Weekly'
                                   : f == RecurringFrequency.monthly
-                                      ? 'Monthly'
-                                      : 'Yearly',
+                                  ? 'Monthly'
+                                  : 'Yearly',
                               style: const TextStyle(fontSize: 11),
                             ),
                             selected: isSelected,
-                            selectedColor: AppTheme.accentPurple.withOpacity(0.2),
+                            selectedColor: AppTheme.accentPurple.withOpacity(
+                              0.2,
+                            ),
                             onSelected: (val) {
                               if (val) setState(() => selectedFreq = f);
                             },
@@ -374,18 +479,38 @@ class SubscriptionsScreen extends StatelessWidget {
                   const SizedBox(height: 14),
 
                   // Account Selector
-                  const Text('Debit Account', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                  const Text(
+                    'Debit Account',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                  ),
                   const SizedBox(height: 6),
                   DropdownButtonFormField<String>(
                     value: selectedAccId,
                     decoration: InputDecoration(
                       filled: true,
-                      fillColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                      fillColor: isDark
+                          ? const Color(0xFF1E293B)
+                          : const Color(0xFFF1F5F9),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 12,
+                      ),
                     ),
-                    dropdownColor: isDark ? const Color(0xFF1E293B) : Colors.white,
-                    items: accounts.map((a) => DropdownMenuItem(value: a.id, child: Text(a.name))).toList(),
+                    dropdownColor: isDark
+                        ? const Color(0xFF1E293B)
+                        : Colors.white,
+                    items: accounts
+                        .map(
+                          (a) => DropdownMenuItem(
+                            value: a.id,
+                            child: Text(a.name),
+                          ),
+                        )
+                        .toList(),
                     onChanged: (val) {
                       if (val != null) setState(() => selectedAccId = val);
                     },
@@ -393,7 +518,10 @@ class SubscriptionsScreen extends StatelessWidget {
                   const SizedBox(height: 14),
 
                   // Next Execution Date
-                  const Text('Next Execution Date', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                  const Text(
+                    'Next Execution Date',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                  ),
                   const SizedBox(height: 6),
                   InkWell(
                     onTap: () async {
@@ -409,9 +537,14 @@ class SubscriptionsScreen extends StatelessWidget {
                       }
                     },
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 12,
+                      ),
                       decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+                        color: isDark
+                            ? const Color(0xFF1E293B)
+                            : const Color(0xFFF1F5F9),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Row(
@@ -436,12 +569,18 @@ class SubscriptionsScreen extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.accentPurple,
                         foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                       onPressed: () async {
                         final name = nameCtrl.text.trim();
-                        final amount = (double.tryParse(amountCtrl.text.trim()) ?? 0 * 100).round();
-                        if (name.isEmpty || amount <= 0 || selectedAccId == null) {
+                        final amount =
+                            (double.tryParse(amountCtrl.text.trim()) ?? 0 * 100)
+                                .round();
+                        if (name.isEmpty ||
+                            amount <= 0 ||
+                            selectedAccId == null) {
                           return;
                         }
 
@@ -451,7 +590,8 @@ class SubscriptionsScreen extends StatelessWidget {
                             id: const Uuid().v4(),
                             name: name,
                             type: 'expense',
-                            amount: (double.parse(amountCtrl.text.trim()) * 100).round(),
+                            amount: (double.parse(amountCtrl.text.trim()) * 100)
+                                .round(),
                             accountId: selectedAccId!,
                             categoryId: selectedCatId,
                             frequency: selectedFreq,
@@ -461,18 +601,23 @@ class SubscriptionsScreen extends StatelessWidget {
                             createdAt: now,
                             updatedAt: now,
                           );
-                          await context.read<RecurringProvider>().addSchedule(newSchedule);
+                          await context.read<RecurringProvider>().addSchedule(
+                            newSchedule,
+                          );
                         } else {
                           final updated = scheduleToEdit.copyWith(
                             name: name,
-                            amount: (double.parse(amountCtrl.text.trim()) * 100).round(),
+                            amount: (double.parse(amountCtrl.text.trim()) * 100)
+                                .round(),
                             accountId: selectedAccId,
                             categoryId: selectedCatId,
                             frequency: selectedFreq,
                             nextOccurrence: nextOccur,
                             updatedAt: now,
                           );
-                          await context.read<RecurringProvider>().updateSchedule(updated);
+                          await context
+                              .read<RecurringProvider>()
+                              .updateSchedule(updated);
                         }
 
                         if (ctx.mounted) {
@@ -480,7 +625,9 @@ class SubscriptionsScreen extends StatelessWidget {
                         }
                       },
                       child: Text(
-                        scheduleToEdit == null ? 'Schedule Subscription' : 'Save Changes',
+                        scheduleToEdit == null
+                            ? 'Schedule Subscription'
+                            : 'Save Changes',
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),

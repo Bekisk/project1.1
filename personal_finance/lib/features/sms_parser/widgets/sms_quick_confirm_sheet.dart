@@ -6,6 +6,7 @@ import 'package:personal_finance/features/transactions/models/financial_transact
 import 'package:personal_finance/features/transactions/providers/transactions_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
+
 import '../models/parsed_sms_transaction.dart';
 
 class SmsQuickConfirmSheet extends StatefulWidget {
@@ -27,10 +28,8 @@ class SmsQuickConfirmSheet extends StatefulWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (ctx) => SmsQuickConfirmSheet(
-        parsedSms: parsedSms,
-        onConfirmed: onConfirmed,
-      ),
+      builder: (ctx) =>
+          SmsQuickConfirmSheet(parsedSms: parsedSms, onConfirmed: onConfirmed),
     );
   }
 
@@ -84,15 +83,18 @@ class _SmsQuickConfirmSheetState extends State<SmsQuickConfirmSheet> {
     // Default select first account if not set
     if (_selectedAccountId == null && accounts.isNotEmpty) {
       // Try to match by account name or provider
-      final providerName = widget.parsedSms.provider == EthiopianBankProvider.cbe
+      final providerName =
+          widget.parsedSms.provider == EthiopianBankProvider.cbe
           ? 'cbe'
           : widget.parsedSms.provider == EthiopianBankProvider.telebirr
-              ? 'telebirr'
-              : widget.parsedSms.provider == EthiopianBankProvider.awash
-                  ? 'awash'
-                  : '';
+          ? 'telebirr'
+          : widget.parsedSms.provider == EthiopianBankProvider.awash
+          ? 'awash'
+          : '';
       final matched = accounts.firstWhere(
-        (a) => a.name.toLowerCase().contains(providerName) || a.accountType.toLowerCase().contains(providerName),
+        (a) =>
+            a.name.toLowerCase().contains(providerName) ||
+            a.accountType.toLowerCase().contains(providerName),
         orElse: () => accounts.first,
       );
       _selectedAccountId = matched.id;
@@ -124,270 +126,318 @@ class _SmsQuickConfirmSheetState extends State<SmsQuickConfirmSheet> {
       child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Drag handle
-          Center(
-            child: Container(
-              width: 44,
-              height: 4,
-              decoration: BoxDecoration(
-                color: isDark ? Colors.white24 : Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(2),
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Drag handle
+            Center(
+              child: Container(
+                width: 44,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: isDark ? Colors.white24 : Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-          // Provider Badge & Title
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  color: AppTheme.primaryGreen.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.sms_rounded, size: 16, color: AppTheme.primaryGreen),
-                    const SizedBox(width: 6),
-                    Text(
-                      widget.parsedSms.providerDisplayName,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
+            // Provider Badge & Title
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryGreen.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.sms_rounded,
+                        size: 16,
                         color: AppTheme.primaryGreen,
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              const Spacer(),
-              IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-
-          Text(
-            'Detected ${_type == TransactionType.expense ? "Expense" : "Income"}',
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          Text(
-            'Confirm details to record automatically into your ledger.',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
-            ),
-          ),
-          const SizedBox(height: 18),
-
-          // Amount Card
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: isDark ? AppTheme.cardCharcoal : const Color(0xFFF8FAFC),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: isDark ? AppTheme.borderPrimary : Colors.black.withOpacity(0.06),
-              ),
-            ),
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: 20,
-                  backgroundColor: _type == TransactionType.expense
-                      ? AppTheme.expenseRed.withOpacity(0.2)
-                      : AppTheme.incomeGreen.withOpacity(0.2),
-                  child: Icon(
-                    _type == TransactionType.expense ? Icons.arrow_upward : Icons.arrow_downward,
-                    color: _type == TransactionType.expense ? AppTheme.expenseRed : AppTheme.incomeGreen,
-                  ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                      const SizedBox(width: 6),
                       Text(
-                        'Amount (ETB)',
-                        style: TextStyle(
+                        widget.parsedSms.providerDisplayName,
+                        style: const TextStyle(
                           fontSize: 12,
-                          color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
-                        ),
-                      ),
-                      Text(
-                        CurrencyFormatter.formatCents(widget.parsedSms.amountCents),
-                        style: theme.textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: _type == TransactionType.expense ? AppTheme.expenseRed : AppTheme.incomeGreen,
+                          color: AppTheme.primaryGreen,
                         ),
                       ),
                     ],
                   ),
                 ),
+                const Spacer(),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.pop(context),
+                ),
               ],
             ),
-          ),
-          const SizedBox(height: 16),
+            const SizedBox(height: 12),
 
-          // Description input
-          Text(
-            'Description / Merchant',
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: isDark ? Colors.white70 : Colors.black87,
-            ),
-          ),
-          const SizedBox(height: 6),
-          TextField(
-            controller: _descController,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: isDark ? AppTheme.inputCharcoal : const Color(0xFFF1F5F9),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(
-                  color: isDark ? AppTheme.borderPrimary : const Color(0xFFE2E8F0),
-                ),
+            Text(
+              'Detected ${_type == TransactionType.expense ? "Expense" : "Income"}',
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w700,
               ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(
-                  color: isDark ? AppTheme.borderPrimary : const Color(0xFFE2E8F0),
-                ),
-              ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             ),
-          ),
-          const SizedBox(height: 14),
+            Text(
+              'Confirm details to record automatically into your ledger.',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: isDark
+                    ? AppTheme.textSecondaryDark
+                    : AppTheme.textSecondaryLight,
+              ),
+            ),
+            const SizedBox(height: 18),
 
-          // Account Selector
-          Text(
-            'Target Account / Wallet',
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: isDark ? Colors.white70 : Colors.black87,
-            ),
-          ),
-          const SizedBox(height: 6),
-          DropdownButtonFormField<String>(
-            value: _selectedAccountId,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: isDark ? AppTheme.inputCharcoal : const Color(0xFFF1F5F9),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(
-                  color: isDark ? AppTheme.borderPrimary : const Color(0xFFE2E8F0),
+            // Amount Card
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: isDark ? AppTheme.cardCharcoal : const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: isDark
+                      ? AppTheme.borderPrimary
+                      : Colors.black.withOpacity(0.06),
                 ),
               ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(
-                  color: isDark ? AppTheme.borderPrimary : const Color(0xFFE2E8F0),
-                ),
-              ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            ),
-            dropdownColor: isDark ? AppTheme.elevatedCharcoal : Colors.white,
-            items: accounts.map((a) {
-              return DropdownMenuItem(
-                value: a.id,
-                child: Text(a.name),
-              );
-            }).toList(),
-            onChanged: (val) {
-              if (val != null) setState(() => _selectedAccountId = val);
-            },
-          ),
-          const SizedBox(height: 14),
-
-          // Category Selector
-          Text(
-            'Category',
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: isDark ? Colors.white70 : Colors.black87,
-            ),
-          ),
-          const SizedBox(height: 6),
-          DropdownButtonFormField<String>(
-            value: _selectedCategoryId,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: isDark ? AppTheme.inputCharcoal : const Color(0xFFF1F5F9),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(
-                  color: isDark ? AppTheme.borderPrimary : const Color(0xFFE2E8F0),
-                ),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(
-                  color: isDark ? AppTheme.borderPrimary : const Color(0xFFE2E8F0),
-                ),
-              ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            ),
-            dropdownColor: isDark ? AppTheme.elevatedCharcoal : Colors.white,
-            items: categories.map((c) {
-              return DropdownMenuItem(
-                value: c.id,
-                child: Text(c.name),
-              );
-            }).toList(),
-            onChanged: (val) {
-              if (val != null) setState(() => _selectedCategoryId = val);
-            },
-          ),
-          const SizedBox(height: 22),
-
-          // Confirm Button
-          SizedBox(
-            width: double.infinity,
-            height: 52,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.primaryGreen,
-                foregroundColor: Colors.black,
-                shape: RoundedRectangleRoundedCorners(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                elevation: 0,
-              ),
-              onPressed: _isSaving ? null : _confirmAndSave,
-              child: _isSaving
-                  ? const SizedBox(
-                      width: 22,
-                      height: 22,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black),
-                    )
-                  : const Text(
-                      'Confirm & Log Transaction',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 20,
+                    backgroundColor: _type == TransactionType.expense
+                        ? AppTheme.expenseRed.withOpacity(0.2)
+                        : AppTheme.incomeGreen.withOpacity(0.2),
+                    child: Icon(
+                      _type == TransactionType.expense
+                          ? Icons.arrow_upward
+                          : Icons.arrow_downward,
+                      color: _type == TransactionType.expense
+                          ? AppTheme.expenseRed
+                          : AppTheme.incomeGreen,
                     ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Amount (ETB)',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: isDark
+                                ? AppTheme.textSecondaryDark
+                                : AppTheme.textSecondaryLight,
+                          ),
+                        ),
+                        Text(
+                          CurrencyFormatter.formatCents(
+                            widget.parsedSms.amountCents,
+                          ),
+                          style: theme.textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: _type == TransactionType.expense
+                                ? AppTheme.expenseRed
+                                : AppTheme.incomeGreen,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
+            const SizedBox(height: 16),
+
+            // Description input
+            Text(
+              'Description / Merchant',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: isDark ? Colors.white70 : Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 6),
+            TextField(
+              controller: _descController,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: isDark
+                    ? AppTheme.inputCharcoal
+                    : const Color(0xFFF1F5F9),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: isDark
+                        ? AppTheme.borderPrimary
+                        : const Color(0xFFE2E8F0),
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: isDark
+                        ? AppTheme.borderPrimary
+                        : const Color(0xFFE2E8F0),
+                  ),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
+                ),
+              ),
+            ),
+            const SizedBox(height: 14),
+
+            // Account Selector
+            Text(
+              'Target Account / Wallet',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: isDark ? Colors.white70 : Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 6),
+            DropdownButtonFormField<String>(
+              value: _selectedAccountId,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: isDark
+                    ? AppTheme.inputCharcoal
+                    : const Color(0xFFF1F5F9),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: isDark
+                        ? AppTheme.borderPrimary
+                        : const Color(0xFFE2E8F0),
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: isDark
+                        ? AppTheme.borderPrimary
+                        : const Color(0xFFE2E8F0),
+                  ),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
+                ),
+              ),
+              dropdownColor: isDark ? AppTheme.elevatedCharcoal : Colors.white,
+              items: accounts.map((a) {
+                return DropdownMenuItem(value: a.id, child: Text(a.name));
+              }).toList(),
+              onChanged: (val) {
+                if (val != null) setState(() => _selectedAccountId = val);
+              },
+            ),
+            const SizedBox(height: 14),
+
+            // Category Selector
+            Text(
+              'Category',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: isDark ? Colors.white70 : Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 6),
+            DropdownButtonFormField<String>(
+              value: _selectedCategoryId,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: isDark
+                    ? AppTheme.inputCharcoal
+                    : const Color(0xFFF1F5F9),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: isDark
+                        ? AppTheme.borderPrimary
+                        : const Color(0xFFE2E8F0),
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: isDark
+                        ? AppTheme.borderPrimary
+                        : const Color(0xFFE2E8F0),
+                  ),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
+                ),
+              ),
+              dropdownColor: isDark ? AppTheme.elevatedCharcoal : Colors.white,
+              items: categories.map((c) {
+                return DropdownMenuItem(value: c.id, child: Text(c.name));
+              }).toList(),
+              onChanged: (val) {
+                if (val != null) setState(() => _selectedCategoryId = val);
+              },
+            ),
+            const SizedBox(height: 22),
+
+            // Confirm Button
+            SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primaryGreen,
+                  foregroundColor: Colors.black,
+                  shape: RoundedRectangleRoundedCorners(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  elevation: 0,
+                ),
+                onPressed: _isSaving ? null : _confirmAndSave,
+                child: _isSaving
+                    ? const SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.black,
+                        ),
+                      )
+                    : const Text(
+                        'Confirm & Log Transaction',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Future<void> _confirmAndSave() async {
     if (_selectedAccountId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select an account')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please select an account')));
       return;
     }
 
@@ -404,13 +454,16 @@ class _SmsQuickConfirmSheetState extends State<SmsQuickConfirmSheet> {
         description: _descController.text.trim().isEmpty
             ? (widget.parsedSms.partyOrMerchant ?? 'Bank Transaction')
             : _descController.text.trim(),
-        notes: 'Auto-parsed from ${widget.parsedSms.providerDisplayName}. Ref: ${widget.parsedSms.referenceNumber ?? "N/A"}',
+        notes:
+            'Auto-parsed from ${widget.parsedSms.providerDisplayName}. Ref: ${widget.parsedSms.referenceNumber ?? "N/A"}',
         transactionDate: widget.parsedSms.transactionDate ?? now,
         createdAt: now,
         updatedAt: now,
       );
 
-      final success = await context.read<TransactionsProvider>().insertTransaction(tx);
+      final success = await context
+          .read<TransactionsProvider>()
+          .insertTransaction(tx);
       if (success && mounted) {
         context.read<DashboardProvider>().loadDashboardData();
         Navigator.pop(context);
@@ -419,7 +472,10 @@ class _SmsQuickConfirmSheetState extends State<SmsQuickConfirmSheet> {
             backgroundColor: AppTheme.primaryGreen,
             content: Text(
               'Successfully logged ${CurrencyFormatter.formatCents(tx.amount)} via SMS!',
-              style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         );
@@ -427,9 +483,9 @@ class _SmsQuickConfirmSheetState extends State<SmsQuickConfirmSheet> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error saving transaction: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error saving transaction: $e')));
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);

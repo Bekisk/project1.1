@@ -16,16 +16,18 @@ class AccountsManagementScreen extends StatefulWidget {
   const AccountsManagementScreen({super.key});
 
   static void navigate(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const AccountsManagementScreen()),
-    );
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const AccountsManagementScreen()));
   }
 
   @override
-  State<AccountsManagementScreen> createState() => _AccountsManagementScreenState();
+  State<AccountsManagementScreen> createState() =>
+      _AccountsManagementScreenState();
 }
 
-class _AccountsManagementScreenState extends State<AccountsManagementScreen> with SingleTickerProviderStateMixin {
+class _AccountsManagementScreenState extends State<AccountsManagementScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   bool _isLoading = true;
   List<Account> _accounts = [];
@@ -100,7 +102,9 @@ class _AccountsManagementScreenState extends State<AccountsManagementScreen> wit
   void _showAddEditAccountDialog({Account? accountToEdit}) {
     final nameCtrl = TextEditingController(text: accountToEdit?.name ?? '');
     final openingCtrl = TextEditingController(
-      text: accountToEdit != null ? (accountToEdit.openingBalance / 100.0).toStringAsFixed(2) : '0.00',
+      text: accountToEdit != null
+          ? (accountToEdit.openingBalance / 100.0).toStringAsFixed(2)
+          : '0.00',
     );
     String selectedType = accountToEdit?.accountType ?? 'cash';
     final formKey = GlobalKey<FormState>();
@@ -110,8 +114,12 @@ class _AccountsManagementScreenState extends State<AccountsManagementScreen> wit
       builder: (ctx) => StatefulBuilder(
         builder: (context, setDialogState) {
           return AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            title: Text(accountToEdit == null ? 'New Account / Wallet' : 'Edit Account'),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            title: Text(
+              accountToEdit == null ? 'New Account / Wallet' : 'Edit Account',
+            ),
             content: SingleChildScrollView(
               child: Form(
                 key: formKey,
@@ -123,9 +131,13 @@ class _AccountsManagementScreenState extends State<AccountsManagementScreen> wit
                       decoration: InputDecoration(
                         labelText: 'Account Name *',
                         hintText: 'e.g. CBE Account, Telebirr, Cash',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
-                      validator: (val) => val == null || val.trim().isEmpty ? 'Enter account name' : null,
+                      validator: (val) => val == null || val.trim().isEmpty
+                          ? 'Enter account name'
+                          : null,
                     ),
                     const SizedBox(height: 14),
                     DropdownButtonFormField<String>(
@@ -133,25 +145,56 @@ class _AccountsManagementScreenState extends State<AccountsManagementScreen> wit
                       isExpanded: true,
                       decoration: InputDecoration(
                         labelText: 'Account Type',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                       items: const [
-                        DropdownMenuItem(value: 'cash', child: Text('Cash Wallet', overflow: TextOverflow.ellipsis)),
-                        DropdownMenuItem(value: 'bank', child: Text('Bank Account (CBE, Awash, etc.)', overflow: TextOverflow.ellipsis)),
-                        DropdownMenuItem(value: 'mobile_money', child: Text('Mobile Money (Telebirr, CBE Birr)', overflow: TextOverflow.ellipsis)),
-                        DropdownMenuItem(value: 'savings', child: Text('Dedicated Savings', overflow: TextOverflow.ellipsis)),
+                        DropdownMenuItem(
+                          value: 'cash',
+                          child: Text(
+                            'Cash Wallet',
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: 'bank',
+                          child: Text(
+                            'Bank Account (CBE, Awash, etc.)',
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: 'mobile_money',
+                          child: Text(
+                            'Mobile Money (Telebirr, CBE Birr)',
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: 'savings',
+                          child: Text(
+                            'Dedicated Savings',
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
                       ],
                       onChanged: (val) {
-                        if (val != null) setDialogState(() => selectedType = val);
+                        if (val != null)
+                          setDialogState(() => selectedType = val);
                       },
                     ),
                     const SizedBox(height: 14),
                     TextFormField(
                       controller: openingCtrl,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
                       decoration: InputDecoration(
                         labelText: 'Opening Balance (ETB)',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                     ),
                   ],
@@ -159,7 +202,10 @@ class _AccountsManagementScreenState extends State<AccountsManagementScreen> wit
               ),
             ),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Cancel'),
+              ),
               FilledButton(
                 onPressed: () async {
                   if (!formKey.currentState!.validate()) return;
@@ -167,7 +213,9 @@ class _AccountsManagementScreenState extends State<AccountsManagementScreen> wit
                   final dash = context.read<DashboardProvider>();
                   final txs = context.read<TransactionsProvider>();
 
-                  final opening = (double.tryParse(openingCtrl.text.trim()) ?? 0 * 100).round();
+                  final opening =
+                      ((double.tryParse(openingCtrl.text.trim()) ?? 0.0) * 100)
+                          .round();
                   final db = await DatabaseHelper.instance.database;
                   final now = DateTime.now();
 
@@ -188,7 +236,12 @@ class _AccountsManagementScreenState extends State<AccountsManagementScreen> wit
                       openingBalance: opening,
                       updatedAt: now,
                     );
-                    await db.update('accounts', updated.toMap(), where: 'id = ?', whereArgs: [accountToEdit.id]);
+                    await db.update(
+                      'accounts',
+                      updated.toMap(),
+                      where: 'id = ?',
+                      whereArgs: [accountToEdit.id],
+                    );
                   }
 
                   nav.pop();
@@ -214,7 +267,9 @@ class _AccountsManagementScreenState extends State<AccountsManagementScreen> wit
   void _confirmArchive(Account acc) {
     if (_accounts.length <= 1) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('You must have at least one active account')),
+        const SnackBar(
+          content: Text('You must have at least one active account'),
+        ),
       );
       return;
     }
@@ -223,21 +278,33 @@ class _AccountsManagementScreenState extends State<AccountsManagementScreen> wit
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Archive Account?'),
-        content: Text('Archive "${acc.name}"? Existing transactions referencing this account will be preserved.'),
+        content: Text(
+          'Archive "${acc.name}"? Existing transactions referencing this account will be preserved.',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
           FilledButton(
             onPressed: () async {
               Navigator.pop(ctx);
               final db = await DatabaseHelper.instance.database;
-              await db.update('accounts', {'is_archived': 1}, where: 'id = ?', whereArgs: [acc.id]);
+              await db.update(
+                'accounts',
+                {'is_archived': 1},
+                where: 'id = ?',
+                whereArgs: [acc.id],
+              );
               if (mounted) {
                 context.read<DashboardProvider>().loadDashboardData();
                 context.read<TransactionsProvider>().loadTransactions();
                 _loadAccountsWithBalances();
               }
             },
-            style: FilledButton.styleFrom(backgroundColor: AppTheme.accentCoral),
+            style: FilledButton.styleFrom(
+              backgroundColor: AppTheme.accentCoral,
+            ),
             child: const Text('Archive'),
           ),
         ],
@@ -270,10 +337,18 @@ class _AccountsManagementScreenState extends State<AccountsManagementScreen> wit
           controller: _tabController,
           indicatorColor: AppTheme.primaryGreen,
           labelColor: isDark ? AppTheme.primaryGreen : AppTheme.primaryNavy,
-          unselectedLabelColor: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+          unselectedLabelColor: isDark
+              ? AppTheme.textSecondaryDark
+              : AppTheme.textSecondaryLight,
           tabs: const [
-            Tab(icon: Icon(Icons.account_balance_wallet_outlined, size: 20), text: 'Wallets & Banks'),
-            Tab(icon: Icon(Icons.handshake_outlined, size: 20), text: 'Lend & Borrow'),
+            Tab(
+              icon: Icon(Icons.account_balance_wallet_outlined, size: 20),
+              text: 'Wallets & Banks',
+            ),
+            Tab(
+              icon: Icon(Icons.handshake_outlined, size: 20),
+              text: 'Lend & Borrow',
+            ),
           ],
         ),
         actions: [
@@ -300,157 +375,264 @@ class _AccountsManagementScreenState extends State<AccountsManagementScreen> wit
                   child: ListView(
                     padding: const EdgeInsets.all(16),
                     children: [
-                  ..._accounts.map((acc) {
-                    final balance = _accountBalances[acc.id] ?? 0;
-                    final profileProvider = context.watch<UserProfileProvider>();
-                    final isMain = profileProvider.mainAccountId == acc.id;
-                    final isSavings = profileProvider.designatedSavingsAccountId == acc.id;
+                      ..._accounts.map((acc) {
+                        final balance = _accountBalances[acc.id] ?? 0;
+                        final profileProvider = context
+                            .watch<UserProfileProvider>();
+                        final isMain = profileProvider.mainAccountId == acc.id;
+                        final isSavings =
+                            profileProvider.designatedSavingsAccountId ==
+                            acc.id;
 
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: FintechCard(
-                        padding: const EdgeInsets.all(16),
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: AppTheme.primaryGreen.withValues(alpha: 0.15),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Icon(_iconForType(acc.accountType), color: AppTheme.primaryGreen, size: 24),
-                            ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Flexible(
-                                        child: Text(
-                                          acc.name,
-                                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                                        ),
-                                      ),
-                                      if (isMain) ...[
-                                        const SizedBox(width: 6),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                          decoration: BoxDecoration(
-                                            color: AppTheme.primaryGreen.withValues(alpha: 0.15),
-                                            borderRadius: BorderRadius.circular(6),
-                                          ),
-                                          child: const Text('MAIN',
-                                              style: TextStyle(
-                                                  fontSize: 9, fontWeight: FontWeight.bold, color: AppTheme.primaryGreen)),
-                                        ),
-                                      ],
-                                      if (isSavings) ...[
-                                        const SizedBox(width: 6),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                          decoration: BoxDecoration(
-                                            color: AppTheme.transferBlue.withValues(alpha: 0.15),
-                                            borderRadius: BorderRadius.circular(6),
-                                          ),
-                                          child: const Text('SAVINGS',
-                                              style: TextStyle(
-                                                  fontSize: 9, fontWeight: FontWeight.bold, color: AppTheme.transferBlue)),
-                                        ),
-                                      ],
-                                    ],
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    acc.accountType.replaceAll('_', ' ').toUpperCase(),
-                                    style: const TextStyle(fontSize: 11, color: Colors.grey, fontWeight: FontWeight.w600),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: FintechCard(
+                            padding: const EdgeInsets.all(16),
+                            child: Row(
                               children: [
-                                Text(
-                                  CurrencyFormatter.formatCents(balance),
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 15,
-                                    color: balance >= 0 ? (isDark ? Colors.white : AppTheme.primaryNavy) : AppTheme.expenseRed,
+                                Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.primaryGreen.withValues(
+                                      alpha: 0.15,
+                                    ),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Icon(
+                                    _iconForType(acc.accountType),
+                                    color: AppTheme.primaryGreen,
+                                    size: 24,
                                   ),
                                 ),
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
+                                const SizedBox(width: 14),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Flexible(
+                                            child: Text(
+                                              acc.name,
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 15,
+                                              ),
+                                            ),
+                                          ),
+                                          if (isMain) ...[
+                                            const SizedBox(width: 6),
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 6,
+                                                    vertical: 2,
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                color: AppTheme.primaryGreen
+                                                    .withValues(alpha: 0.15),
+                                                borderRadius:
+                                                    BorderRadius.circular(6),
+                                              ),
+                                              child: const Text(
+                                                'MAIN',
+                                                style: TextStyle(
+                                                  fontSize: 9,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: AppTheme.primaryGreen,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                          if (isSavings) ...[
+                                            const SizedBox(width: 6),
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 6,
+                                                    vertical: 2,
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                color: AppTheme.transferBlue
+                                                    .withValues(alpha: 0.15),
+                                                borderRadius:
+                                                    BorderRadius.circular(6),
+                                              ),
+                                              child: const Text(
+                                                'SAVINGS',
+                                                style: TextStyle(
+                                                  fontSize: 9,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: AppTheme.transferBlue,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ],
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        acc.accountType
+                                            .replaceAll('_', ' ')
+                                            .toUpperCase(),
+                                        style: const TextStyle(
+                                          fontSize: 11,
+                                          color: Colors.grey,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
-                                    PopupMenuButton<String>(
-                                      icon: const Icon(Icons.more_vert_rounded, size: 20),
-                                      tooltip: 'Account Roles & Actions',
-                                      onSelected: (val) async {
-                                        final scaffoldMessenger = ScaffoldMessenger.of(context);
-                                        if (val == 'set_main') {
-                                          await profileProvider.setMainAccountId(acc.id);
-                                          scaffoldMessenger.showSnackBar(
-                                            SnackBar(content: Text('${acc.name} set as Main Account')),
-                                          );
-                                        } else if (val == 'set_savings') {
-                                          await profileProvider.setDesignatedSavingsAccountId(acc.id);
-                                          scaffoldMessenger.showSnackBar(
-                                            SnackBar(content: Text('${acc.name} set as Designated Savings Account')),
-                                          );
-                                        } else if (val == 'unset_savings') {
-                                          await profileProvider.setDesignatedSavingsAccountId(null);
-                                          scaffoldMessenger.showSnackBar(
-                                            const SnackBar(content: Text('Removed Savings Account designation')),
-                                          );
-                                        } else if (val == 'edit') {
-                                          _showAddEditAccountDialog(accountToEdit: acc);
-                                        } else if (val == 'archive') {
-                                          _confirmArchive(acc);
-                                        }
-                                      },
-                                      itemBuilder: (ctx) => [
-                                        PopupMenuItem(
-                                          value: 'set_main',
-                                          enabled: !isMain,
-                                          child: Row(
-                                            children: [
-                                              Icon(Icons.star_rounded, size: 18, color: isMain ? Colors.grey : AppTheme.primaryGreen),
-                                              const SizedBox(width: 8),
-                                              Text(isMain ? 'Current Main Account' : 'Set as Main Account'),
-                                            ],
+                                    Text(
+                                      CurrencyFormatter.formatCents(balance),
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                        color: balance >= 0
+                                            ? (isDark
+                                                  ? Colors.white
+                                                  : AppTheme.primaryNavy)
+                                            : AppTheme.expenseRed,
+                                      ),
+                                    ),
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        PopupMenuButton<String>(
+                                          icon: const Icon(
+                                            Icons.more_vert_rounded,
+                                            size: 20,
                                           ),
-                                        ),
-                                        PopupMenuItem(
-                                          value: isSavings ? 'unset_savings' : 'set_savings',
-                                          child: Row(
-                                            children: [
-                                              Icon(Icons.savings_rounded, size: 18, color: isSavings ? AppTheme.accentCoral : AppTheme.transferBlue),
-                                              const SizedBox(width: 8),
-                                              Text(isSavings ? 'Remove Savings Role' : 'Set as Savings Account'),
-                                            ],
-                                          ),
-                                        ),
-                                        const PopupMenuDivider(),
-                                        const PopupMenuItem(
-                                          value: 'edit',
-                                          child: Row(
-                                            children: [
-                                              Icon(Icons.edit_outlined, size: 18),
-                                              SizedBox(width: 8),
-                                              Text('Edit Account Details'),
-                                            ],
-                                          ),
-                                        ),
-                                        const PopupMenuItem(
-                                          value: 'archive',
-                                          child: Row(
-                                            children: [
-                                              Icon(Icons.archive_outlined, size: 18, color: AppTheme.accentCoral),
-                                              SizedBox(width: 8),
-                                              Text('Archive Account', style: TextStyle(color: AppTheme.accentCoral)),
-                                            ],
-                                          ),
+                                          tooltip: 'Account Roles & Actions',
+                                          onSelected: (val) async {
+                                            final scaffoldMessenger =
+                                                ScaffoldMessenger.of(context);
+                                            if (val == 'set_main') {
+                                              await profileProvider
+                                                  .setMainAccountId(acc.id);
+                                              scaffoldMessenger.showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    '${acc.name} set as Main Account',
+                                                  ),
+                                                ),
+                                              );
+                                            } else if (val == 'set_savings') {
+                                              await profileProvider
+                                                  .setDesignatedSavingsAccountId(
+                                                    acc.id,
+                                                  );
+                                              scaffoldMessenger.showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    '${acc.name} set as Designated Savings Account',
+                                                  ),
+                                                ),
+                                              );
+                                            } else if (val == 'unset_savings') {
+                                              await profileProvider
+                                                  .setDesignatedSavingsAccountId(
+                                                    null,
+                                                  );
+                                              scaffoldMessenger.showSnackBar(
+                                                const SnackBar(
+                                                  content: Text(
+                                                    'Removed Savings Account designation',
+                                                  ),
+                                                ),
+                                              );
+                                            } else if (val == 'edit') {
+                                              _showAddEditAccountDialog(
+                                                accountToEdit: acc,
+                                              );
+                                            } else if (val == 'archive') {
+                                              _confirmArchive(acc);
+                                            }
+                                          },
+                                          itemBuilder: (ctx) => [
+                                            PopupMenuItem(
+                                              value: 'set_main',
+                                              enabled: !isMain,
+                                              child: Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.star_rounded,
+                                                    size: 18,
+                                                    color: isMain
+                                                        ? Colors.grey
+                                                        : AppTheme.primaryGreen,
+                                                  ),
+                                                  const SizedBox(width: 8),
+                                                  Text(
+                                                    isMain
+                                                        ? 'Current Main Account'
+                                                        : 'Set as Main Account',
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            PopupMenuItem(
+                                              value: isSavings
+                                                  ? 'unset_savings'
+                                                  : 'set_savings',
+                                              child: Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.savings_rounded,
+                                                    size: 18,
+                                                    color: isSavings
+                                                        ? AppTheme.accentCoral
+                                                        : AppTheme.transferBlue,
+                                                  ),
+                                                  const SizedBox(width: 8),
+                                                  Text(
+                                                    isSavings
+                                                        ? 'Remove Savings Role'
+                                                        : 'Set as Savings Account',
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            const PopupMenuDivider(),
+                                            const PopupMenuItem(
+                                              value: 'edit',
+                                              child: Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.edit_outlined,
+                                                    size: 18,
+                                                  ),
+                                                  SizedBox(width: 8),
+                                                  Text('Edit Account Details'),
+                                                ],
+                                              ),
+                                            ),
+                                            const PopupMenuItem(
+                                              value: 'archive',
+                                              child: Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.archive_outlined,
+                                                    size: 18,
+                                                    color: AppTheme.accentCoral,
+                                                  ),
+                                                  SizedBox(width: 8),
+                                                  Text(
+                                                    'Archive Account',
+                                                    style: TextStyle(
+                                                      color:
+                                                          AppTheme.accentCoral,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
@@ -458,18 +640,16 @@ class _AccountsManagementScreenState extends State<AccountsManagementScreen> wit
                                 ),
                               ],
                             ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }),
-                ],
-              ),
+                          ),
+                        );
+                      }),
+                    ],
+                  ),
+                ),
+                // Tab 2: Lend & Borrow IOU Tracker
+                DebtsListView(accounts: _accounts),
+              ],
             ),
-            // Tab 2: Lend & Borrow IOU Tracker
-            DebtsListView(accounts: _accounts),
-          ],
-        ),
     );
   }
 }

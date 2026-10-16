@@ -22,9 +22,7 @@ class PlaceholderSectionScreen extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-      ),
+      appBar: AppBar(title: Text(title)),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -36,7 +34,9 @@ class PlaceholderSectionScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(22),
                   decoration: BoxDecoration(
-                    color: AppTheme.primaryGreen.withValues(alpha: isDark ? 0.18 : 0.12),
+                    color: AppTheme.primaryGreen.withValues(
+                      alpha: isDark ? 0.18 : 0.12,
+                    ),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(icon, size: 44, color: AppTheme.primaryGreen),
@@ -54,15 +54,22 @@ class PlaceholderSectionScreen extends StatelessWidget {
                   description,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                    color: isDark
+                        ? AppTheme.textSecondaryDark
+                        : AppTheme.textSecondaryLight,
                     height: 1.4,
                   ),
                 ),
                 const SizedBox(height: 22),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
-                    color: AppTheme.accentAmber.withValues(alpha: isDark ? 0.2 : 0.12),
+                    color: AppTheme.accentAmber.withValues(
+                      alpha: isDark ? 0.2 : 0.12,
+                    ),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: AppTheme.accentAmber.withValues(alpha: 0.35),
@@ -72,7 +79,11 @@ class PlaceholderSectionScreen extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.auto_awesome_rounded, size: 14, color: AppTheme.accentAmber),
+                      const Icon(
+                        Icons.auto_awesome_rounded,
+                        size: 14,
+                        color: AppTheme.accentAmber,
+                      ),
                       const SizedBox(width: 6),
                       Text(
                         milestoneInfo,

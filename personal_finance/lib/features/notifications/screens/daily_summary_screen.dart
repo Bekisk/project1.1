@@ -86,32 +86,48 @@ class _DailySummaryScreenState extends State<DailySummaryScreen> {
               : RefreshIndicator(
                   color: AppTheme.primaryGreen,
                   onRefresh: () async {
-                    await context.read<TransactionsProvider>().loadTransactions();
+                    await context
+                        .read<TransactionsProvider>()
+                        .loadTransactions();
                     await _loadSummary();
                   },
                   child: SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(
                       parent: BouncingScrollPhysics(),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Date header chip
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
-                            color: AppTheme.primaryAccent.withValues(alpha: 0.12),
+                            color: AppTheme.primaryAccent.withValues(
+                              alpha: 0.12,
+                            ),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: AppTheme.primaryAccent.withValues(alpha: 0.3),
+                              color: AppTheme.primaryAccent.withValues(
+                                alpha: 0.3,
+                              ),
                               width: 1,
                             ),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.today_rounded, size: 16, color: AppTheme.primaryAccent),
+                              const Icon(
+                                Icons.today_rounded,
+                                size: 16,
+                                color: AppTheme.primaryAccent,
+                              ),
                               const SizedBox(width: 6),
                               Text(
                                 dateFormatted,
@@ -142,9 +158,14 @@ class _DailySummaryScreenState extends State<DailySummaryScreen> {
                               ),
                             ),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
                               decoration: BoxDecoration(
-                                color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+                                color: isDark
+                                    ? const Color(0xFF1E293B)
+                                    : const Color(0xFFF1F5F9),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Text(
@@ -152,7 +173,9 @@ class _DailySummaryScreenState extends State<DailySummaryScreen> {
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
-                                  color: isDark ? AppTheme.primaryGreen : AppTheme.primaryNavy,
+                                  color: isDark
+                                      ? AppTheme.primaryGreen
+                                      : AppTheme.primaryNavy,
                                 ),
                               ),
                             ),
@@ -168,7 +191,8 @@ class _DailySummaryScreenState extends State<DailySummaryScreen> {
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             itemCount: _summary!.eligibleTransactions.length,
-                            separatorBuilder: (context, index) => const SizedBox(height: 10),
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(height: 10),
                             itemBuilder: (context, index) {
                               final tx = _summary!.eligibleTransactions[index];
                               return _buildTransactionItem(context, tx, isDark);
@@ -219,7 +243,11 @@ class _DailySummaryScreenState extends State<DailySummaryScreen> {
                   letterSpacing: 0.8,
                 ),
               ),
-              Icon(Icons.shield_rounded, color: AppTheme.primaryAccent, size: 16),
+              Icon(
+                Icons.shield_rounded,
+                color: AppTheme.primaryAccent,
+                size: 16,
+              ),
             ],
           ),
           const SizedBox(height: 8),
@@ -240,7 +268,10 @@ class _DailySummaryScreenState extends State<DailySummaryScreen> {
             children: [
               Expanded(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(14),
@@ -250,9 +281,19 @@ class _DailySummaryScreenState extends State<DailySummaryScreen> {
                     children: [
                       const Row(
                         children: [
-                          Icon(Icons.arrow_downward_rounded, size: 14, color: AppTheme.accentTeal),
+                          Icon(
+                            Icons.arrow_downward_rounded,
+                            size: 14,
+                            color: AppTheme.accentTeal,
+                          ),
                           SizedBox(width: 4),
-                          Text('Income', style: TextStyle(color: Colors.white70, fontSize: 11)),
+                          Text(
+                            'Income',
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 11,
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 4),
@@ -266,7 +307,10 @@ class _DailySummaryScreenState extends State<DailySummaryScreen> {
                       ),
                       Text(
                         '${summary.incomeTransactionCount} ${summary.incomeTransactionCount == 1 ? 'entry' : 'entries'}',
-                        style: const TextStyle(color: Colors.white54, fontSize: 10),
+                        style: const TextStyle(
+                          color: Colors.white54,
+                          fontSize: 10,
+                        ),
                       ),
                     ],
                   ),
@@ -275,7 +319,10 @@ class _DailySummaryScreenState extends State<DailySummaryScreen> {
               const SizedBox(width: 12),
               Expanded(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(14),
@@ -285,14 +332,26 @@ class _DailySummaryScreenState extends State<DailySummaryScreen> {
                     children: [
                       const Row(
                         children: [
-                          Icon(Icons.arrow_upward_rounded, size: 14, color: AppTheme.accentCoral),
+                          Icon(
+                            Icons.arrow_upward_rounded,
+                            size: 14,
+                            color: AppTheme.accentCoral,
+                          ),
                           SizedBox(width: 4),
-                          Text('Expenses', style: TextStyle(color: Colors.white70, fontSize: 11)),
+                          Text(
+                            'Expenses',
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 11,
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        CurrencyFormatter.formatCents(summary.totalExpenseCents),
+                        CurrencyFormatter.formatCents(
+                          summary.totalExpenseCents,
+                        ),
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 15,
@@ -301,7 +360,10 @@ class _DailySummaryScreenState extends State<DailySummaryScreen> {
                       ),
                       Text(
                         '${summary.expenseTransactionCount} ${summary.expenseTransactionCount == 1 ? 'entry' : 'entries'}',
-                        style: const TextStyle(color: Colors.white54, fontSize: 10),
+                        style: const TextStyle(
+                          color: Colors.white54,
+                          fontSize: 10,
+                        ),
                       ),
                     ],
                   ),
@@ -346,7 +408,10 @@ class _DailySummaryScreenState extends State<DailySummaryScreen> {
               children: [
                 Text(
                   tx.description,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -408,7 +473,9 @@ class _DailySummaryScreenState extends State<DailySummaryScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.primaryGreen,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
           ],

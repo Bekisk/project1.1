@@ -1,15 +1,21 @@
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:uuid/uuid.dart';
 
 class DatabaseHelper {
   static const _databaseName = "personal_finance.db";
-  static const _databaseVersion = 6;
+  static const _databaseVersion = 7;
 
   DatabaseHelper._privateConstructor();
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
 
   static Database? _database;
+
+  @visibleForTesting
+  void setDatabaseForTesting(Database? db) {
+    _database = db;
+  }
 
   Future<Database> get database async {
     if (_database != null) return _database!;
@@ -52,6 +58,39 @@ class DatabaseHelper {
     }
     if (oldVersion < 6) {
       await _upgradeSmsTrackerTablesV6(db);
+    }
+    if (oldVersion < 7) {
+      await _upgradeBalanceAndReviewV7(db);
+    }
+  }
+
+  Future<void> _upgradeBalanceAndReviewV7(Database db) async {
+    // 1. Add review_status column to transactions table if missing
+    final txCols = await db.rawQuery("PRAGMA table_info(transactions)");
+    final existingTxCols = txCols.map((c) => c['name'] as String).toSet();
+    if (!existingTxCols.contains('review_status')) {
+      await db.execute(
+        "ALTER TABLE transactions ADD COLUMN review_status TEXT NOT NULL DEFAULT 'reviewed'",
+      );
+    }
+
+    // 2. Add balance tracking columns to accounts table if missing
+    final accCols = await db.rawQuery("PRAGMA table_info(accounts)");
+    final existingAccCols = accCols.map((c) => c['name'] as String).toSet();
+    if (!existingAccCols.contains('last_confirmed_balance')) {
+      await db.execute(
+        "ALTER TABLE accounts ADD COLUMN last_confirmed_balance INTEGER",
+      );
+    }
+    if (!existingAccCols.contains('last_confirmed_at')) {
+      await db.execute(
+        "ALTER TABLE accounts ADD COLUMN last_confirmed_at TEXT",
+      );
+    }
+    if (!existingAccCols.contains('has_confirmed_starting_balance')) {
+      await db.execute(
+        "ALTER TABLE accounts ADD COLUMN has_confirmed_starting_balance INTEGER NOT NULL DEFAULT 1",
+      );
     }
   }
 
@@ -129,13 +168,19 @@ class DatabaseHelper {
     final debtCols = await db.rawQuery("PRAGMA table_info(debts)");
     final existingDebtCols = debtCols.map((c) => c['name'] as String).toSet();
     if (!existingDebtCols.contains('person_name')) {
-      await db.execute("ALTER TABLE debts ADD COLUMN person_name TEXT NOT NULL DEFAULT ''");
+      await db.execute(
+        "ALTER TABLE debts ADD COLUMN person_name TEXT NOT NULL DEFAULT ''",
+      );
     }
     if (!existingDebtCols.contains('total_amount')) {
-      await db.execute("ALTER TABLE debts ADD COLUMN total_amount INTEGER NOT NULL DEFAULT 0");
+      await db.execute(
+        "ALTER TABLE debts ADD COLUMN total_amount INTEGER NOT NULL DEFAULT 0",
+      );
     }
     if (!existingDebtCols.contains('settled_amount')) {
-      await db.execute("ALTER TABLE debts ADD COLUMN settled_amount INTEGER NOT NULL DEFAULT 0");
+      await db.execute(
+        "ALTER TABLE debts ADD COLUMN settled_amount INTEGER NOT NULL DEFAULT 0",
+      );
     }
     if (!existingDebtCols.contains('linked_wallet_id')) {
       await db.execute("ALTER TABLE debts ADD COLUMN linked_wallet_id TEXT");
@@ -144,16 +189,24 @@ class DatabaseHelper {
     final recCols = await db.rawQuery("PRAGMA table_info(recurring_schedules)");
     final existingRecCols = recCols.map((c) => c['name'] as String).toSet();
     if (!existingRecCols.contains('name')) {
-      await db.execute("ALTER TABLE recurring_schedules ADD COLUMN name TEXT NOT NULL DEFAULT 'Subscription'");
+      await db.execute(
+        "ALTER TABLE recurring_schedules ADD COLUMN name TEXT NOT NULL DEFAULT 'Subscription'",
+      );
     }
     if (!existingRecCols.contains('frequency')) {
-      await db.execute("ALTER TABLE recurring_schedules ADD COLUMN frequency TEXT NOT NULL DEFAULT 'monthly'");
+      await db.execute(
+        "ALTER TABLE recurring_schedules ADD COLUMN frequency TEXT NOT NULL DEFAULT 'monthly'",
+      );
     }
     if (!existingRecCols.contains('last_processed_date')) {
-      await db.execute("ALTER TABLE recurring_schedules ADD COLUMN last_processed_date TEXT");
+      await db.execute(
+        "ALTER TABLE recurring_schedules ADD COLUMN last_processed_date TEXT",
+      );
     }
     if (!existingRecCols.contains('is_active')) {
-      await db.execute("ALTER TABLE recurring_schedules ADD COLUMN is_active INTEGER NOT NULL DEFAULT 1");
+      await db.execute(
+        "ALTER TABLE recurring_schedules ADD COLUMN is_active INTEGER NOT NULL DEFAULT 1",
+      );
     }
     if (!existingRecCols.contains('notes')) {
       await db.execute("ALTER TABLE recurring_schedules ADD COLUMN notes TEXT");
@@ -189,22 +242,32 @@ class DatabaseHelper {
 
   Future<void> _upgradeBudgetsTableV2(Database db) async {
     final columnsResult = await db.rawQuery("PRAGMA table_info(budgets)");
-    final existingColumns = columnsResult.map((c) => c['name'] as String).toSet();
+    final existingColumns = columnsResult
+        .map((c) => c['name'] as String)
+        .toSet();
 
     if (!existingColumns.contains('name')) {
-      await db.execute("ALTER TABLE budgets ADD COLUMN name TEXT NOT NULL DEFAULT 'Budget'");
+      await db.execute(
+        "ALTER TABLE budgets ADD COLUMN name TEXT NOT NULL DEFAULT 'Budget'",
+      );
     }
     if (!existingColumns.contains('budget_type')) {
-      await db.execute("ALTER TABLE budgets ADD COLUMN budget_type TEXT NOT NULL DEFAULT 'category'");
+      await db.execute(
+        "ALTER TABLE budgets ADD COLUMN budget_type TEXT NOT NULL DEFAULT 'category'",
+      );
     }
     if (!existingColumns.contains('frequency')) {
-      await db.execute("ALTER TABLE budgets ADD COLUMN frequency TEXT NOT NULL DEFAULT 'monthly'");
+      await db.execute(
+        "ALTER TABLE budgets ADD COLUMN frequency TEXT NOT NULL DEFAULT 'monthly'",
+      );
     }
     if (!existingColumns.contains('account_id')) {
       await db.execute("ALTER TABLE budgets ADD COLUMN account_id TEXT");
     }
     if (!existingColumns.contains('is_archived')) {
-      await db.execute("ALTER TABLE budgets ADD COLUMN is_archived INTEGER NOT NULL DEFAULT 0");
+      await db.execute(
+        "ALTER TABLE budgets ADD COLUMN is_archived INTEGER NOT NULL DEFAULT 0",
+      );
     }
     if (!existingColumns.contains('notes')) {
       await db.execute("ALTER TABLE budgets ADD COLUMN notes TEXT");
@@ -216,34 +279,54 @@ class DatabaseHelper {
     final existingGoalCols = goalCols.map((c) => c['name'] as String).toSet();
 
     if (!existingGoalCols.contains('category')) {
-      await db.execute("ALTER TABLE savings_goals ADD COLUMN category TEXT NOT NULL DEFAULT 'General Savings'");
+      await db.execute(
+        "ALTER TABLE savings_goals ADD COLUMN category TEXT NOT NULL DEFAULT 'General Savings'",
+      );
     }
     if (!existingGoalCols.contains('icon_key')) {
-      await db.execute("ALTER TABLE savings_goals ADD COLUMN icon_key TEXT NOT NULL DEFAULT 'savings'");
+      await db.execute(
+        "ALTER TABLE savings_goals ADD COLUMN icon_key TEXT NOT NULL DEFAULT 'savings'",
+      );
     }
     if (!existingGoalCols.contains('priority')) {
-      await db.execute("ALTER TABLE savings_goals ADD COLUMN priority TEXT NOT NULL DEFAULT 'medium'");
+      await db.execute(
+        "ALTER TABLE savings_goals ADD COLUMN priority TEXT NOT NULL DEFAULT 'medium'",
+      );
     }
     if (!existingGoalCols.contains('linked_account_id')) {
-      await db.execute("ALTER TABLE savings_goals ADD COLUMN linked_account_id TEXT");
+      await db.execute(
+        "ALTER TABLE savings_goals ADD COLUMN linked_account_id TEXT",
+      );
     }
     if (!existingGoalCols.contains('plan_frequency')) {
-      await db.execute("ALTER TABLE savings_goals ADD COLUMN plan_frequency TEXT");
+      await db.execute(
+        "ALTER TABLE savings_goals ADD COLUMN plan_frequency TEXT",
+      );
     }
     if (!existingGoalCols.contains('planned_periodic_amount')) {
-      await db.execute("ALTER TABLE savings_goals ADD COLUMN planned_periodic_amount INTEGER");
+      await db.execute(
+        "ALTER TABLE savings_goals ADD COLUMN planned_periodic_amount INTEGER",
+      );
     }
     if (!existingGoalCols.contains('notes')) {
       await db.execute("ALTER TABLE savings_goals ADD COLUMN notes TEXT");
     }
     if (!existingGoalCols.contains('completed_at')) {
-      await db.execute("ALTER TABLE savings_goals ADD COLUMN completed_at TEXT");
+      await db.execute(
+        "ALTER TABLE savings_goals ADD COLUMN completed_at TEXT",
+      );
     }
 
-    final contribCols = await db.rawQuery("PRAGMA table_info(goal_contributions)");
-    final existingContribCols = contribCols.map((c) => c['name'] as String).toSet();
+    final contribCols = await db.rawQuery(
+      "PRAGMA table_info(goal_contributions)",
+    );
+    final existingContribCols = contribCols
+        .map((c) => c['name'] as String)
+        .toSet();
     if (!existingContribCols.contains('destination_account_id')) {
-      await db.execute("ALTER TABLE goal_contributions ADD COLUMN destination_account_id TEXT");
+      await db.execute(
+        "ALTER TABLE goal_contributions ADD COLUMN destination_account_id TEXT",
+      );
     }
   }
 
@@ -257,6 +340,9 @@ class DatabaseHelper {
         account_type TEXT NOT NULL,
         currency_code TEXT NOT NULL DEFAULT 'ETB',
         opening_balance INTEGER NOT NULL DEFAULT 0,
+        last_confirmed_balance INTEGER,
+        last_confirmed_at TEXT,
+        has_confirmed_starting_balance INTEGER NOT NULL DEFAULT 1,
         is_archived INTEGER NOT NULL DEFAULT 0,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
@@ -290,6 +376,7 @@ class DatabaseHelper {
         notes TEXT,
         transaction_date TEXT NOT NULL,
         recurring_schedule_id TEXT,
+        review_status TEXT NOT NULL DEFAULT 'reviewed',
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL,
         FOREIGN KEY (account_id) REFERENCES accounts (id) ON DELETE RESTRICT,
@@ -482,24 +569,104 @@ class DatabaseHelper {
     const uuid = Uuid();
     final defaultCategories = [
       // Expense categories
-      {'name': 'Food & Dining', 'type': 'expense', 'icon': 'restaurant', 'color': '0xFFFF7043'},
-      {'name': 'Groceries', 'type': 'expense', 'icon': 'shopping_cart', 'color': '0xFF26A69A'},
-      {'name': 'Transportation', 'type': 'expense', 'icon': 'directions_car', 'color': '0xFF42A5F5'},
-      {'name': 'Housing & Rent', 'type': 'expense', 'icon': 'home', 'color': '0xFFAB47BC'},
-      {'name': 'Utilities & Bills', 'type': 'expense', 'icon': 'receipt_long', 'color': '0xFFFFA726'},
-      {'name': 'Healthcare', 'type': 'expense', 'icon': 'medical_services', 'color': '0xFFEC407A'},
-      {'name': 'Education', 'type': 'expense', 'icon': 'school', 'color': '0xFF5C6BC0'},
-      {'name': 'Entertainment', 'type': 'expense', 'icon': 'movie', 'color': '0xFF7E57C2'},
-      {'name': 'Shopping', 'type': 'expense', 'icon': 'shopping_bag', 'color': '0xFF26C6DA'},
-      {'name': 'Other Expense', 'type': 'expense', 'icon': 'category', 'color': '0xFF78909C'},
+      {
+        'name': 'Food & Dining',
+        'type': 'expense',
+        'icon': 'restaurant',
+        'color': '0xFFFF7043',
+      },
+      {
+        'name': 'Groceries',
+        'type': 'expense',
+        'icon': 'shopping_cart',
+        'color': '0xFF26A69A',
+      },
+      {
+        'name': 'Transportation',
+        'type': 'expense',
+        'icon': 'directions_car',
+        'color': '0xFF42A5F5',
+      },
+      {
+        'name': 'Housing & Rent',
+        'type': 'expense',
+        'icon': 'home',
+        'color': '0xFFAB47BC',
+      },
+      {
+        'name': 'Utilities & Bills',
+        'type': 'expense',
+        'icon': 'receipt_long',
+        'color': '0xFFFFA726',
+      },
+      {
+        'name': 'Healthcare',
+        'type': 'expense',
+        'icon': 'medical_services',
+        'color': '0xFFEC407A',
+      },
+      {
+        'name': 'Education',
+        'type': 'expense',
+        'icon': 'school',
+        'color': '0xFF5C6BC0',
+      },
+      {
+        'name': 'Entertainment',
+        'type': 'expense',
+        'icon': 'movie',
+        'color': '0xFF7E57C2',
+      },
+      {
+        'name': 'Shopping',
+        'type': 'expense',
+        'icon': 'shopping_bag',
+        'color': '0xFF26C6DA',
+      },
+      {
+        'name': 'Other Expense',
+        'type': 'expense',
+        'icon': 'category',
+        'color': '0xFF78909C',
+      },
 
       // Income categories
-      {'name': 'Salary', 'type': 'income', 'icon': 'work', 'color': '0xFF66BB6A'},
-      {'name': 'Business', 'type': 'income', 'icon': 'store', 'color': '0xFF29B6F6'},
-      {'name': 'Freelance', 'type': 'income', 'icon': 'laptop', 'color': '0xFF8D6E63'},
-      {'name': 'Investments', 'type': 'income', 'icon': 'trending_up', 'color': '0xFF26A69A'},
-      {'name': 'Gifts & Grants', 'type': 'income', 'icon': 'card_giftcard', 'color': '0xFFFFCA28'},
-      {'name': 'Other Income', 'type': 'income', 'icon': 'attach_money', 'color': '0xFF9CCC65'},
+      {
+        'name': 'Salary',
+        'type': 'income',
+        'icon': 'work',
+        'color': '0xFF66BB6A',
+      },
+      {
+        'name': 'Business',
+        'type': 'income',
+        'icon': 'store',
+        'color': '0xFF29B6F6',
+      },
+      {
+        'name': 'Freelance',
+        'type': 'income',
+        'icon': 'laptop',
+        'color': '0xFF8D6E63',
+      },
+      {
+        'name': 'Investments',
+        'type': 'income',
+        'icon': 'trending_up',
+        'color': '0xFF26A69A',
+      },
+      {
+        'name': 'Gifts & Grants',
+        'type': 'income',
+        'icon': 'card_giftcard',
+        'color': '0xFFFFCA28',
+      },
+      {
+        'name': 'Other Income',
+        'type': 'income',
+        'icon': 'attach_money',
+        'color': '0xFF9CCC65',
+      },
     ];
 
     for (var cat in defaultCategories) {

@@ -2,6 +2,7 @@ import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:personal_finance/core/database/database_helper.dart';
 import 'package:personal_finance/features/accounts/models/account.dart';
+import 'package:personal_finance/features/accounts/services/account_balance_service.dart';
 import 'package:personal_finance/features/sms_parser/models/parsed_sms_transaction.dart';
 import 'package:personal_finance/features/sms_parser/models/sms_import_log.dart';
 import 'package:personal_finance/features/transactions/models/financial_transaction.dart';
@@ -79,7 +80,8 @@ class SmsParserService {
         lower.contains('commercial bank') ||
         lower.contains('cbebirr') ||
         lower.contains('cbe birr') ||
-        lower.contains('1000') && (lower.contains('debited') || lower.contains('credited'))) {
+        lower.contains('1000') &&
+            (lower.contains('debited') || lower.contains('credited'))) {
       final cbe = _parseCbe(text);
       if (cbe != null) return cbe;
     }
@@ -100,7 +102,9 @@ class SmsParserService {
     }
 
     // 6. Bank of Abyssinia (BoA)
-    if (lower.contains('abyssinia') || lower.contains('boa') || lower.contains('apollo')) {
+    if (lower.contains('abyssinia') ||
+        lower.contains('boa') ||
+        lower.contains('apollo')) {
       final boa = _parseAbyssinia(text);
       if (boa != null) return boa;
     }
@@ -121,66 +125,220 @@ class SmsParserService {
 
   ParsedSmsTransaction? _parseCbe(String text) {
     final lower = text.toLowerCase();
-    final isDebit = lower.contains('debited') ||
+
+    // Direction indicators:
+    // Outgoing transfers / withdrawals / debits:
+    final hasSuccessfullyTransferred =
+        lower.contains('successfully transferred') ||
+        lower.contains('transferred to') ||
+        lower.contains('you have transferred');
+    final isDebit =
+        lower.contains('debited') ||
         lower.contains('withdrawn') ||
         lower.contains('paid') ||
-        lower.contains('transferred to') ||
+        hasSuccessfullyTransferred ||
         lower.contains('service charge');
-    final isCredit = lower.contains('credited') ||
+
+    // Incoming transfers / deposits / credits:
+    final hasReceived =
+        lower.contains('you have received') ||
+        lower.contains('received etb') ||
+        lower.contains('credited with') ||
+        lower.contains('credited to');
+    final isCredit =
+        lower.contains('credited') ||
         lower.contains('deposited') ||
-        lower.contains('received') ||
+        hasReceived ||
         lower.contains('refunded');
 
     if (!isDebit && !isCredit) return null;
 
-    final amountCents = _extractAmountAfterKeywords(
-          text,
-          ['debited with', 'debited by', 'credited with', 'transferred', 'withdrawn', 'paid'],
-        ) ??
+    // Prioritize specific direction when both could match loosely:
+    // E.g. "You have successfully transferred ETB200 from ... to ... Service charge of ETB 0.50"
+    final bool moneyIn;
+    if (hasSuccessfullyTransferred) {
+      moneyIn = false;
+    } else if (hasReceived) {
+      moneyIn = true;
+    } else if (lower.contains('debited')) {
+      moneyIn = false;
+    } else if (lower.contains('credited')) {
+      moneyIn = true;
+    } else {
+      moneyIn = isCredit && !isDebit;
+    }
+
+    // Extract primary amount
+    final amountCents =
+        _extractAmountAfterKeywords(text, [
+          'successfully transferred',
+          'transferred',
+          'received',
+          'debited with',
+          'debited by',
+          'credited with',
+          'withdrawn',
+          'paid',
+        ]) ??
         _extractPrimaryAmount(text);
 
     if (amountCents == null || amountCents <= 0) return null;
 
-    final feeCents = _extractSeparateFee(text);
     final reportedBalance = _extractReportedBalance(text);
-    final account = _extractAccount(text);
     final ref = _extractReference(text);
     final date = _extractDate(text) ?? DateTime.now();
 
-    // Determine granular type
+    // Account extraction:
+    // For incoming: "to your account 1**2313" vs "from account 1**6658"
+    // For outgoing: "from account 1**2313 to account 1**9525"
+    String? account;
+    if (moneyIn) {
+      final toYourAccMatch = RegExp(
+        r'(?:to your account|to account)\s*([0-9*X\-]{4,20})',
+        caseSensitive: false,
+      ).firstMatch(text);
+      if (toYourAccMatch != null) {
+        final raw = toYourAccMatch.group(1)!;
+        final digits = RegExp(r'([0-9]{3,4})$').firstMatch(raw);
+        account = digits != null ? '...${digits.group(1)}' : raw;
+      }
+    } else {
+      final fromAccMatch = RegExp(
+        r'(?:from account|from your account)\s*([0-9*X\-]{4,20})',
+        caseSensitive: false,
+      ).firstMatch(text);
+      if (fromAccMatch != null) {
+        final raw = fromAccMatch.group(1)!;
+        final digits = RegExp(r'([0-9]{3,4})$').firstMatch(raw);
+        account = digits != null ? '...${digits.group(1)}' : raw;
+      }
+    }
+    account ??= _extractAccount(text);
+
+    // Fee extraction:
+    // Check if total fee is indicated e.g. "with total of ETB200.61"
+    int feeCents = 0;
+    final totalFeeMatch = RegExp(
+      r'with total of\s*(?:etb|birr|br\.?)?\s*([0-9,]+(?:\.[0-9]{1,2})?)',
+      caseSensitive: false,
+    ).firstMatch(text);
+    if (totalFeeMatch != null) {
+      final totalCents = _parseAmountToCents(totalFeeMatch.group(1));
+      if (totalCents != null && totalCents > amountCents) {
+        feeCents = totalCents - amountCents;
+      }
+    }
+    // Only look for separate fee if NOT stated as "including Service charge" (which means already included in total debit)
+    if (feeCents == 0 && !lower.contains('including service charge')) {
+      feeCents = _extractSeparateFee(text);
+    }
+
+    // Determine granular transaction type
     SmsTransactionType txType;
     if (lower.contains('atm') || lower.contains('withdrawn from atm')) {
       txType = SmsTransactionType.atmWithdrawal;
-    } else if (lower.contains('service charge') || lower.contains('bank fee') || lower.contains('maintenance')) {
+    } else if (lower.contains('service charge') &&
+        !hasSuccessfullyTransferred &&
+        !lower.contains('debited with etb') &&
+        !lower.contains('debited with') &&
+        !lower.contains('including service charge')) {
       txType = SmsTransactionType.bankServiceFee;
     } else if (lower.contains('refund') || lower.contains('reversal')) {
       txType = SmsTransactionType.reversalOrRefund;
     } else if (lower.contains('interest')) {
       txType = SmsTransactionType.interestReceived;
-    } else if (isCredit) {
-      txType = lower.contains('deposit') ? SmsTransactionType.cashDeposit : SmsTransactionType.incomingTransfer;
+    } else if (moneyIn) {
+      txType = lower.contains('deposited')
+          ? SmsTransactionType.cashDeposit
+          : SmsTransactionType.incomingTransfer;
+    } else if (hasSuccessfullyTransferred ||
+        lower.contains('transferred to') ||
+        lower.contains('transfer to')) {
+      txType = SmsTransactionType.outgoingTransfer;
+    } else if (lower.contains('paid etb') ||
+        lower.contains('pos purchase') ||
+        lower.contains('card payment')) {
+      txType = SmsTransactionType.cardPayment;
+    } else if (RegExp(
+          r'\bfor\s+[a-zA-Z0-9]',
+          caseSensitive: false,
+        ).hasMatch(text) &&
+        !lower.contains('for feedback') &&
+        !lower.contains('for banking with')) {
+      // e.g. "debited with ETB 653.00 on 12/10/2026 for Groceries."
+      txType = SmsTransactionType.cardPayment;
     } else {
-      txType = lower.contains('to') ? SmsTransactionType.outgoingTransfer : SmsTransactionType.cardPayment;
+      // Generic account debit (e.g. Example C: "has been debited with ETB 200.85 including Service charge...")
+      txType = SmsTransactionType.other;
     }
 
-    // Party / Merchant
+    // Extract party / merchant / counterpart
     String? party;
-    if (isDebit) {
-      final forMatch = RegExp(r'(?:for|to|at)\s+([^.\n]+?)(?:\.|\s+on|\s+balance|\s+ref|\s+txn|$)', caseSensitive: false).firstMatch(text);
-      party = forMatch?.group(1)?.trim();
-    } else {
-      final byMatch = RegExp(r'(?:by|from)\s+([^.\n]+?)(?:\.|\s+on|\s+balance|\s+ref|\s+txn|$)', caseSensitive: false).firstMatch(text);
-      party = byMatch?.group(1)?.trim();
+    if (moneyIn) {
+      // E.g. "from account 1**6658 (Alemtshay Mekurya W/aregay)"
+      final fromParenMatch = RegExp(
+        r'from account\s*[0-9*X\-]+\s*\(([^)]+)\)',
+        caseSensitive: false,
+      ).firstMatch(text);
+      if (fromParenMatch != null) {
+        party = fromParenMatch.group(1)?.trim();
+      } else {
+        final byMatch = RegExp(
+          r'(?:by|from)\s+([^.\n]+?)(?:\.|\s+on|\s+balance|\s+ref|\s+txn|$)',
+          caseSensitive: false,
+        ).firstMatch(text);
+        final candidate = byMatch?.group(1)?.trim();
+        if (candidate != null &&
+            !candidate.toLowerCase().startsWith('banking with') &&
+            !candidate.toLowerCase().startsWith('cbe')) {
+          party = candidate;
+        }
+      }
+    } else if (txType == SmsTransactionType.outgoingTransfer) {
+      // E.g. "to account 1**9525 (Ethi.full Gos.ch. Haya Hulet M)"
+      final toParenMatch = RegExp(
+        r'to account\s*[0-9*X\-]+\s*\(([^)]+)\)',
+        caseSensitive: false,
+      ).firstMatch(text);
+      if (toParenMatch != null) {
+        party = toParenMatch.group(1)?.trim();
+      } else {
+        final toMatch = RegExp(
+          r'(?:to)\s+([^.\n]+?)(?:\.|\s+on|\s+balance|\s+ref|\s+txn|$)',
+          caseSensitive: false,
+        ).firstMatch(text);
+        final candidate = toMatch?.group(1)?.trim();
+        if (candidate != null &&
+            !candidate.toLowerCase().startsWith('account') &&
+            !candidate.toLowerCase().startsWith('cbe')) {
+          party = candidate;
+        }
+      }
+    } else if (txType == SmsTransactionType.cardPayment ||
+        txType == SmsTransactionType.merchantPayment) {
+      final forMatch = RegExp(
+        r'(?:for|to|at)\s+([^.\n]+?)(?:\.|\s+on|\s+balance|\s+ref|\s+txn|$)',
+        caseSensitive: false,
+      ).firstMatch(text);
+      final candidate = forMatch?.group(1)?.trim();
+      if (candidate != null &&
+          !candidate.toLowerCase().startsWith('banking with') &&
+          !candidate.toLowerCase().startsWith('feedback') &&
+          !candidate.toLowerCase().startsWith('cbe')) {
+        party = candidate;
+      }
     }
+    // Generic debits (SmsTransactionType.other) have no inferred recipient/merchant
 
-    final confidence = (account != null && (ref != null || reportedBalance != null))
+    final confidence =
+        (account != null && (ref != null || reportedBalance != null))
         ? ParsingConfidence.high
         : ParsingConfidence.medium;
 
     return ParsedSmsTransaction(
       provider: EthiopianBankProvider.cbe,
       transactionType: txType,
-      isMoneyIn: isCredit,
+      isMoneyIn: moneyIn,
       amountCents: amountCents,
       feeCents: feeCents,
       reportedBalanceCents: reportedBalance,
@@ -196,22 +354,29 @@ class SmsParserService {
 
   ParsedSmsTransaction? _parseTelebirr(String text) {
     final lower = text.toLowerCase();
-    final isDebit = lower.contains('paid') ||
+    final isDebit =
+        lower.contains('paid') ||
         lower.contains('transferred to') ||
         lower.contains('debited') ||
         lower.contains('cash out') ||
         lower.contains('bought');
-    final isCredit = lower.contains('received') ||
+    final isCredit =
+        lower.contains('received') ||
         lower.contains('credited') ||
         lower.contains('deposited') ||
         lower.contains('cash in');
 
     if (!isDebit && !isCredit) return null;
 
-    final amountCents = _extractAmountAfterKeywords(
-          text,
-          ['paid', 'received', 'transferred', 'cash out', 'cash in', 'debited'],
-        ) ??
+    final amountCents =
+        _extractAmountAfterKeywords(text, [
+          'paid',
+          'received',
+          'transferred',
+          'cash out',
+          'cash in',
+          'debited',
+        ]) ??
         _extractPrimaryAmount(text);
 
     if (amountCents == null || amountCents <= 0) return null;
@@ -236,10 +401,16 @@ class SmsParserService {
 
     String? party;
     if (isDebit) {
-      final toMatch = RegExp(r'to\s+([^.\n]+?)(?:\s+on|\s+your|\.|\s+txn|\s+ref|\s+current balance|$)', caseSensitive: false).firstMatch(text);
+      final toMatch = RegExp(
+        r'to\s+([^.\n]+?)(?:\s+on|\s+your|\.|\s+txn|\s+ref|\s+current balance|$)',
+        caseSensitive: false,
+      ).firstMatch(text);
       party = toMatch?.group(1)?.trim();
     } else {
-      final fromMatch = RegExp(r'from\s+([^.\n]+?)(?:\s+on|\.|\s+txn|\s+ref|\s+current balance|$)', caseSensitive: false).firstMatch(text);
+      final fromMatch = RegExp(
+        r'from\s+([^.\n]+?)(?:\s+on|\.|\s+txn|\s+ref|\s+current balance|$)',
+        caseSensitive: false,
+      ).firstMatch(text);
       party = fromMatch?.group(1)?.trim();
     }
 
@@ -256,18 +427,32 @@ class SmsParserService {
       transactionDate: date,
       referenceNumber: ref,
       rawMessage: text,
-      confidence: ref != null ? ParsingConfidence.high : ParsingConfidence.medium,
+      confidence: ref != null
+          ? ParsingConfidence.high
+          : ParsingConfidence.medium,
     );
   }
 
   ParsedSmsTransaction? _parseAwash(String text) {
     final lower = text.toLowerCase();
-    final isDebit = lower.contains('debited') || lower.contains('withdrawn') || lower.contains('paid');
-    final isCredit = lower.contains('credited') || lower.contains('deposited') || lower.contains('received');
+    final isDebit =
+        lower.contains('debited') ||
+        lower.contains('withdrawn') ||
+        lower.contains('paid');
+    final isCredit =
+        lower.contains('credited') ||
+        lower.contains('deposited') ||
+        lower.contains('received');
 
     if (!isDebit && !isCredit) return null;
 
-    final amountCents = _extractAmountAfterKeywords(text, ['debited by', 'debited with', 'credited with', 'transferred']) ??
+    final amountCents =
+        _extractAmountAfterKeywords(text, [
+          'debited by',
+          'debited with',
+          'credited with',
+          'transferred',
+        ]) ??
         _extractPrimaryAmount(text);
     if (amountCents == null || amountCents <= 0) return null;
 
@@ -277,10 +462,15 @@ class SmsParserService {
     final ref = _extractReference(text);
     final date = _extractDate(text) ?? DateTime.now();
 
-    final reasonMatch = RegExp(r'(?:reason|for|to|from):?\s*([^.\n]+?)(?:\.|\s+balance|\s+ref|$)', caseSensitive: false).firstMatch(text);
+    final reasonMatch = RegExp(
+      r'(?:reason|for|to|from):?\s*([^.\n]+?)(?:\.|\s+balance|\s+ref|$)',
+      caseSensitive: false,
+    ).firstMatch(text);
     final party = reasonMatch?.group(1)?.trim();
 
-    final txType = isCredit ? SmsTransactionType.incomingTransfer : SmsTransactionType.cardPayment;
+    final txType = isCredit
+        ? SmsTransactionType.incomingTransfer
+        : SmsTransactionType.cardPayment;
 
     return ParsedSmsTransaction(
       provider: EthiopianBankProvider.awash,
@@ -295,14 +485,23 @@ class SmsParserService {
       transactionDate: date,
       referenceNumber: ref,
       rawMessage: text,
-      confidence: (account != null || ref != null) ? ParsingConfidence.high : ParsingConfidence.medium,
+      confidence: (account != null || ref != null)
+          ? ParsingConfidence.high
+          : ParsingConfidence.medium,
     );
   }
 
   ParsedSmsTransaction? _parseAbyssinia(String text) {
     final lower = text.toLowerCase();
-    final isDebit = lower.contains('debited') || lower.contains('withdrawn') || lower.contains('paid') || lower.contains('transferred');
-    final isCredit = lower.contains('credited') || lower.contains('deposited') || lower.contains('received');
+    final isDebit =
+        lower.contains('debited') ||
+        lower.contains('withdrawn') ||
+        lower.contains('paid') ||
+        lower.contains('transferred');
+    final isCredit =
+        lower.contains('credited') ||
+        lower.contains('deposited') ||
+        lower.contains('received');
 
     if (!isDebit && !isCredit) return null;
 
@@ -317,7 +516,9 @@ class SmsParserService {
 
     return ParsedSmsTransaction(
       provider: EthiopianBankProvider.abyssinia,
-      transactionType: isCredit ? SmsTransactionType.incomingTransfer : SmsTransactionType.outgoingTransfer,
+      transactionType: isCredit
+          ? SmsTransactionType.incomingTransfer
+          : SmsTransactionType.outgoingTransfer,
       isMoneyIn: isCredit,
       amountCents: amountCents,
       feeCents: feeCents,
@@ -334,8 +535,14 @@ class SmsParserService {
 
   ParsedSmsTransaction? _parseDashen(String text) {
     final lower = text.toLowerCase();
-    final isDebit = lower.contains('debited') || lower.contains('withdrawn') || lower.contains('paid');
-    final isCredit = lower.contains('credited') || lower.contains('deposited') || lower.contains('received');
+    final isDebit =
+        lower.contains('debited') ||
+        lower.contains('withdrawn') ||
+        lower.contains('paid');
+    final isCredit =
+        lower.contains('credited') ||
+        lower.contains('deposited') ||
+        lower.contains('received');
 
     if (!isDebit && !isCredit) return null;
 
@@ -350,7 +557,9 @@ class SmsParserService {
 
     return ParsedSmsTransaction(
       provider: EthiopianBankProvider.dashen,
-      transactionType: isCredit ? SmsTransactionType.incomingTransfer : SmsTransactionType.cardPayment,
+      transactionType: isCredit
+          ? SmsTransactionType.incomingTransfer
+          : SmsTransactionType.cardPayment,
       isMoneyIn: isCredit,
       amountCents: amountCents,
       feeCents: feeCents,
@@ -367,11 +576,21 @@ class SmsParserService {
 
   ParsedSmsTransaction? _parseGenericEthiopian(String text) {
     final lower = text.toLowerCase();
-    final hasMoneyKeyword = lower.contains('etb') || lower.contains('birr') || lower.contains('br.');
+    final hasMoneyKeyword =
+        lower.contains('etb') ||
+        lower.contains('birr') ||
+        lower.contains('br.');
     if (!hasMoneyKeyword) return null;
 
-    final isDebit = lower.contains('debited') || lower.contains('paid') || lower.contains('withdrawn') || lower.contains('transfer');
-    final isCredit = lower.contains('credited') || lower.contains('received') || lower.contains('deposited');
+    final isDebit =
+        lower.contains('debited') ||
+        lower.contains('paid') ||
+        lower.contains('withdrawn') ||
+        lower.contains('transfer');
+    final isCredit =
+        lower.contains('credited') ||
+        lower.contains('received') ||
+        lower.contains('deposited');
     if (!isDebit && !isCredit) return null;
 
     final amountCents = _extractPrimaryAmount(text);
@@ -385,7 +604,9 @@ class SmsParserService {
 
     return ParsedSmsTransaction(
       provider: EthiopianBankProvider.unknown,
-      transactionType: isCredit ? SmsTransactionType.incomingTransfer : SmsTransactionType.other,
+      transactionType: isCredit
+          ? SmsTransactionType.incomingTransfer
+          : SmsTransactionType.other,
       isMoneyIn: isCredit,
       amountCents: amountCents,
       feeCents: feeCents,
@@ -407,10 +628,14 @@ class SmsParserService {
 
   /// Evaluates an SMS message and either auto-records it or puts it into the review queue.
   /// Strictly prevents duplicate insertions and duplicate notifications.
-  Future<SyncResult> processAndReconcileSms(String text, {String? senderShortCode}) async {
+  Future<SyncResult> processAndReconcileSms(
+    String text, {
+    String? senderShortCode,
+  }) async {
     final parsed = parseSms(text);
     final now = DateTime.now();
-    final fingerprint = parsed?.generateDeduplicationFingerprint() ??
+    final fingerprint =
+        parsed?.generateDeduplicationFingerprint() ??
         'raw_${text.hashCode}_${now.millisecondsSinceEpoch}';
 
     final db = await DatabaseHelper.instance.database;
@@ -440,12 +665,14 @@ class SmsParserService {
         amountCents: parsed?.amountCents ?? 0,
         fingerprint: fingerprint,
         transactionType: parsed?.transactionType.name ?? 'unsupported',
-        status: parsed?.transactionType == SmsTransactionType.nonFinancialOrOtp ||
+        status:
+            parsed?.transactionType == SmsTransactionType.nonFinancialOrOtp ||
                 parsed?.transactionType == SmsTransactionType.balanceInquiry
             ? SmsImportStatus.ignored
             : SmsImportStatus.unsupported,
         confidence: parsed?.confidence.name ?? 'low',
-        reviewReason: parsed?.reviewReason ?? 'Non-financial or unrecognized format',
+        reviewReason:
+            parsed?.reviewReason ?? 'Non-financial or unrecognized format',
         rawPreview: text.length > 80 ? '${text.substring(0, 80)}...' : text,
         createdAt: now,
       );
@@ -466,7 +693,8 @@ class SmsParserService {
       where: "key = 'auto_record_high_confidence'",
       limit: 1,
     );
-    final autoRecordEnabled = settingsRows.isNotEmpty && settingsRows.first['value'] == '1';
+    final autoRecordEnabled =
+        settingsRows.isNotEmpty && settingsRows.first['value'] == '1';
 
     // Check duplicate against existing transactions table by reference or (amount + date window)
     final isTxDuplicate = await _checkTransactionDuplicate(parsed);
@@ -497,7 +725,8 @@ class SmsParserService {
     }
 
     // Decide whether to auto-record or queue for review
-    final canAutoRecord = autoRecordEnabled &&
+    final canAutoRecord =
+        autoRecordEnabled &&
         parsed.confidence == ParsingConfidence.high &&
         matchedAccount != null &&
         parsed.amountCents > 0;
@@ -511,13 +740,17 @@ class SmsParserService {
         id: txId,
         accountId: matchedAccount.id,
         destinationAccountId: null,
-        type: parsed.isMoneyIn ? TransactionType.income : TransactionType.expense,
+        type: parsed.isMoneyIn
+            ? TransactionType.income
+            : TransactionType.expense,
         amount: parsed.amountCents,
         categoryId: categoryId,
         description: parsed.buildFactualDescription(),
-        notes: 'Auto-imported from ${parsed.providerDisplayName}. Ref: ${parsed.referenceNumber ?? "N/A"}'
+        notes:
+            'Auto-imported from ${parsed.providerDisplayName}. Ref: ${parsed.referenceNumber ?? "N/A"}'
             '${parsed.reportedBalanceCents != null ? " • Reported Balance: ETB ${(parsed.reportedBalanceCents! / 100).toStringAsFixed(2)}" : ""}',
         transactionDate: parsed.transactionDate ?? now,
+        reviewStatus: ReviewStatus.needsReview,
         createdAt: now,
         updatedAt: now,
       );
@@ -536,10 +769,22 @@ class SmsParserService {
           description: 'Bank service fee (${parsed.providerDisplayName})',
           notes: 'Fee for transaction ref ${parsed.referenceNumber ?? "N/A"}',
           transactionDate: parsed.transactionDate ?? now,
+          reviewStatus:
+              ReviewStatus.reviewed, // Service fees are pre-categorized
           createdAt: now,
           updatedAt: now,
         );
         await db.insert('transactions', feeTx.toMap());
+      }
+
+      // Reconcile bank-reported balance snapshot safely if present
+      if (parsed.reportedBalanceCents != null) {
+        await AccountBalanceService.instance.reconcileBankReportedBalance(
+          accountId: matchedAccount.id,
+          reportedBalanceCents: parsed.reportedBalanceCents!,
+          snapshotTime: parsed.transactionDate ?? now,
+          executor: db,
+        );
       }
 
       final log = SmsImportLog(
@@ -572,8 +817,8 @@ class SmsParserService {
       final reviewReason = matchedAccount == null
           ? 'No matching app account found. Please assign an account.'
           : (parsed.confidence != ParsingConfidence.high
-              ? 'Parsing confidence requires confirmation.'
-              : 'Auto-recording is disabled in settings. Confirm to add.');
+                ? 'Parsing confidence requires confirmation.'
+                : 'Auto-recording is disabled in settings. Confirm to add.');
 
       final log = SmsImportLog(
         id: const Uuid().v4(),
@@ -614,7 +859,8 @@ class SmsParserService {
       final db = await DatabaseHelper.instance.database;
       final now = DateTime.now();
 
-      final isCredit = log.transactionType == SmsTransactionType.incomingTransfer.name ||
+      final isCredit =
+          log.transactionType == SmsTransactionType.incomingTransfer.name ||
           log.transactionType == SmsTransactionType.cashDeposit.name ||
           log.transactionType == SmsTransactionType.interestReceived.name;
 
@@ -627,17 +873,52 @@ class SmsParserService {
         amount: log.amountCents,
         categoryId: categoryId,
         description: customDescription ?? 'Bank SMS Import (${log.sender})',
-        notes: 'Confirmed from Bank SMS. Ref: ${log.referenceNumber ?? "N/A"}'
+        notes:
+            'Confirmed from Bank SMS. Ref: ${log.referenceNumber ?? "N/A"}'
             '${log.reportedBalanceCents != null ? " • Reported Balance: ETB ${(log.reportedBalanceCents! / 100).toStringAsFixed(2)}" : ""}',
         transactionDate: log.createdAt,
+        reviewStatus: (categoryId != null || customDescription != null)
+            ? ReviewStatus.reviewed
+            : ReviewStatus.needsReview,
         createdAt: now,
         updatedAt: now,
       );
 
       await db.insert('transactions', financialTx.toMap());
 
+      // If there's a separate fee, insert fee transaction
+      if (log.feeCents > 0) {
+        final feeTx = FinancialTransaction(
+          id: const Uuid().v4(),
+          accountId: accountId,
+          destinationAccountId: null,
+          type: TransactionType.expense,
+          amount: log.feeCents,
+          categoryId: null,
+          description: 'Bank service fee (${log.sender})',
+          notes: 'Fee for transaction ref ${log.referenceNumber ?? "N/A"}',
+          transactionDate: log.createdAt,
+          reviewStatus: ReviewStatus.reviewed,
+          createdAt: now,
+          updatedAt: now,
+        );
+        await db.insert('transactions', feeTx.toMap());
+      }
+
+      // Reconcile bank-reported balance snapshot safely if present
+      if (log.reportedBalanceCents != null) {
+        await AccountBalanceService.instance.reconcileBankReportedBalance(
+          accountId: accountId,
+          reportedBalanceCents: log.reportedBalanceCents!,
+          snapshotTime: log.createdAt,
+          executor: db,
+        );
+      }
+
       // If user selected a category and gave merchant name, learn the rule
-      if (categoryId != null && merchantToLearn != null && merchantToLearn.trim().isNotEmpty) {
+      if (categoryId != null &&
+          merchantToLearn != null &&
+          merchantToLearn.trim().isNotEmpty) {
         await learnCategoryRule(merchantToLearn.trim(), categoryId);
       }
 
@@ -673,7 +954,11 @@ class SmsParserService {
       );
       if (mappings.isNotEmpty) {
         final targetAccId = mappings.first['account_id'] as String;
-        final accMap = await db.query('accounts', where: 'id = ? AND is_archived = 0', whereArgs: [targetAccId]);
+        final accMap = await db.query(
+          'accounts',
+          where: 'id = ? AND is_archived = 0',
+          whereArgs: [targetAccId],
+        );
         if (accMap.isNotEmpty) {
           return Account.fromMap(accMap.first);
         }
@@ -688,14 +973,14 @@ class SmsParserService {
     final providerQuery = parsed.provider == EthiopianBankProvider.cbe
         ? 'cbe'
         : parsed.provider == EthiopianBankProvider.telebirr
-            ? 'telebirr'
-            : parsed.provider == EthiopianBankProvider.awash
-                ? 'awash'
-                : parsed.provider == EthiopianBankProvider.abyssinia
-                    ? 'abyssinia'
-                    : parsed.provider == EthiopianBankProvider.dashen
-                        ? 'dashen'
-                        : '';
+        ? 'telebirr'
+        : parsed.provider == EthiopianBankProvider.awash
+        ? 'awash'
+        : parsed.provider == EthiopianBankProvider.abyssinia
+        ? 'abyssinia'
+        : parsed.provider == EthiopianBankProvider.dashen
+        ? 'dashen'
+        : '';
 
     if (providerQuery.isNotEmpty) {
       for (final a in accounts) {
@@ -723,7 +1008,9 @@ class SmsParserService {
   Future<bool> _checkTransactionDuplicate(ParsedSmsTransaction parsed) async {
     final db = await DatabaseHelper.instance.database;
 
-    if (parsed.referenceNumber != null && parsed.referenceNumber!.isNotEmpty && parsed.referenceNumber != 'N/A') {
+    if (parsed.referenceNumber != null &&
+        parsed.referenceNumber!.isNotEmpty &&
+        parsed.referenceNumber != 'N/A') {
       final existingByRef = await db.query(
         'transactions',
         where: "notes LIKE ?",
@@ -734,8 +1021,19 @@ class SmsParserService {
     }
 
     final txDate = parsed.transactionDate ?? DateTime.now();
-    final dayStart = DateTime(txDate.year, txDate.month, txDate.day).toIso8601String();
-    final dayEnd = DateTime(txDate.year, txDate.month, txDate.day, 23, 59, 59).toIso8601String();
+    final dayStart = DateTime(
+      txDate.year,
+      txDate.month,
+      txDate.day,
+    ).toIso8601String();
+    final dayEnd = DateTime(
+      txDate.year,
+      txDate.month,
+      txDate.day,
+      23,
+      59,
+      59,
+    ).toIso8601String();
     final existingDuplicate = await db.query(
       'transactions',
       where: "amount = ? AND transaction_date >= ? AND transaction_date <= ?",
@@ -785,12 +1083,18 @@ class SmsParserService {
         text.contains('login alert') ||
         text.contains('password changed') ||
         text.contains('pin changed') ||
-        text.contains('welcome to') && !text.contains('credited') && !text.contains('debited');
+        text.contains('welcome to') &&
+            !text.contains('credited') &&
+            !text.contains('debited');
   }
 
   bool _isBalanceInquiry(String text) {
-    final hasBalance = text.contains('balance is') || text.contains('current balance') || text.contains('available balance');
-    final hasTx = text.contains('debited') ||
+    final hasBalance =
+        text.contains('balance is') ||
+        text.contains('current balance') ||
+        text.contains('available balance');
+    final hasTx =
+        text.contains('debited') ||
         text.contains('credited') ||
         text.contains('paid') ||
         text.contains('received') ||
@@ -809,23 +1113,39 @@ class SmsParserService {
   }
 
   EthiopianBankProvider _detectProvider(String text) {
-    if (text.contains('cbe') || text.contains('commercial bank')) return EthiopianBankProvider.cbe;
-    if (text.contains('telebirr')) return EthiopianBankProvider.telebirr;
-    if (text.contains('awash')) return EthiopianBankProvider.awash;
-    if (text.contains('abyssinia') || text.contains('boa')) return EthiopianBankProvider.abyssinia;
-    if (text.contains('dashen') || text.contains('amole')) return EthiopianBankProvider.dashen;
+    if (text.contains('cbe') || text.contains('commercial bank')) {
+      return EthiopianBankProvider.cbe;
+    }
+    if (text.contains('telebirr')) {
+      return EthiopianBankProvider.telebirr;
+    }
+    if (text.contains('awash')) {
+      return EthiopianBankProvider.awash;
+    }
+    if (text.contains('abyssinia') || text.contains('boa')) {
+      return EthiopianBankProvider.abyssinia;
+    }
+    if (text.contains('dashen') || text.contains('amole')) {
+      return EthiopianBankProvider.dashen;
+    }
     return EthiopianBankProvider.unknown;
   }
 
   int? _extractPrimaryAmount(String text) {
-    // Looks for ETB / Birr / Br followed or preceded by decimal amount
-    final regex = RegExp(r'(?:etb|birr|br\.?)\s*([0-9,]+(?:\.[0-9]{1,2})?)', caseSensitive: false);
+    // Looks for ETB / Birr / Br followed or preceded by decimal amount, with or without space
+    final regex = RegExp(
+      r'(?:etb|birr|br\.?)\s*([0-9,]+(?:\.[0-9]{1,2})?)',
+      caseSensitive: false,
+    );
     final match = regex.firstMatch(text);
     if (match != null) {
       return _parseAmountToCents(match.group(1));
     }
 
-    final reverseRegex = RegExp(r'([0-9,]+(?:\.[0-9]{1,2})?)\s*(?:etb|birr|br\.?)', caseSensitive: false);
+    final reverseRegex = RegExp(
+      r'([0-9,]+(?:\.[0-9]{1,2})?)\s*(?:etb|birr|br\.?)',
+      caseSensitive: false,
+    );
     final matchRev = reverseRegex.firstMatch(text);
     if (matchRev != null) {
       return _parseAmountToCents(matchRev.group(1));
@@ -848,7 +1168,12 @@ class SmsParserService {
   }
 
   int _extractSeparateFee(String text) {
-    final feeRegex = RegExp(r'(?:fee|service charge|charge)\s*(?:is|of|:)?\s*(?:etb|birr|br\.?)?\s*([0-9,]+(?:\.[0-9]{1,2})?)', caseSensitive: false);
+    // Check if total fee is indicated e.g. "with total of ETB200.61" or "including Service charge..."
+    // Matches explicit fee / service charge clauses
+    final feeRegex = RegExp(
+      r'(?:fee|service charge|charge)\s*(?:is|of|:)?\s*(?:etb|birr|br\.?)?\s*([0-9,]+(?:\.[0-9]{1,2})?)',
+      caseSensitive: false,
+    );
     final match = feeRegex.firstMatch(text);
     if (match != null) {
       return _parseAmountToCents(match.group(1)) ?? 0;
@@ -869,10 +1194,22 @@ class SmsParserService {
   }
 
   String? _extractAccount(String text) {
-    final accRegex = RegExp(r'(?:account|acc\.?|a/c)\s*(?:no\.?)?\s*([0-9*X\-]{4,20})', caseSensitive: false);
+    // Matches account formats like 1000123456, 1**2313, 1****2313, 01320098765400
+    final accRegex = RegExp(
+      r'(?:account|acc\.?|a/c)\s*(?:no\.?)?\s*([0-9*X\-]{4,20})',
+      caseSensitive: false,
+    );
     final match = accRegex.firstMatch(text);
     if (match != null) {
       final raw = match.group(1)!;
+      // If masked e.g. 1**2313 or 1****2313, extract the trailing digits
+      if (raw.contains('*')) {
+        final lastDigits = RegExp(r'([0-9]{3,4})$').firstMatch(raw);
+        if (lastDigits != null) {
+          return '...${lastDigits.group(1)}';
+        }
+        return raw;
+      }
       // Mask if longer than 4 digits
       if (raw.length > 4) {
         return '...${raw.substring(raw.length - 4)}';
@@ -883,6 +1220,25 @@ class SmsParserService {
   }
 
   String? _extractReference(String text) {
+    // 1. Check for CBE digital receipt URL format: https://mbreciept.cbe.com.et/v2-hfHCxHzZw3nl5PujC2Gx
+    final cbeUrlMatch = RegExp(
+      r'mbreciept\.cbe\.com\.et/([A-Za-z0-9\-_]+)',
+      caseSensitive: false,
+    ).firstMatch(text);
+    if (cbeUrlMatch != null) {
+      return cbeUrlMatch.group(1);
+    }
+
+    // 2. Short URL receipts: https://shorturl.at/auUX0
+    final shortUrlMatch = RegExp(
+      r'shorturl\.at/([A-Za-z0-9\-_]+)',
+      caseSensitive: false,
+    ).firstMatch(text);
+    if (shortUrlMatch != null) {
+      return 'short_${shortUrlMatch.group(1)}';
+    }
+
+    // 3. Standard text references
     final refRegex = RegExp(
       r'(?:transaction (?:number|id|ref) is|txn:?|ref:?|reference:?|trans\.? no\.?)\s*([A-Za-z0-9]+)',
       caseSensitive: false,
@@ -897,7 +1253,13 @@ class SmsParserService {
     if (match == null) return null;
 
     final dateStr = match.group(1)!;
-    final formats = ['dd/MM/yyyy', 'MM/dd/yyyy', 'yyyy-MM-dd', 'dd-MM-yyyy', 'd/M/yyyy'];
+    final formats = [
+      'dd/MM/yyyy',
+      'MM/dd/yyyy',
+      'yyyy-MM-dd',
+      'dd-MM-yyyy',
+      'd/M/yyyy',
+    ];
     for (final f in formats) {
       try {
         return DateFormat(f).parse(dateStr);

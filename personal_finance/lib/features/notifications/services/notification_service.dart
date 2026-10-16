@@ -12,7 +12,8 @@ class NotificationService {
   NotificationService._();
   static final NotificationService instance = NotificationService._();
 
-  final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _plugin =
+      FlutterLocalNotificationsPlugin();
   bool _initialized = false;
 
   static const int dailySummaryNotificationId = 7001;
@@ -38,15 +39,15 @@ class NotificationService {
     try {
       tz.initializeTimeZones();
       final localName = tz.local.name;
-      debugPrint('NotificationService: local timezone initialized as $localName');
+      debugPrint(
+        'NotificationService: local timezone initialized as $localName',
+      );
     } catch (e) {
       debugPrint('NotificationService: Error initializing timezones: $e');
     }
 
     const androidSettings = AndroidInitializationSettings('ic_notification');
-    const initSettings = InitializationSettings(
-      android: androidSettings,
-    );
+    const initSettings = InitializationSettings(android: androidSettings);
 
     await _plugin.initialize(
       settings: initSettings,
@@ -76,7 +77,9 @@ class NotificationService {
     );
 
     final androidImplementation = _plugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
 
     if (androidImplementation != null) {
       await androidImplementation.createNotificationChannel(dailyChannel);
@@ -102,14 +105,14 @@ class NotificationService {
       importance: Importance.high,
       priority: Priority.high,
       icon: 'ic_notification',
-      styleInformation: BigTextStyleInformation(
-        body,
-        contentTitle: title,
-      ),
+      styleInformation: BigTextStyleInformation(body, contentTitle: title),
     );
 
     final details = NotificationDetails(android: androidDetails);
-    final id = notificationId ?? (transactionAlertNotificationBaseId + (DateTime.now().millisecondsSinceEpoch % 1000));
+    final id =
+        notificationId ??
+        (transactionAlertNotificationBaseId +
+            (DateTime.now().millisecondsSinceEpoch % 1000));
 
     await _plugin.show(
       id: id,
@@ -123,7 +126,9 @@ class NotificationService {
   /// Checks if POST_NOTIFICATIONS permission is granted on Android
   Future<bool> checkPermission() async {
     final android = _plugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
     if (android == null) return true;
 
     final areEnabled = await android.areNotificationsEnabled();
@@ -133,7 +138,9 @@ class NotificationService {
   /// Requests notification permission on Android 13+ (API 33+)
   Future<bool> requestPermission() async {
     final android = _plugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
     if (android == null) return true;
 
     final granted = await android.requestNotificationsPermission();
@@ -141,7 +148,11 @@ class NotificationService {
   }
 
   /// Calculates the next TZDateTime for the given hour and minute in device local time
-  tz.TZDateTime calculateNextScheduledTime(int hour, int minute, [tz.Location? location]) {
+  tz.TZDateTime calculateNextScheduledTime(
+    int hour,
+    int minute, [
+    tz.Location? location,
+  ]) {
     final loc = location ?? tz.local;
     final now = tz.TZDateTime.now(loc);
     var scheduledDate = tz.TZDateTime(
@@ -163,8 +174,23 @@ class NotificationService {
   /// Fetches transactions directly from SQLite database and computes the daily summary
   Future<DailyFinancialSummary> getTodaySummary() async {
     final now = DateTime.now();
-    final startOfDayIso = DateTime(now.year, now.month, now.day, 0, 0, 0).toIso8601String();
-    final endOfDayIso = DateTime(now.year, now.month, now.day, 23, 59, 59, 999).toIso8601String();
+    final startOfDayIso = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      0,
+      0,
+      0,
+    ).toIso8601String();
+    final endOfDayIso = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      23,
+      59,
+      59,
+      999,
+    ).toIso8601String();
 
     try {
       final db = await DatabaseHelper.instance.database;
@@ -174,13 +200,17 @@ class NotificationService {
         whereArgs: [startOfDayIso, endOfDayIso],
       );
 
-      final transactions = rows.map((r) => FinancialTransaction.fromMap(r)).toList();
+      final transactions = rows
+          .map((r) => FinancialTransaction.fromMap(r))
+          .toList();
       return DailyFinancialSummary.fromTransactions(
         targetDate: now,
         allTransactions: transactions,
       );
     } catch (e) {
-      debugPrint('NotificationService: Error loading transactions for summary: $e');
+      debugPrint(
+        'NotificationService: Error loading transactions for summary: $e',
+      );
       return DailyFinancialSummary(
         date: now,
         totalExpenseCents: 0,
@@ -235,10 +265,13 @@ class NotificationService {
         scheduledDate: scheduledTzTime,
         notificationDetails: details,
         androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-        matchDateTimeComponents: DateTimeComponents.time, // Repeats daily at specified hour:minute
+        matchDateTimeComponents:
+            DateTimeComponents.time, // Repeats daily at specified hour:minute
         payload: 'daily_summary_screen',
       );
-      debugPrint('NotificationService: Daily summary scheduled successfully for $scheduledTzTime');
+      debugPrint(
+        'NotificationService: Daily summary scheduled successfully for $scheduledTzTime',
+      );
     } catch (e) {
       debugPrint('NotificationService: Error scheduling daily summary: $e');
       rethrow;

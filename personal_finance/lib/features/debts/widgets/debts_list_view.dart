@@ -13,10 +13,7 @@ import 'package:provider/provider.dart';
 class DebtsListView extends StatelessWidget {
   final List<Account> accounts;
 
-  const DebtsListView({
-    super.key,
-    required this.accounts,
-  });
+  const DebtsListView({super.key, required this.accounts});
 
   @override
   Widget build(BuildContext context) {
@@ -48,20 +45,28 @@ class DebtsListView extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
-                            color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                            color: isDark
+                                ? AppTheme.textSecondaryDark
+                                : AppTheme.textSecondaryLight,
                           ),
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
                           decoration: BoxDecoration(
-                            color: (debtsProvider.netDebtBalanceCents >= 0
-                                    ? AppTheme.primaryGreen
-                                    : AppTheme.expenseRed)
-                                .withOpacity(0.15),
+                            color:
+                                (debtsProvider.netDebtBalanceCents >= 0
+                                        ? AppTheme.primaryGreen
+                                        : AppTheme.expenseRed)
+                                    .withOpacity(0.15),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
-                            debtsProvider.netDebtBalanceCents >= 0 ? 'Net Receivable' : 'Net Payable',
+                            debtsProvider.netDebtBalanceCents >= 0
+                                ? 'Net Receivable'
+                                : 'Net Payable',
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
@@ -81,10 +86,18 @@ class DebtsListView extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text('They Owe Me', style: TextStyle(fontSize: 11, color: Colors.grey)),
+                              const Text(
+                                'They Owe Me',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: Colors.grey,
+                                ),
+                              ),
                               const SizedBox(height: 2),
                               Text(
-                                CurrencyFormatter.formatCents(debtsProvider.totalOwedToMeCents),
+                                CurrencyFormatter.formatCents(
+                                  debtsProvider.totalOwedToMeCents,
+                                ),
                                 style: const TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
@@ -94,17 +107,29 @@ class DebtsListView extends StatelessWidget {
                             ],
                           ),
                         ),
-                        Container(width: 1, height: 32, color: isDark ? Colors.white12 : Colors.black12),
+                        Container(
+                          width: 1,
+                          height: 32,
+                          color: isDark ? Colors.white12 : Colors.black12,
+                        ),
                         const SizedBox(width: 14),
                         // I owe
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text('I Owe', style: TextStyle(fontSize: 11, color: Colors.grey)),
+                              const Text(
+                                'I Owe',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: Colors.grey,
+                                ),
+                              ),
                               const SizedBox(height: 2),
                               Text(
-                                CurrencyFormatter.formatCents(debtsProvider.totalIOweCents),
+                                CurrencyFormatter.formatCents(
+                                  debtsProvider.totalIOweCents,
+                                ),
                                 style: const TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
@@ -136,14 +161,18 @@ class DebtsListView extends StatelessWidget {
                         const SizedBox(height: 12),
                         Text(
                           'No active debts or IOUs',
-                          style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           'Track informal loans, shared bills, and receivables effortlessly.',
                           textAlign: TextAlign.center,
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color: isDark ? AppTheme.textSecondaryDark : AppTheme.textSecondaryLight,
+                            color: isDark
+                                ? AppTheme.textSecondaryDark
+                                : AppTheme.textSecondaryLight,
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -151,11 +180,16 @@ class DebtsListView extends StatelessWidget {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppTheme.primaryGreen,
                             foregroundColor: Colors.black,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                           ),
                           icon: const Icon(Icons.add, size: 18),
                           label: const Text('Add First IOU'),
-                          onPressed: () => AddEditDebtDialog.show(context, accounts: accounts),
+                          onPressed: () => AddEditDebtDialog.show(
+                            context,
+                            accounts: accounts,
+                          ),
                         ),
                       ],
                     ),
@@ -185,11 +219,17 @@ class DebtsListView extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 18,
-                  backgroundColor: (isReceivable ? AppTheme.primaryGreen : AppTheme.expenseRed).withOpacity(0.15),
+                  backgroundColor:
+                      (isReceivable
+                              ? AppTheme.primaryGreen
+                              : AppTheme.expenseRed)
+                          .withOpacity(0.15),
                   child: Icon(
                     isReceivable ? Icons.arrow_downward : Icons.arrow_upward,
                     size: 18,
-                    color: isReceivable ? AppTheme.primaryGreen : AppTheme.expenseRed,
+                    color: isReceivable
+                        ? AppTheme.primaryGreen
+                        : AppTheme.expenseRed,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -199,7 +239,10 @@ class DebtsListView extends StatelessWidget {
                     children: [
                       Text(
                         debt.personName,
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -208,7 +251,9 @@ class DebtsListView extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
-                          color: isReceivable ? AppTheme.primaryGreen : AppTheme.expenseRed,
+                          color: isReceivable
+                              ? AppTheme.primaryGreen
+                              : AppTheme.expenseRed,
                         ),
                       ),
                     ],
@@ -224,13 +269,18 @@ class DebtsListView extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                         color: isSettled
                             ? Colors.grey
-                            : (isReceivable ? AppTheme.primaryGreen : AppTheme.expenseRed),
+                            : (isReceivable
+                                  ? AppTheme.primaryGreen
+                                  : AppTheme.expenseRed),
                       ),
                     ),
                     if (debt.settledAmount > 0)
                       Text(
                         'Total: ${CurrencyFormatter.formatCents(debt.totalAmount)}',
-                        style: TextStyle(fontSize: 10, color: isDark ? Colors.white38 : Colors.black38),
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: isDark ? Colors.white38 : Colors.black38,
+                        ),
                       ),
                   ],
                 ),
@@ -238,14 +288,24 @@ class DebtsListView extends StatelessWidget {
                   icon: const Icon(Icons.more_vert_rounded, size: 18),
                   onSelected: (val) {
                     if (val == 'edit') {
-                      AddEditDebtDialog.show(context, debtToEdit: debt, accounts: accounts);
+                      AddEditDebtDialog.show(
+                        context,
+                        debtToEdit: debt,
+                        accounts: accounts,
+                      );
                     } else if (val == 'delete') {
                       context.read<DebtsProvider>().deleteDebt(debt.id);
                     }
                   },
                   itemBuilder: (ctx) => [
                     const PopupMenuItem(value: 'edit', child: Text('Edit')),
-                    const PopupMenuItem(value: 'delete', child: Text('Delete', style: TextStyle(color: Colors.redAccent))),
+                    const PopupMenuItem(
+                      value: 'delete',
+                      child: Text(
+                        'Delete',
+                        style: TextStyle(color: Colors.redAccent),
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -260,7 +320,11 @@ class DebtsListView extends StatelessWidget {
                 minHeight: 5,
                 backgroundColor: isDark ? Colors.white10 : Colors.black12,
                 valueColor: AlwaysStoppedAnimation<Color>(
-                  isSettled ? Colors.grey : (isReceivable ? AppTheme.primaryGreen : AppTheme.expenseRed),
+                  isSettled
+                      ? Colors.grey
+                      : (isReceivable
+                            ? AppTheme.primaryGreen
+                            : AppTheme.expenseRed),
                 ),
               ),
             ),
@@ -272,38 +336,68 @@ class DebtsListView extends StatelessWidget {
                 if (debt.dueDate != null)
                   Row(
                     children: [
-                      Icon(Icons.event_outlined, size: 12, color: isDark ? Colors.white38 : Colors.black38),
+                      Icon(
+                        Icons.event_outlined,
+                        size: 12,
+                        color: isDark ? Colors.white38 : Colors.black38,
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         'Due: ${DateFormat('MMM dd').format(debt.dueDate!)}',
-                        style: TextStyle(fontSize: 11, color: isDark ? Colors.white54 : Colors.black54),
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: isDark ? Colors.white54 : Colors.black54,
+                        ),
                       ),
                     ],
                   )
                 else
-                  const Text('No due date', style: TextStyle(fontSize: 11, color: Colors.grey)),
+                  const Text(
+                    'No due date',
+                    style: TextStyle(fontSize: 11, color: Colors.grey),
+                  ),
                 if (!isSettled)
                   TextButton.icon(
                     style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
                       minimumSize: Size.zero,
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                     icon: const Icon(Icons.check_circle_outline, size: 14),
                     label: Text(
                       isReceivable ? 'Receive' : 'Pay',
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    onPressed: () => SettleDebtDialog.show(context, debt: debt, accounts: accounts),
+                    onPressed: () => SettleDebtDialog.show(
+                      context,
+                      debt: debt,
+                      accounts: accounts,
+                    ),
                   )
                 else
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.grey.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(4),
                     ),
-                    child: const Text('SETTLED', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.grey)),
+                    child: const Text(
+                      'SETTLED',
+                      style: TextStyle(
+                        fontSize: 9,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey,
+                      ),
+                    ),
                   ),
               ],
             ),

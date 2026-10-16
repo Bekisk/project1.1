@@ -85,7 +85,9 @@ class SmsImportLog {
       reviewReason: map['review_reason'] as String?,
       confidence: map['confidence'] as String? ?? 'medium',
       rawPreview: map['raw_preview'] as String? ?? '',
-      createdAt: DateTime.tryParse(map['created_at'] as String? ?? '') ?? DateTime.now(),
+      createdAt:
+          DateTime.tryParse(map['created_at'] as String? ?? '') ??
+          DateTime.now(),
     );
   }
 }

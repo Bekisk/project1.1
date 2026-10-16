@@ -58,12 +58,20 @@ class TransactionFilterState {
     return TransactionFilterState(
       type: clearType ? null : (type ?? this.type),
       datePreset: datePreset ?? this.datePreset,
-      customStartDate: clearCustomDates ? null : (customStartDate ?? this.customStartDate),
-      customEndDate: clearCustomDates ? null : (customEndDate ?? this.customEndDate),
+      customStartDate: clearCustomDates
+          ? null
+          : (customStartDate ?? this.customStartDate),
+      customEndDate: clearCustomDates
+          ? null
+          : (customEndDate ?? this.customEndDate),
       accountId: clearAccountId ? null : (accountId ?? this.accountId),
       categoryId: clearCategoryId ? null : (categoryId ?? this.categoryId),
-      minAmountCents: clearMinAmount ? null : (minAmountCents ?? this.minAmountCents),
-      maxAmountCents: clearMaxAmount ? null : (maxAmountCents ?? this.maxAmountCents),
+      minAmountCents: clearMinAmount
+          ? null
+          : (minAmountCents ?? this.minAmountCents),
+      maxAmountCents: clearMaxAmount
+          ? null
+          : (maxAmountCents ?? this.maxAmountCents),
       searchQuery: searchQuery ?? this.searchQuery,
     );
   }
@@ -71,7 +79,9 @@ class TransactionFilterState {
   int get activeFilterCount {
     int count = 0;
     if (type != null) count++;
-    if (datePreset != DateRangePreset.thisMonth && datePreset != DateRangePreset.allTime) count++;
+    if (datePreset != DateRangePreset.thisMonth &&
+        datePreset != DateRangePreset.allTime)
+      count++;
     if (accountId != null) count++;
     if (categoryId != null) count++;
     if (minAmountCents != null || maxAmountCents != null) count++;
@@ -123,7 +133,9 @@ class TransactionsProvider extends ChangeNotifier {
         'transactions',
         orderBy: 'transaction_date DESC, created_at DESC',
       );
-      _allTransactions = txMaps.map((e) => FinancialTransaction.fromMap(e)).toList();
+      _allTransactions = txMaps
+          .map((e) => FinancialTransaction.fromMap(e))
+          .toList();
     } catch (e) {
       debugPrint('Error loading transactions: $e');
     } finally {
@@ -153,7 +165,11 @@ class TransactionsProvider extends ChangeNotifier {
   }
 
   /// Calculates boundary dates [start, end] in local timezone for date presets
-  (DateTime?, DateTime?) _resolveDateRange(DateRangePreset preset, DateTime? customStart, DateTime? customEnd) {
+  (DateTime?, DateTime?) _resolveDateRange(
+    DateRangePreset preset,
+    DateTime? customStart,
+    DateTime? customEnd,
+  ) {
     final now = DateTime.now();
     final todayStart = DateTime(now.year, now.month, now.day);
     final todayEnd = DateTime(now.year, now.month, now.day, 23, 59, 59, 999);
@@ -165,17 +181,35 @@ class TransactionsProvider extends ChangeNotifier {
         return (todayStart, todayEnd);
       case DateRangePreset.yesterday:
         final yStart = todayStart.subtract(const Duration(days: 1));
-        final yEnd = DateTime(yStart.year, yStart.month, yStart.day, 23, 59, 59, 999);
+        final yEnd = DateTime(
+          yStart.year,
+          yStart.month,
+          yStart.day,
+          23,
+          59,
+          59,
+          999,
+        );
         return (yStart, yEnd);
       case DateRangePreset.thisWeek:
         // Week starting Monday
         final weekday = now.weekday; // 1 = Monday
         final weekStart = todayStart.subtract(Duration(days: weekday - 1));
-        final weekEnd = DateTime(weekStart.year, weekStart.month, weekStart.day + 6, 23, 59, 59, 999);
+        final weekEnd = DateTime(
+          weekStart.year,
+          weekStart.month,
+          weekStart.day + 6,
+          23,
+          59,
+          59,
+          999,
+        );
         return (weekStart, weekEnd);
       case DateRangePreset.thisMonth:
         final mStart = DateTime(now.year, now.month, 1);
-        final nextM = now.month == 12 ? DateTime(now.year + 1, 1, 1) : DateTime(now.year, now.month + 1, 1);
+        final nextM = now.month == 12
+            ? DateTime(now.year + 1, 1, 1)
+            : DateTime(now.year, now.month + 1, 1);
         final mEnd = nextM.subtract(const Duration(milliseconds: 1));
         return (mStart, mEnd);
       case DateRangePreset.lastMonth:
@@ -190,9 +224,19 @@ class TransactionsProvider extends ChangeNotifier {
         return (start30, todayEnd);
       case DateRangePreset.custom:
         if (customStart == null && customEnd == null) return (null, null);
-        final cStart = customStart != null ? DateTime(customStart.year, customStart.month, customStart.day) : null;
+        final cStart = customStart != null
+            ? DateTime(customStart.year, customStart.month, customStart.day)
+            : null;
         final cEnd = customEnd != null
-            ? DateTime(customEnd.year, customEnd.month, customEnd.day, 23, 59, 59, 999)
+            ? DateTime(
+                customEnd.year,
+                customEnd.month,
+                customEnd.day,
+                23,
+                59,
+                59,
+                999,
+              )
             : null;
         return (cStart, cEnd);
     }
@@ -239,10 +283,12 @@ class TransactionsProvider extends ChangeNotifier {
       }
 
       // 5. Amount Range
-      if (_filter.minAmountCents != null && tx.amount < _filter.minAmountCents!) {
+      if (_filter.minAmountCents != null &&
+          tx.amount < _filter.minAmountCents!) {
         return false;
       }
-      if (_filter.maxAmountCents != null && tx.amount > _filter.maxAmountCents!) {
+      if (_filter.maxAmountCents != null &&
+          tx.amount > _filter.maxAmountCents!) {
         return false;
       }
 
@@ -250,13 +296,16 @@ class TransactionsProvider extends ChangeNotifier {
       if (query.isNotEmpty) {
         final desc = tx.description.toLowerCase();
         final notes = (tx.notes ?? '').toLowerCase();
-        final cat = tx.categoryId != null ? (_categoryMap[tx.categoryId]?.name.toLowerCase() ?? '') : '';
+        final cat = tx.categoryId != null
+            ? (_categoryMap[tx.categoryId]?.name.toLowerCase() ?? '')
+            : '';
         final acc = _accountMap[tx.accountId]?.name.toLowerCase() ?? '';
         final destAcc = tx.destinationAccountId != null
             ? (_accountMap[tx.destinationAccountId]?.name.toLowerCase() ?? '')
             : '';
 
-        final matches = desc.contains(query) ||
+        final matches =
+            desc.contains(query) ||
             notes.contains(query) ||
             cat.contains(query) ||
             acc.contains(query) ||
@@ -307,7 +356,11 @@ class TransactionsProvider extends ChangeNotifier {
   Future<bool> deleteTransaction(String transactionId) async {
     try {
       final db = await DatabaseHelper.instance.database;
-      final count = await db.delete('transactions', where: 'id = ?', whereArgs: [transactionId]);
+      final count = await db.delete(
+        'transactions',
+        where: 'id = ?',
+        whereArgs: [transactionId],
+      );
       if (count > 0) {
         await loadTransactions();
         return true;

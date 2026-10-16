@@ -32,8 +32,23 @@ class DailyFinancialSummary {
     required DateTime targetDate,
     required List<FinancialTransaction> allTransactions,
   }) {
-    final startOfDay = DateTime(targetDate.year, targetDate.month, targetDate.day, 0, 0, 0);
-    final endOfDay = DateTime(targetDate.year, targetDate.month, targetDate.day, 23, 59, 59, 999);
+    final startOfDay = DateTime(
+      targetDate.year,
+      targetDate.month,
+      targetDate.day,
+      0,
+      0,
+      0,
+    );
+    final endOfDay = DateTime(
+      targetDate.year,
+      targetDate.month,
+      targetDate.day,
+      23,
+      59,
+      59,
+      999,
+    );
 
     int expenses = 0;
     int income = 0;
@@ -43,7 +58,8 @@ class DailyFinancialSummary {
 
     for (final tx in allTransactions) {
       // 1. Boundary filter in local time
-      if (tx.transactionDate.isBefore(startOfDay) || tx.transactionDate.isAfter(endOfDay)) {
+      if (tx.transactionDate.isBefore(startOfDay) ||
+          tx.transactionDate.isAfter(endOfDay)) {
         continue;
       }
 
@@ -54,7 +70,8 @@ class DailyFinancialSummary {
 
       // 3. Strict exclusion: Opening balances
       final descLower = tx.description.toLowerCase().trim();
-      if (descLower.contains('opening balance') || descLower.contains('initial balance')) {
+      if (descLower.contains('opening balance') ||
+          descLower.contains('initial balance')) {
         continue;
       }
 
@@ -94,7 +111,8 @@ class DailyFinancialSummary {
     final incomeFormatted = CurrencyFormatter.formatCents(totalIncomeCents);
 
     final netSign = netCashFlowCents >= 0 ? '+' : '';
-    final netFormatted = '$netSign${CurrencyFormatter.formatCents(netCashFlowCents)}';
+    final netFormatted =
+        '$netSign${CurrencyFormatter.formatCents(netCashFlowCents)}';
 
     return 'Today: Expenses $expenseFormatted · Income $incomeFormatted · Net $netFormatted ($expenseTransactionCount ${expenseTransactionCount == 1 ? 'expense' : 'expenses'})';
   }
@@ -108,11 +126,16 @@ class DailyFinancialSummary {
     final expenseFormatted = CurrencyFormatter.formatCents(totalExpenseCents);
     final incomeFormatted = CurrencyFormatter.formatCents(totalIncomeCents);
     final netSign = netCashFlowCents >= 0 ? '+' : '';
-    final netFormatted = '$netSign${CurrencyFormatter.formatCents(netCashFlowCents)}';
+    final netFormatted =
+        '$netSign${CurrencyFormatter.formatCents(netCashFlowCents)}';
 
     final buffer = StringBuffer();
-    buffer.writeln('• Total Expenses: $expenseFormatted ($expenseTransactionCount ${expenseTransactionCount == 1 ? 'transaction' : 'transactions'})');
-    buffer.writeln('• Total Income: $incomeFormatted ($incomeCount ${incomeCount == 1 ? 'transaction' : 'transactions'})');
+    buffer.writeln(
+      '• Total Expenses: $expenseFormatted ($expenseTransactionCount ${expenseTransactionCount == 1 ? 'transaction' : 'transactions'})',
+    );
+    buffer.writeln(
+      '• Total Income: $incomeFormatted ($incomeCount ${incomeCount == 1 ? 'transaction' : 'transactions'})',
+    );
     buffer.write('• Net Cashflow: $netFormatted');
 
     return buffer.toString();

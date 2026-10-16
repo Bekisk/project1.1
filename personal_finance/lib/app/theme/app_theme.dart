@@ -9,22 +9,46 @@ import 'package:flutter/services.dart';
 /// and preserved vibrant category/bank icon artwork.
 class AppTheme {
   // 1. Core Apple-Inspired Monochrome Palette
-  static const Color pureBlack = Color(0xFF000000); // Main background: pure black
-  static const Color secondaryBlack = Color(0xFF080808); // Subtle section separation
-  static const Color cardCharcoal = Color(0xFF111111); // Standard cards & containers
-  static const Color elevatedCharcoal = Color(0xFF181818); // Elevated cards & floating panels
-  static const Color inputCharcoal = Color(0xFF101010); // Inputs, search fields, filters
+  static const Color pureBlack = Color(
+    0xFF000000,
+  ); // Main background: pure black
+  static const Color secondaryBlack = Color(
+    0xFF080808,
+  ); // Subtle section separation
+  static const Color cardCharcoal = Color(
+    0xFF111111,
+  ); // Standard cards & containers
+  static const Color elevatedCharcoal = Color(
+    0xFF181818,
+  ); // Elevated cards & floating panels
+  static const Color inputCharcoal = Color(
+    0xFF101010,
+  ); // Inputs, search fields, filters
 
   // 2. Monochromatic Text & Accents
-  static const Color pureWhite = Color(0xFFFFFFFF); // Primary text, headings, balances
-  static const Color secondaryGray = Color(0xFFB3B3B3); // Subtitles, labels, descriptions
-  static const Color tertiaryGray = Color(0xFF777777); // Inactive labels, hints, placeholders
-  static const Color disabledGray = Color(0xFF454545); // Disabled controls, inactive tracks
+  static const Color pureWhite = Color(
+    0xFFFFFFFF,
+  ); // Primary text, headings, balances
+  static const Color secondaryGray = Color(
+    0xFFB3B3B3,
+  ); // Subtitles, labels, descriptions
+  static const Color tertiaryGray = Color(
+    0xFF777777,
+  ); // Inactive labels, hints, placeholders
+  static const Color disabledGray = Color(
+    0xFF454545,
+  ); // Disabled controls, inactive tracks
 
   // 3. Precision Borders & Dividers
-  static const Color borderPrimary = Color(0xFF292929); // Card outlines, input borders
-  static const Color borderSecondary = Color(0xFF202020); // Internal dividers & subtle edges
-  static const Color borderTertiary = Color(0xFF383838); // Outlined buttons, switch tracks
+  static const Color borderPrimary = Color(
+    0xFF292929,
+  ); // Card outlines, input borders
+  static const Color borderSecondary = Color(
+    0xFF202020,
+  ); // Internal dividers & subtle edges
+  static const Color borderTertiary = Color(
+    0xFF383838,
+  ); // Outlined buttons, switch tracks
 
   // 4. Aliases for Clean Backwards Compatibility
   static const Color primaryBackground = pureBlack;
@@ -40,11 +64,20 @@ class AppTheme {
   static const Color glowTeal = Colors.transparent;
 
   // Brand Accents & Semantic Financial Status Indicators
-  static const Color primaryGreen = emeraldAccent; // Teal/emerald brand accent (#10B981)
-  static const Color incomeGreen = Color(0xFF34D399); // Semantic income indicator
-  static const Color expenseRed = Color(0xFFF87171); // Semantic expense/alert indicator
-  static const Color transferBlue = Color(0xFF38BDF8); // Semantic transfer indicator
-  static const Color accentAmber = Color(0xFFFBBF24); // Semantic warning indicator
+  static const Color primaryGreen =
+      emeraldAccent; // Teal/emerald brand accent (#10B981)
+  static const Color incomeGreen = Color(
+    0xFF34D399,
+  ); // Semantic income indicator
+  static const Color expenseRed = Color(
+    0xFFF87171,
+  ); // Semantic expense/alert indicator
+  static const Color transferBlue = Color(
+    0xFF38BDF8,
+  ); // Semantic transfer indicator
+  static const Color accentAmber = Color(
+    0xFFFBBF24,
+  ); // Semantic warning indicator
   static const Color accentPurple = Color(0xFFA78BFA);
   static const Color accentTeal = Color(0xFF14B8A6);
   static const Color accentBlue = Color(0xFF38BDF8);
@@ -55,7 +88,9 @@ class AppTheme {
   static const Color emeraldDarkContainer = Color(0xFF181818);
 
   // Backward Compatibility Navy Aliases
-  static const Color primaryNavy = Color(0xFF0F172A); // Deep slate navy for secondary dark actions
+  static const Color primaryNavy = Color(
+    0xFF0F172A,
+  ); // Deep slate navy for secondary dark actions
   static const Color deepNavy = pureBlack;
   static const Color navyCardDark = cardCharcoal;
   static const Color navyElevatedDark = elevatedCharcoal;
@@ -85,31 +120,21 @@ class AppTheme {
 
   /// Pure Minimalist Monochrome Gradients (Black to Charcoal only)
   static const LinearGradient glassCardGradient = LinearGradient(
-    colors: [
-      Color(0xFF161616),
-      Color(0xFF0F0F0F),
-    ],
+    colors: [Color(0xFF161616), Color(0xFF0F0F0F)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   /// Wallet Hero Balance Card Gradient (Deep refined charcoal to black)
   static const LinearGradient walletHeroGradient = LinearGradient(
-    colors: [
-      Color(0xFF181818),
-      Color(0xFF111111),
-      Color(0xFF080808),
-    ],
+    colors: [Color(0xFF181818), Color(0xFF111111), Color(0xFF080808)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   /// Floating Capsule Navigation Gradient (Solid dark charcoal/black)
   static const LinearGradient floatingCapsuleGradient = LinearGradient(
-    colors: [
-      Color(0xFF141414),
-      Color(0xFF0A0A0A),
-    ],
+    colors: [Color(0xFF141414), Color(0xFF0A0A0A)],
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
   );
@@ -171,7 +196,10 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: surfaceSubtleLight,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide.none,
@@ -194,8 +222,14 @@ class AppTheme {
         backgroundColor: surfaceLight,
         selectedItemColor: textDark,
         unselectedItemColor: textSecondaryLight,
-        selectedLabelStyle: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
-        unselectedLabelStyle: TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+        selectedLabelStyle: TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 12,
+        ),
+        unselectedLabelStyle: TextStyle(
+          fontWeight: FontWeight.w500,
+          fontSize: 12,
+        ),
         type: BottomNavigationBarType.fixed,
         elevation: 0,
       ),
@@ -257,7 +291,10 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: inputCharcoal,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide.none,
@@ -281,7 +318,9 @@ class AppTheme {
           backgroundColor: primaryGreen,
           foregroundColor: Colors.white,
           elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(
@@ -289,7 +328,9 @@ class AppTheme {
           backgroundColor: primaryGreen,
           foregroundColor: Colors.white,
           elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
@@ -297,20 +338,26 @@ class AppTheme {
           backgroundColor: Colors.transparent,
           foregroundColor: pureWhite,
           side: const BorderSide(color: borderTertiary, width: 1),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(
-          foregroundColor: primaryGreen,
-        ),
+        style: TextButton.styleFrom(foregroundColor: primaryGreen),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: secondaryBlack,
         selectedItemColor: pureWhite,
         unselectedItemColor: tertiaryGray,
-        selectedLabelStyle: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
-        unselectedLabelStyle: TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+        selectedLabelStyle: TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 12,
+        ),
+        unselectedLabelStyle: TextStyle(
+          fontWeight: FontWeight.w500,
+          fontSize: 12,
+        ),
         type: BottomNavigationBarType.fixed,
         elevation: 0,
       ),

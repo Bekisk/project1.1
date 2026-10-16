@@ -1,15 +1,6 @@
-enum BudgetType {
-  category,
-  overall,
-  customPeriod,
-}
+enum BudgetType { category, overall, customPeriod }
 
-enum BudgetFrequency {
-  weekly,
-  monthly,
-  yearly,
-  custom,
-}
+enum BudgetFrequency { weekly, monthly, yearly, custom }
 
 class Budget {
   final String id;
@@ -69,7 +60,9 @@ class Budget {
       name: map['name'] as String? ?? 'Budget',
       budgetType: BudgetType.values.firstWhere(
         (e) => e.name == map['budget_type'],
-        orElse: () => map['category_id'] != null ? BudgetType.category : BudgetType.overall,
+        orElse: () => map['category_id'] != null
+            ? BudgetType.category
+            : BudgetType.overall,
       ),
       categoryId: map['category_id'] as String?,
       amount: map['amount'] as int,

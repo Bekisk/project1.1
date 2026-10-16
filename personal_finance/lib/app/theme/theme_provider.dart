@@ -46,11 +46,10 @@ class ThemeProvider extends ChangeNotifier {
       if (mode == ThemeMode.light) strVal = 'light';
       if (mode == ThemeMode.dark) strVal = 'dark';
 
-      await db.insert(
-        'app_settings',
-        {'key': 'theme_mode', 'value': strVal},
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
+      await db.insert('app_settings', {
+        'key': 'theme_mode',
+        'value': strVal,
+      }, conflictAlgorithm: ConflictAlgorithm.replace);
     } catch (e) {
       debugPrint('Error saving theme: $e');
     }
