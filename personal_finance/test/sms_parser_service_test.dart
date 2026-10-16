@@ -291,5 +291,76 @@ void main() {
       expect(parsed.buildFactualDescription(), 'Money deducted');
       expect(parsed.isCompletedFinancialTransaction, isTrue);
     });
+
+    // 21. CBE Message Formats Without Spaces & Variations
+    test('CBE Message without spaces after ETB, whole number amounts, and thousand separators', () {
+      const smsWithoutSpaces =
+          'Dear Bereket Anteneh Kassa You have received ETB20,000 from account 16658 (Alemtshay Mekurya W/aregay) to your account 12313. Your current balance is ETB20822. Thanks for Banking with CBE.';
+      final parsed = parser.parseSms(smsWithoutSpaces);
+
+      expect(parsed, isNotNull);
+      expect(parsed!.provider, EthiopianBankProvider.cbe);
+      expect(parsed.isMoneyIn, isTrue);
+      expect(parsed.transactionType, SmsTransactionType.incomingTransfer);
+      expect(parsed.amountCents, 2000000); // 20,000 ETB
+      expect(parsed.reportedBalanceCents, 2082200); // 20,822 ETB
+      expect(parsed.accountSuffix, '...2313');
+      expect(parsed.partyOrMerchant, 'Alemtshay Mekurya W/aregay');
+    });
+
+    test('CBE Message without optional fields or recipient maintains unknown principal & recipient', () {
+      const smsDebit =
+          'Dear Mr Bereket your Account 12313 has been debited with ETB 500.00. Your Current Balance is ETB 10,000.00. Thank you for Banking with CBE!.';
+      final parsed = parser.parseSms(smsDebit);
+
+      expect(parsed, isNotNull);
+      expect(parsed!.provider, EthiopianBankProvider.cbe);
+      expect(parsed.isMoneyIn, isFalse);
+      expect(parsed.amountCents, 50000);
+      expect(parsed.partyOrMerchant, isNull);
+      expect(parsed.referenceNumber, isNull);
+      expect(parsed.reportedBalanceCents, 1000000);
+      expect(parsed.buildFactualDescription(), 'Money deducted');
+    });
+
+    test('CBE Message with balance only and no transaction is classified as balance inquiry', () {
+      const smsBalOnly =
+          'Dear customer, your CBE account 1000123456 current balance is ETB 15,200.50. Thanks for Banking with CBE.';
+      final parsed = parser.parseSms(smsBalOnly);
+
+      expect(parsed, isNotNull);
+      expect(parsed!.transactionType, SmsTransactionType.balanceInquiry);
+      expect(parsed.isCompletedFinancialTransaction, isFalse);
+      expect(parsed.reportedBalanceCents, 1520050);
+      expect(parsed.amountCents, 0);
+    });
+
+    test('CBE Message with malformed / invalid content is rejected safely', () {
+      const malformedSms = 'Thanks for Banking with CBE! Visit https://cbe.com.et for new promotions.';
+      final parsed = parser.parseSms(malformedSms);
+
+      // Either null or non-completed transaction
+      expect(parsed == null || !parsed.isCompletedFinancialTransaction, isTrue);
+    });
+
+    test('Telebirr regression: confirmed standard Telebirr incoming and outgoing messages remain unaffected', () {
+      const tbIn =
+          'You have received ETB 3,500.00 from Abebe Bikila (0911223344) on 15/10/2026. Txn: TB882910. Current balance is ETB 7,200.00.';
+      final pIn = parser.parseSms(tbIn);
+      expect(pIn, isNotNull);
+      expect(pIn!.provider, EthiopianBankProvider.telebirr);
+      expect(pIn.isMoneyIn, isTrue);
+      expect(pIn.amountCents, 350000);
+      expect(pIn.referenceNumber, 'TB882910');
+
+      const tbOut =
+          'You have paid ETB 150.00 to Supermarket on 15/10/2026. Txn: TB112233. Current balance is ETB 7,050.00.';
+      final pOut = parser.parseSms(tbOut);
+      expect(pOut, isNotNull);
+      expect(pOut!.provider, EthiopianBankProvider.telebirr);
+      expect(pOut.isMoneyIn, isFalse);
+      expect(pOut.amountCents, 15000);
+      expect(pOut.referenceNumber, 'TB112233');
+    });
   });
 }

@@ -27,20 +27,34 @@ class _SmsScannerDialogState extends State<SmsScannerDialog> {
 
   final List<Map<String, String>> _templates = [
     {
+      'label': 'CBE Received',
+      'text':
+          'Dear Bereket Anteneh Kassa You have received ETB 20,000.00 from account 16658 (Alemtshay Mekurya W/aregay) to your account 12313. Your current balance is ETB20,822.40. Thanks for Banking with CBE.',
+    },
+    {
+      'label': 'CBE Transferred',
+      'text':
+          'Dear Bereket Anteneh Kassa You have successfully transferred ETB200.00 from account 12313 to account 19525 (Ethi.full Gos.ch. Haya Hulet M). Service charge of ETB 0.50 and VAT(15%) of ETB0.08 and Disaster Recovery(5%) of 0.03 with total of ETB200.61. Your current balance is ETB20,621.79. Thanks for Banking with CBE.',
+    },
+    {
       'label': 'CBE Debit',
-      'text': 'Dear Abebe, your account 1000123456 has been debited with ETB 653.00 on 12/10/2026 for Groceries. Balance is ETB 4,500.00.',
+      'text':
+          'Dear Mr Bereket your Account 1****2313 has been debited with ETB 200.85 including Service charge ETB0.70ETB0.04 and VAT(15%) ETB0.11. Your Current Balance is ETB 10434.47. Thank you for Banking with CBE!. For feedback https://shorturl.at/auUX0',
     },
     {
       'label': 'Telebirr Paid',
-      'text': 'You have paid ETB 450.00 to Cafe on 12/10/2026 14:32:00. Your transaction number is CI892345. Current balance is ETB 1200.00.',
-    },
-    {
-      'label': 'Awash Bank',
-      'text': 'Awash Bank: Your account 01320098765400 has been debited by ETB 1,500.00 on 12/10/2026. Reason: Supermarket shopping.',
+      'text':
+          'You have paid ETB 450.00 to Cafe on 12/10/2026 14:32:00. Your transaction number is CI892345. Current balance is ETB 1200.00.',
     },
     {
       'label': 'Telebirr Received',
-      'text': 'You have received ETB 2,500.00 from 0911223344 on 11/10/2026. Txn: TB782193. Current balance is ETB 3700.00.',
+      'text':
+          'You have received ETB 2,500.00 from 0911223344 on 11/10/2026. Txn: TB782193. Current balance is ETB 3700.00.',
+    },
+    {
+      'label': 'Awash Bank',
+      'text':
+          'Awash Bank: Your account 01320098765400 has been debited by ETB 1,500.00 on 12/10/2026. Reason: Supermarket shopping.',
     },
   ];
 

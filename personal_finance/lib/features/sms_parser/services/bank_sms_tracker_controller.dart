@@ -66,17 +66,21 @@ class BankSmsTrackerController {
       if (result.status == SmsImportStatus.autoRecorded &&
           result.transaction != null) {
         final tx = result.transaction!;
-        final amountFormatted = 'ETB ${(tx.amount / 100.0).toStringAsFixed(2)}';
+        final totalDeductedCents = tx.amount + result.log.feeCents;
+        final amountFormatted =
+            'ETB ${(totalDeductedCents / 100.0).toStringAsFixed(2)}';
         final isIncome = tx.type.name == 'income';
         final bankName = result.log.sender.isNotEmpty
             ? result.log.sender
             : 'Bank';
         final title = isIncome
             ? '$bankName: $amountFormatted received'
-            : '$bankName: $amountFormatted debited';
+            : '$bankName: $amountFormatted deducted';
         final body = isIncome
             ? '$amountFormatted credited to your account. ${tx.description}'
-            : '$amountFormatted deducted. ${tx.description}';
+            : (result.log.feeCents > 0
+                ? '$amountFormatted total deducted (includes ETB ${(result.log.feeCents / 100.0).toStringAsFixed(2)} fee). ${tx.description}'
+                : '$amountFormatted deducted. ${tx.description}');
 
         try {
           await NotificationService.instance.showBankTransactionNotification(
